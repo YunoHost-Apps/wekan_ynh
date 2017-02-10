@@ -1,0 +1,126 @@
+#!/bin/bash
+
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+# Arguments from manifest
+app=$YNH_APP_INSTANCE_NAME
+domain=$YNH_APP_ARG_DOMAIN
+path_url=$YNH_APP_ARG_PATH
+admin=$YNH_APP_ARG_ADMIN
+is_public=$YNH_APP_ARG_IS_PUBLIC
+language=$YNH_APP_ARG_LANGUAGE
+
+src_path="/var/www/wekan"
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+# Save app settings
+ynh_app_setting_set "$app" admin "$admin"
+ynh_app_setting_set "$app" is_public "$is_public"
+ynh_app_setting_set "$app" language "$language"
+
+# Check domain/path availability
+sudo yunohost app checkurl "${domain}${path_url}" -a "$app" \
+    || ynh_die "Path not available: ${domain}${path_url}"
+
+
+
+INSTALL_USER=admin
+
+# Install nvm
+export NVM_DIR="/opt/nvm"
+sudo curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | sudo NVM_DIR=$NVM_DIR bash
+
+# Install latest nodejs
+sudo su -c ". $NVM_DIR/nvm.sh && nvm install 0.10 && nvm use 0.10"
+
+# Install npm
+sudo apt-get update
+sudo apt-get -y install npm
+
+# Add some swap :/
+if [ $(free | tail -n 1 | awk '{print $2}') -lt 1000000 ];
+then
+	if [[ -z $(mount | grep /tmp | grep tmpfs) ]];
+	then
+		tmp_swap_file=/tmp/wekan_swapfile
+	else
+	    # It is NOT possible to setup a swap file on a tmpfs filesystem
+		tmp_swap_file=/var/cache/wekan_swapfile
+	fi
+	sudo dd if=/dev/zero of=$tmp_swap_file bs=1M count=1024
+	sudo chmod 600 $tmp_swap_file
+	sudo mkswap $tmp_swap_file
+	sudo swapon $tmp_swap_file
+fi
+
+# Install meteor
+METEOR_INSTALL_DIR="/opt/meteor"
+METEOR_BIN="/usr/local/bin/meteor"
+#sudo rm -rf $METEOR_INSTALL_DIR
+#sudo cp -r ../sources/meteor $METEOR_INSTALL_DIR
+#sudo git clone --recursive https://github.com/meteor/meteor.git $METEOR_INSTALL_DIR -b release-1.3.5
+#NODE_BIN=`sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 >/dev/null && which node"`
+#sudo mkdir -p /opt/meteor/dev_bundle/bin/
+#sudo ln -s $NODE_BIN /opt/meteor/dev_bundle/bin/node
+
+sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && curl https://install.meteor.com/ | sh"
+
+#sudo chown -R admin $METEOR_INSTALL_DIR
+#cd $METEOR_INSTALL_DIR
+#./meteor --help
+#sudo rm -f $METEOR_BIN
+#sudo ln -s $METEOR_INSTALL_DIR/meteor $METEOR_BIN
+
+
+# Install wekan
+sudo mkdir -p $src_path
+cd $src_path
+sudo git clone https://github.com/wekan/wekan.git .
+sudo chown -R admin /var/www/wekan/
+sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && npm install"
+sudo rm -rf .build
+sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && $METEOR_BIN build .build --directory"
+cd .build/bundle/programs/server
+sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && npm install"
+#sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && meteor build .build --directory"
+
+# Disable swapfile
+if [[ -v "$tmp_swap_file" ]];
+then
+	sudo swapoff $tmp_swap_file
+	sudo rm -f $tmp_swap_file
+fi
+
+# Configure stuff ?
+export MONGO_URL="mongodb://127.0.0.1:27017/wekan"
+export ROOT_URL="https://${domain}"
+export MAIL_URL="smtp://root@localhost/"
+export PORT=8081
+
+# Launch ?
+cd ../../
+node main.js
+
+
+
+
+
+
+
+# Modify Nginx configuration file and copy it to Nginx conf directory
+nginx_conf=../conf/nginx.conf
+sed -i "s@YNH_WWW_PATH@$path_url@g" $nginx_conf
+sed -i "s@YNH_WWW_ALIAS@$src_path/@g" $nginx_conf
+sudo cp $nginx_conf /etc/nginx/conf.d/$domain.d/$app.conf
+
+# If app is public, add url to SSOWat conf as skipped_uris
+if [[ $is_public -eq 1 ]]; then
+  # unprotected_uris allows SSO credentials to be passed anyway.
+  ynh_app_setting_set "$app" unprotected_uris "/"
+fi
+
+# Reload services
+sudo service nginx reload

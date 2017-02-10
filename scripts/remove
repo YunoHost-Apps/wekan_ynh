@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# See comments in install script
+app=$YNH_APP_INSTANCE_NAME
+
+# Source YunoHost helpers
+source /usr/share/yunohost/helpers
+
+# Retrieve app settings
+domain=$(ynh_app_setting_get "$app" domain)
+
+# Remove sources
+sudo rm -rf /var/www/$app
+
+# Remove nginx configuration file
+sudo rm -f /etc/nginx/conf.d/$domain.d/$app.conf
+
+# Reload nginx service
+sudo service nginx reload
