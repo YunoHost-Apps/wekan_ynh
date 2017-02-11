@@ -13,6 +13,9 @@ language=$YNH_APP_ARG_LANGUAGE
 
 src_path="/var/www/wekan"
 
+systemd_conf="$PWD/../conf/systemd.conf"
+nginx_conf="$PWD/../conf/nginx.conf"
+
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
 
@@ -58,20 +61,7 @@ fi
 METEOR_INSTALL_DIR="/opt/meteor"
 METEOR_BIN="/usr/local/bin/meteor"
 NODE_BIN=`sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 >/dev/null && which node"`
-#sudo rm -rf $METEOR_INSTALL_DIR
-#sudo cp -r ../sources/meteor $METEOR_INSTALL_DIR
-#sudo git clone --recursive https://github.com/meteor/meteor.git $METEOR_INSTALL_DIR -b release-1.3.5
-#sudo mkdir -p /opt/meteor/dev_bundle/bin/
-#sudo ln -s $NODE_BIN /opt/meteor/dev_bundle/bin/node
-
 sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && curl https://install.meteor.com/ | sh"
-
-#sudo chown -R admin $METEOR_INSTALL_DIR
-#cd $METEOR_INSTALL_DIR
-#./meteor --help
-#sudo rm -f $METEOR_BIN
-#sudo ln -s $METEOR_INSTALL_DIR/meteor $METEOR_BIN
-
 
 # Install wekan
 sudo mkdir -p $src_path
@@ -83,7 +73,6 @@ sudo rm -rf .build
 sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && $METEOR_BIN build .build --directory"
 cd .build/bundle/programs/server
 sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && npm install"
-#sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && meteor build .build --directory"
 
 # Disable swapfile
 if [[ -v "$(echo $tmp_swap_file)" ]];
@@ -101,7 +90,6 @@ sudo systemctl start mongod
 sudo systemctl enable mongod
 
 # Install systemd conf
-systemd_conf=../conf/systemd.conf
 sed -i "s@WEKAN_INSTALL_PATH@/var/www/wekan/.build/bundle@g" $systemd_conf
 sed -i "s@WEKAN_NODEJS_PATH@$NODE_BIN@g"                     $systemd_conf
 sed -i "s@WEKAN_DOMAIN@$domain@g"                            $systemd_conf
@@ -109,10 +97,9 @@ sed -i "s@WEKAN_PATH@$path_url@g"                            $systemd_conf
                                                              
 sed -i "s@WEKAN_DB_NAME@wekan@g"                             $systemd_conf
 sed -i "s@WEKAN_PORT@8081@g"                                 $systemd_conf
-cp $systemd_conf /etc/systemd/system/wekan@.service
+sudo cp $systemd_conf /etc/systemd/system/wekan@.service
 
 # Modify Nginx configuration file and copy it to Nginx conf directory
-nginx_conf=../conf/nginx.conf
 sed -i "s@YNH_WWW_PATH@$path_url@g" $nginx_conf
 sed -i "s@YNH_WWW_ALIAS@$src_path/@g" $nginx_conf
 sudo cp $nginx_conf /etc/nginx/conf.d/$domain.d/$app.conf
