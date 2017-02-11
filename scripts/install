@@ -4,118 +4,164 @@
 set -eu
 
 # Arguments from manifest
-app=$YNH_APP_INSTANCE_NAME
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
-is_public=$YNH_APP_ARG_IS_PUBLIC
-language=$YNH_APP_ARG_LANGUAGE
+readonly APP=$YNH_APP_INSTANCE_NAME
+readonly DOMAIN=$YNH_APP_ARG_DOMAIN
+readonly APP_URI=$YNH_APP_ARG_PATH
+readonly APP_ADMIN=$YNH_APP_ARG_ADMIN
+readonly APP_IS_PUBLIC=$YNH_APP_ARG_IS_PUBLIC
+readonly APP_LANGUAGE=$YNH_APP_ARG_LANGUAGE
 
-src_path="/var/www/wekan"
+readonly APP_INSTALL_PATH="/var/www/wekan"
+readonly SYSTEMD_CONF_TEMPLATE="$PWD/../conf/systemd.conf"
+readonly NGINX_CONF_TEMPLATE="$PWD/../conf/nginx.conf"
 
-systemd_conf="$PWD/../conf/systemd.conf"
-nginx_conf="$PWD/../conf/nginx.conf"
+export NVM_INSTALL_DIR="/opt/nvm"
 
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
 
-# Save app settings
-ynh_app_setting_set "$app" admin "$admin"
-ynh_app_setting_set "$app" is_public "$is_public"
-ynh_app_setting_set "$app" language "$language"
+function configure_app()
+{
+    # Save app settings
+    ynh_app_setting_set "$APP" admin     "$APP_ADMIN"
+    ynh_app_setting_set "$APP" is_public "$APP_IS_PUBLIC"
+    ynh_app_setting_set "$APP" language  "$APP_LANGUAGE"
 
-# Check domain/path availability
-sudo yunohost app checkurl "${domain}${path_url}" -a "$app" \
-    || ynh_die "Path not available: ${domain}${path_url}"
+    # Check domain/path availability
+    sudo yunohost app checkurl "${DOMAIN}${APP_URI}" -a "$APP" \
+        || ynh_die "Path not available: ${DOMAIN}${APP_URI}"
+}
+
+function install_node()
+{
+    local nvm_install_script="https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh"
+
+    # Install nvm
+    sudo curl -o- $nvm_install_script | sudo NVM_DIR=$NVM_INSTALL_DIR bash
+
+    # Install latest nodejs
+    sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm install 0.10 && nvm use 0.10"
+}
+
+function add_swap_if_needed()
+{
+    local available_swap=$(free | tail -n 1 | awk '{print $2}')
+    local tmp_swap_file=/tmp/wekan_swapfile
+
+    if [ $available_swap -lt 1000000 ];
+    then
+        # It is NOT possible to setup a swap file on a tmpfs filesystem
+        if [[ ! -z $(mount | grep /tmp | grep tmpfs) ]];
+        then
+            tmp_swap_file=/var/cache/wekan_swapfile
+        fi
+
+        sudo dd if=/dev/zero of=$tmp_swap_file bs=1M count=1024
+        sudo chmod 600 $tmp_swap_file
+        sudo mkswap $tmp_swap_file
+        sudo swapon $tmp_swap_file
+    fi
+}
+
+function install_meteor()
+{
+    # Install meteor
+    METEOR_INSTALL_DIR="/opt/meteor"
+    METEOR_BIN="/usr/local/bin/meteor"
+    sudo su admin -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && curl https://install.meteor.com/ | sh"
+}
+
+function install_and_build_wekan()
+{
+    # Clone wekan github repo
+    sudo mkdir -p $APP_INSTALL_PATH
+    cd $APP_INSTALL_PATH
+    sudo git clone https://github.com/wekan/wekan.git .
+
+    # Give all permissions to admin (it's the user we'll use to build :/)
+    sudo chown -R admin /var/www/wekan/
+
+    # Install dependencies with npm
+    sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && npm install"
+
+    # Build with meteor
+    sudo rm -rf .build
+    sudo su admin -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && $METEOR_BIN build .build --directory | tee /tmp/meteor_build.log"
+
+    # Install dependencies .. again ?
+    cd .build/bundle/programs/server
+    sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && npm install"
+}
+
+function remove_swap()
+{
+    local file1="/tmp/wekan_swapfile"
+    local file2="/var/cache/wekan_swapfile"
+
+    if [ -f $file1 ]; then
+	    sudo swapoff $file1
+	    sudo rm -f $file2
+    fi
+    if [ -f $file1 ]; then
+        sudo swapoff $file1
+        sudo rm -f $file2
+    fi
+}
+
+function install_mongodb()
+{
+    # Install mongodb
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+    echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+    sudo apt-get update
+    sudo apt-get install -y mongodb-org=3.2.11 mongodb-org-server=3.2.11 mongodb-org-shell=3.2.11 mongodb-org-mongos=3.2.11 mongodb-org-tools=3.2.11
+    sudo systemctl start mongod
+    sudo systemctl enable mongod
+}
+
+function setup_systemd_service()
+{
+    # Install systemd conf
+    local node_bin=`sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 >/dev/null && which node"`
+    sed -i "s@WEKAN_INSTALL_PATH@$APP_INSTALL_PATH/.build/bundle@g" $SYSTEMD_CONF_TEMPLATE
+    sed -i "s@WEKAN_NODEJS_PATH@$node_bin@g"                     $SYSTEMD_CONF_TEMPLATE
+    sed -i "s@WEKAN_DOMAIN@$DOMAIN@g"                            $SYSTEMD_CONF_TEMPLATE
+    sed -i "s@WEKAN_PATH@$APP_URI@g"                             $SYSTEMD_CONF_TEMPLATE
+    sed -i "s@WEKAN_DB_NAME@wekan@g"                             $SYSTEMD_CONF_TEMPLATE
+    sed -i "s@WEKAN_PORT@8081@g"                                 $SYSTEMD_CONF_TEMPLATE
+    sudo cp $SYSTEMD_CONF_TEMPLATE /etc/systemd/system/wekan@.service
+
+    # Start service
+    sudo systemctl daemon-reload
+    sudo systemctl start wekan@admin
+    sudo systemctl enable wekan@admin
+}
+
+function configure_nginx_and_ssowat()
+{
+    # Modify Nginx configuration file and copy it to Nginx conf directory
+    sed -i "s@YNH_WWW_PATH@$APP_URI@g" $NGINX_CONF_TEMPLATE
+    sed -i "s@YNH_WWW_ALIAS@$APP_INSTALL_PATH/@g" $NGINX_CONF_TEMPLATE
+    sudo cp $NGINX_CONF_TEMPLATE /etc/nginx/conf.d/$DOMAIN.d/$APP.conf
+
+    # If app is public, add url to SSOWat conf as skipped_uris
+    if [[ $APP_IS_PUBLIC -eq 1 ]]; then
+        # unprotected_uris allows SSO credentials to be passed anyway.
+        ynh_app_setting_set "$APP" unprotected_uris "/"
+    fi
+
+    sudo service nginx reload
+}
 
 
-# Install nvm
-export NVM_DIR="/opt/nvm"
-sudo curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | sudo NVM_DIR=$NVM_DIR bash
-
-# Install latest nodejs
-sudo su -c ". $NVM_DIR/nvm.sh && nvm install 0.10 && nvm use 0.10"
-
-# Install npm
-sudo apt-get update
-sudo apt-get -y install npm
-
-# Add some swap :/
-if [ $(free | tail -n 1 | awk '{print $2}') -lt 1000000 ];
-then
-	if [[ -z $(mount | grep /tmp | grep tmpfs) ]];
-	then
-		tmp_swap_file=/tmp/wekan_swapfile
-	else
-	    # It is NOT possible to setup a swap file on a tmpfs filesystem
-		tmp_swap_file=/var/cache/wekan_swapfile
-	fi
-	sudo dd if=/dev/zero of=$tmp_swap_file bs=1M count=1024
-	sudo chmod 600 $tmp_swap_file
-	sudo mkswap $tmp_swap_file
-	sudo swapon $tmp_swap_file
-fi
-
-
-# Install meteor
-METEOR_INSTALL_DIR="/opt/meteor"
-METEOR_BIN="/usr/local/bin/meteor"
-NODE_BIN=`sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 >/dev/null && which node"`
-sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && curl https://install.meteor.com/ | sh"
-
-# Install wekan
-sudo mkdir -p $src_path
-cd $src_path
-sudo git clone https://github.com/wekan/wekan.git .
-sudo chown -R admin /var/www/wekan/
-sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && npm install"
-sudo rm -rf .build
-sudo su admin -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && $METEOR_BIN build .build --directory"
-cd .build/bundle/programs/server
-sudo su -c ". $NVM_DIR/nvm.sh && nvm use 0.10 && npm install"
-
-# Disable swapfile
-if [[ -v "$(echo $tmp_swap_file)" ]];
-then
-	sudo swapoff $tmp_swap_file
-	sudo rm -f $tmp_swap_file
-fi
-
-# Install mongodb
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-sudo apt-get update
-sudo apt-get install -y mongodb-org=3.2.11 mongodb-org-server=3.2.11 mongodb-org-shell=3.2.11 mongodb-org-mongos=3.2.11 mongodb-org-tools=3.2.11
-sudo systemctl start mongod
-sudo systemctl enable mongod
-
-# Install systemd conf
-sed -i "s@WEKAN_INSTALL_PATH@/var/www/wekan/.build/bundle@g" $systemd_conf
-sed -i "s@WEKAN_NODEJS_PATH@$NODE_BIN@g"                     $systemd_conf
-sed -i "s@WEKAN_DOMAIN@$domain@g"                            $systemd_conf
-sed -i "s@WEKAN_PATH@$path_url@g"                            $systemd_conf
-                                                             
-sed -i "s@WEKAN_DB_NAME@wekan@g"                             $systemd_conf
-sed -i "s@WEKAN_PORT@8081@g"                                 $systemd_conf
-sudo cp $systemd_conf /etc/systemd/system/wekan@.service
-
-# Modify Nginx configuration file and copy it to Nginx conf directory
-sed -i "s@YNH_WWW_PATH@$path_url@g" $nginx_conf
-sed -i "s@YNH_WWW_ALIAS@$src_path/@g" $nginx_conf
-sudo cp $nginx_conf /etc/nginx/conf.d/$domain.d/$app.conf
-
-# If app is public, add url to SSOWat conf as skipped_uris
-if [[ $is_public -eq 1 ]]; then
-  # unprotected_uris allows SSO credentials to be passed anyway.
-  ynh_app_setting_set "$app" unprotected_uris "/"
-fi
-
-# Reload services
-sudo service nginx reload
-
-# Start service
-sudo systemctl daemon-reload
-sudo systemctl start wekan@admin
-sudo systemctl enable wekan@admin
+configure_app
+install_node
+add_swap_if_needed
+install_meteor
+install_and_build_wekan
+remove_swap
+install_mongodb
+setup_systemd_service
+configure_nginx_and_ssowat
 
 
