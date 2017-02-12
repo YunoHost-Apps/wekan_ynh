@@ -153,7 +153,7 @@ function setup_systemd_service()
     sed -i "s@WEKAN_INSTALL_PATH@$APP_INSTALL_PATH/.build/bundle@g" $SYSTEMD_CONF_TEMPLATE
     sed -i "s@WEKAN_NODEJS_PATH@$node_bin@g"                     $SYSTEMD_CONF_TEMPLATE
     sed -i "s@WEKAN_DOMAIN@$DOMAIN@g"                            $SYSTEMD_CONF_TEMPLATE
-    sed -i "s@WEKAN_PATH@$APP_URI@g"                             $SYSTEMD_CONF_TEMPLATE
+    sed -i "s@WEKAN_URI@$APP_URI@g"                              $SYSTEMD_CONF_TEMPLATE
     sed -i "s@WEKAN_DB_NAME@wekan@g"                             $SYSTEMD_CONF_TEMPLATE
     sed -i "s@WEKAN_PORT@8081@g"                                 $SYSTEMD_CONF_TEMPLATE
     sudo cp $SYSTEMD_CONF_TEMPLATE /etc/systemd/system/wekan.service

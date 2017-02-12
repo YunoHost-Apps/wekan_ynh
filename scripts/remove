@@ -11,15 +11,6 @@ readonly APP_INSTALL_PATH="/var/www/wekan"
 readonly NVM_INSTALL_DIR="/opt/nvm"
 readonly METEOR_INSTALL_DIR="/opt/meteor"
 
-
-function remove_user_wekan()
-{
-    if [[ ! -z $(sudo getent passwd wekan) ]]
-    then
-        sudo userdel wekan
-    fi
-}
-
 function remove_node()
 {
     if [ -d "$NVM_INSTALL_DIR" ];
@@ -75,10 +66,18 @@ function remove_nginx_conf()
     sudo service nginx reload
 }
 
-remove_user_wekan
+function remove_user_wekan()
+{
+    if [[ ! -z $(sudo getent passwd wekan) ]]
+    then
+        sudo userdel wekan
+    fi
+}
+
 remove_node
 remove_meteor
 remove_wekan
 remove_mongodb
 remove_systemd_service
 remove_nginx_conf
+remove_user_wekan
