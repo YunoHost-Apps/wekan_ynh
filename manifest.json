@@ -59,7 +59,7 @@
                     "en": "Is it a public application?",
                     "fr": "Est-ce une application publique ?"
                 },
-                "default": true
+                "default": false
             },
             {
                 "name": "language",

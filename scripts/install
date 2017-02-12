@@ -15,8 +15,9 @@ readonly APP_INSTALL_PATH="/var/www/wekan"
 readonly SYSTEMD_CONF_TEMPLATE="$PWD/../conf/systemd.conf"
 readonly NGINX_CONF_TEMPLATE="$PWD/../conf/nginx.conf"
 
-export NVM_INSTALL_DIR="/opt/nvm"
-NVM_BIN="/opt/nvm"
+readonly METEOR_INSTALL_DIR="/opt/meteor"
+readonly NVM_INSTALL_DIR="/opt/nvm"
+readonly METEOR_BIN="/usr/local/bin/meteor"
 
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
@@ -39,8 +40,6 @@ function create_user_wekan()
     then
         sudo useradd wekan
     fi
-
-
 }
 
 function install_node()
@@ -84,7 +83,6 @@ function add_swap_if_needed()
 function install_meteor()
 {
     # Install meteor
-    METEOR_INSTALL_DIR="/opt/meteor"
     if [ ! -d "$METEOR_INSTALL_DIR" ];
     then
         sudo mkdir $METEOR_INSTALL_DIR
@@ -98,7 +96,7 @@ function install_and_build_wekan()
 {
     local npm_bin=`sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 >/dev/null && which npm"`
     
-    # Clone wekan github repo
+    # Give all permissions to app dir to user wekan
     if [ -d "$APP_INSTALL_PATH" ];
     then
         sudo rm -rf $APP_INSTALL_PATH
@@ -106,16 +104,15 @@ function install_and_build_wekan()
     sudo mkdir -p $APP_INSTALL_PATH
     sudo chown -R wekan $APP_INSTALL_PATH
     cd $APP_INSTALL_PATH
+    
+    # Clone wekan github repo
     sudo su wekan -c "git clone https://github.com/wekan/wekan.git ."
-
-    # Give all permissions to wekan (it's the user we'll use to build :/)
 
     # Install dependencies with npm
     sudo su wekan -c "$npm_bin install"
 
     # Build with meteor
     sudo rm -rf .build
-    METEOR_BIN="/usr/local/bin/meteor"
     sudo su wekan -c "$METEOR_BIN build .build --directory | tee /tmp/meteor_build.log"
 
     # Install dependencies .. again ?
