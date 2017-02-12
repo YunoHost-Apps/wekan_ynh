@@ -16,6 +16,7 @@ readonly SYSTEMD_CONF_TEMPLATE="$PWD/../conf/systemd.conf"
 readonly NGINX_CONF_TEMPLATE="$PWD/../conf/nginx.conf"
 
 export NVM_INSTALL_DIR="/opt/nvm"
+NVM_BIN="/opt/nvm"
 
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
@@ -31,16 +32,33 @@ function configure_app()
     sudo yunohost app checkurl "${DOMAIN}${APP_URI}" -a "$APP" \
         || ynh_die "Path not available: ${DOMAIN}${APP_URI}"
 }
+    
+function create_user_wekan()
+{
+    if [[  -z $(sudo getent passwd wekan) ]]
+    then
+        sudo useradd wekan
+    fi
+
+
+}
 
 function install_node()
 {
     local nvm_install_script="https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh"
+  
+    if [ ! -d "$NVM_INSTALL_DIR" ];
+    then
+        sudo mkdir $NVM_INSTALL_DIR
+    fi
+    sudo chown -R wekan $NVM_INSTALL_DIR
+    cd $NVM_INSTALL_DIR
 
     # Install nvm
     sudo curl -o- $nvm_install_script | sudo NVM_DIR=$NVM_INSTALL_DIR bash
 
     # Install latest nodejs
-    sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm install 0.10 && nvm use 0.10"
+    sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm install 0.10"
 }
 
 function add_swap_if_needed()
@@ -67,30 +85,42 @@ function install_meteor()
 {
     # Install meteor
     METEOR_INSTALL_DIR="/opt/meteor"
-    METEOR_BIN="/usr/local/bin/meteor"
-    sudo su admin -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && curl https://install.meteor.com/ | sh"
+    if [ ! -d "$METEOR_INSTALL_DIR" ];
+    then
+        sudo mkdir $METEOR_INSTALL_DIR
+    fi
+    sudo chown -R wekan $METEOR_INSTALL_DIR
+    cd $METEOR_INSTALL_DIR
+    sudo su -c "curl https://install.meteor.com/ | sh"
 }
 
 function install_and_build_wekan()
 {
+    local npm_bin=`sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 >/dev/null && which npm"`
+    
     # Clone wekan github repo
+    if [ -d "$APP_INSTALL_PATH" ];
+    then
+        sudo rm -rf $APP_INSTALL_PATH
+    fi
     sudo mkdir -p $APP_INSTALL_PATH
+    sudo chown -R wekan $APP_INSTALL_PATH
     cd $APP_INSTALL_PATH
-    sudo git clone https://github.com/wekan/wekan.git .
+    sudo su wekan -c "git clone https://github.com/wekan/wekan.git ."
 
-    # Give all permissions to admin (it's the user we'll use to build :/)
-    sudo chown -R admin /var/www/wekan/
+    # Give all permissions to wekan (it's the user we'll use to build :/)
 
     # Install dependencies with npm
-    sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && npm install"
+    sudo su wekan -c "$npm_bin install"
 
     # Build with meteor
     sudo rm -rf .build
-    sudo su admin -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && $METEOR_BIN build .build --directory | tee /tmp/meteor_build.log"
+    METEOR_BIN="/usr/local/bin/meteor"
+    sudo su wekan -c "$METEOR_BIN build .build --directory | tee /tmp/meteor_build.log"
 
     # Install dependencies .. again ?
     cd .build/bundle/programs/server
-    sudo su -c ". $NVM_INSTALL_DIR/nvm.sh && nvm use 0.10 && npm install"
+    sudo su wekan -c "$npm_bin install"
 }
 
 function remove_swap()
@@ -100,10 +130,10 @@ function remove_swap()
 
     if [ -f $file1 ]; then
 	    sudo swapoff $file1
-	    sudo rm -f $file2
+	    sudo rm -f $file1
     fi
-    if [ -f $file1 ]; then
-        sudo swapoff $file1
+    if [ -f $file2 ]; then
+        sudo swapoff $file2
         sudo rm -f $file2
     fi
 }
@@ -129,12 +159,12 @@ function setup_systemd_service()
     sed -i "s@WEKAN_PATH@$APP_URI@g"                             $SYSTEMD_CONF_TEMPLATE
     sed -i "s@WEKAN_DB_NAME@wekan@g"                             $SYSTEMD_CONF_TEMPLATE
     sed -i "s@WEKAN_PORT@8081@g"                                 $SYSTEMD_CONF_TEMPLATE
-    sudo cp $SYSTEMD_CONF_TEMPLATE /etc/systemd/system/wekan@.service
+    sudo cp $SYSTEMD_CONF_TEMPLATE /etc/systemd/system/wekan.service
 
     # Start service
     sudo systemctl daemon-reload
-    sudo systemctl start wekan@admin
-    sudo systemctl enable wekan@admin
+    sudo systemctl start wekan
+    sudo systemctl enable wekan
 }
 
 function configure_nginx_and_ssowat()
@@ -155,6 +185,7 @@ function configure_nginx_and_ssowat()
 
 
 configure_app
+create_user_wekan
 install_node
 add_swap_if_needed
 install_meteor
