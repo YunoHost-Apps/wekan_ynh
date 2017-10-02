@@ -1,83 +1,82 @@
 #!/bin/bash
-
-# Source YunoHost helpers
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+source _future.sh
 source /usr/share/yunohost/helpers
 
-# Retrieve app settings
-readonly APP=$YNH_APP_INSTANCE_NAME
-readonly DOMAIN=$(ynh_app_setting_get "$app" domain)
+#=================================================
+# LOAD SETTINGS
+#=================================================
+readonly app=$YNH_APP_INSTANCE_NAME
+readonly domain=$(ynh_app_setting_get "$app" domain)
+readonly final_path=$(ynh_app_setting_get "$app" final_path)
 
-readonly APP_INSTALL_PATH="/var/www/wekan"
-readonly NVM_INSTALL_DIR="/opt/nvm"
-readonly METEOR_INSTALL_DIR="/opt/meteor"
+#=================================================
+# STANDARD REMOVE
+#=================================================
+# STOP AND REMOVE SERVICE
+#=================================================
 
-function remove_node()
-{
-    if [ -d "$NVM_INSTALL_DIR" ];
-    then
-        sudo rm -rf $NVM_INSTALL_DIR
-    fi
-}
+ynh_remove_systemd_config
 
-function remove_meteor()
-{
-    if [ -d "$METEOR_INSTALL_DIR" ];
-    then
-        sudo rm -rf $METEOR_INSTALL_DIR
-    fi
-}
+#=================================================
+# DISABLE SERVICE IN ADMIN PANEL
+#=================================================
 
-function remove_wekan()
-{
-    if [ -d "$APP_INSTALL_PATH" ];
-    then
-        sudo rm -rf $APP_INSTALL_PATH
-    fi
-}
+if yunohost service status | grep -q $app   # Test l'existence du service dans Yunohost
+then
+    echo "Remove $app service"
+    yunohost service remove $app
+fi
+
+#=================================================
+# REMOVE DB
+#=================================================
+mongo $app --eval "db.dropDatabase()"
+
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+
+ynh_remove_app_dependencies
+
+#=================================================
+# REMOVE NODEJS
+#=================================================
+
+ynh_remove_nodejs
 
 
-function remove_mongodb()
-{
-    sudo systemctl stop mongod
-    sudo systemctl disable mongod
+#=================================================
+# REMOVE MONGODB
+#=================================================
+# TODO / FIXME : remove the keys added ?
+#apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+        
+#rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
 
-    # TODO / FIXME : remove the keys added ?
-    #sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
- 
-    sudo apt-get remove -y mongodb-org=3.2.11 mongodb-org-server=3.2.11 mongodb-org-shell=3.2.11 mongodb-org-mongos=3.2.11 mongodb-org-tools=3.2.11
-    sudo apt-get update
-    sudo rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
-    sudo apt-get update
-}
+#=================================================
+# REMOVE THE MAIN DIR OF THE APP
+#=================================================
 
-function remove_systemd_service()
-{
-    sudo systemctl stop wekan
-    sudo systemctl disable wekan
-    sudo rm -f /etc/systemd/system/wekan.service
-    sudo systemctl daemon-reload
-}
+ynh_secure_remove "/var/www/$app"
 
-function remove_nginx_conf()
-{
-    # Modify Nginx configuration file and copy it to Nginx conf directory
-    sudo rm -f /etc/nginx/conf.d/$DOMAIN.d/$APP.conf
 
-    sudo service nginx reload
-}
+#=================================================
+# REMOVE THE NGINX CONFIGURATION
+#=================================================
 
-function remove_user_wekan()
-{
-    if [[ ! -z $(sudo getent passwd wekan) ]]
-    then
-        sudo userdel wekan
-    fi
-}
+ynh_remove_nginx_config 
 
-remove_node
-remove_meteor
-remove_wekan
-remove_mongodb
-remove_systemd_service
-remove_nginx_conf
-remove_user_wekan
+#=================================================
+# GENERIC FINALISATION
+#=================================================
+# REMOVE DEDICATED USER
+#=================================================
+
+ynh_system_user_delete $app
+
+

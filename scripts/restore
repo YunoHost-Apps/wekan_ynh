@@ -1,49 +1,53 @@
 #!/bin/bash
+
 #=================================================
 # GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
-source _future.sh
+source ../settings/scripts/_future.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
+
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
-
 #=================================================
-# RETRIEVE ARGUMENTS FROM THE MANIFEST
+# LOAD SETTINGS
 #=================================================
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
-is_public=$YNH_APP_ARG_IS_PUBLIC
 
 app=$YNH_APP_INSTANCE_NAME
 
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die "This path already contains a folder"
-
-# Register (book) web path
-ynh_webpath_register $app $domain $path_url
+domain=$(ynh_app_setting_get $app domain)
+path_url=$(ynh_app_setting_get $app path_url)
+is_public=$(ynh_app_setting_get $app is_public)
+final_path=$(ynh_app_setting_get $app final_path)
+port=$(ynh_app_setting_get $app final_path)
 
 #=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-ynh_app_setting_set $app is_public $is_public
-
-#=================================================
-# FIND AND OPEN A PORT
+# CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-# Find a free port
-port=$(ynh_find_port 8081)
-ynh_app_setting_set $app port $port
+yunohost app checkurl "${domain}${path_url}" -a "$app" \
+    || ynh_die "Path not available: ${domain}${path_url}"
+test ! -d $final_path \
+|| ynh_die "There is already a directory: $final_path "
+
+#=================================================
+# STANDARD RESTORE STEPS
+#=================================================
+ynh_restore
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+# Create a system user
+ynh_system_user_create $app "$final_path"
+
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -55,53 +59,25 @@ apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-3.2.list
 
 ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell mongodb-org-mongos mongodb-org-tools"
-   
 
 #=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
+# RESTORE DB
 #=================================================
-ynh_app_setting_set $app final_path $final_path
-# Download, check integrity, uncompress and patch the source from app.src
-# For this app sources are in app subdirectory 
-ynh_setup_source "$final_path"
-
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-# Create a dedicated nginx config
-ynh_add_nginx_config
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-
-# Create a system user
-ynh_system_user_create $app "$final_path"
+# Start mogodb
+systemctl start mongod
+systemctl enable mongod
+mongorestore --db $app ./dump
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
+
 # Install wekan dependencies
 chown -R $app $final_path
-pushd $final_path/programs/server
+pushd $final_path/bundle/programs/server
 ynh_use_nodejs
 npm install
 popd
-
-# Start mogodb
-systemctl start mongod
-systemctl enable mongod
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-# Create a dedicated systemd config
-ynh_replace_string "__NODEJS__" "$nodejs_use_version" "../conf/systemd.service"
-ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
-ynh_replace_string "__DB_NAME__" "$app" "../conf/systemd.service"
-ynh_replace_string "__URI__" "$path_url" "../conf/systemd.service"
-ynh_replace_string "__PORT__" "$port" "../conf/systemd.service"
-ynh_add_systemd_config
 
 #=================================================
 # GENERIC FINALIZATION

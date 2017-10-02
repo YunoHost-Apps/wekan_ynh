@@ -1,0 +1,70 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _future.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get $app domain)
+path_url=$(ynh_app_setting_get $app path_url)
+is_public=$(ynh_app_setting_get $app is_public)
+final_path=$(ynh_app_setting_get $app final_path)
+port=$(ynh_app_setting_get $app final_path)
+
+#=================================================
+# Check version
+#=================================================
+abort_if_up_to_date
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+
+ynh_backup_before_upgrade	# Backup the current version of the app
+ynh_clean_setup () {
+	ynh_restore_upgradebackup	# restore it if the upgrade fails
+}
+ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+
+#if [ "${version}" = "20160501-7" ]; then
+    
+#fi
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+# Download, check integrity, uncompress and patch the source from app.src
+# For this app sources are in app subdirectory 
+ynh_setup_source "$final_path"
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+# Set strong right permissions to app files
+chown -R $app: "$final_path"
+chmod -R 640 "$final_path"
+find "$final_path" -type d -print0 | xargs -0 chmod 750
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+systemctl reload nginx

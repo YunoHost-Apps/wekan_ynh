@@ -2,25 +2,25 @@
     "name": "Wekan",
     "id": "wekan",
     "packaging_format": 1,
+    "version": "0.45-1",
     "description": {
         "en": "Trello-like kanban",
         "fr": "Un kanban similaire à Trello"
     },
     "url": "https://wekan.io",
-    "license": "free",
+    "license": "MIT",
     "maintainer": {
         "name": "alexAubin",
         "email": "alex.aubin@mailoo.org",
         "url": "https://github.com/alexAubin/"
     },
     "requirements": {
-        "yunohost": ">> 2.4.0"
+        "yunohost": ">= 2.7.2"
     },
-    "multi_instance": false,
+    "multi_instance": true,
     "services": [
         "nginx",
-        "php5-fpm",
-        "mysql"
+        "mongod"
     ],
     "arguments": {
         "install" : [
@@ -44,15 +44,6 @@
                 "default": "/wekan"
             },
             {
-                "name": "admin",
-                "type": "user",
-                "ask": {
-                    "en": "Choose an admin user",
-                    "fr": "Choisissez l’administrateur"
-                },
-                "example": "johndoe"
-            },
-            {
                 "name": "is_public",
                 "type": "boolean",
                 "ask": {
@@ -60,15 +51,6 @@
                     "fr": "Est-ce une application publique ?"
                 },
                 "default": false
-            },
-            {
-                "name": "language",
-                "ask": {
-                    "en": "Choose the application language",
-                    "fr": "Choisissez la langue de l'application"
-                },
-                "choices": ["fr", "en"],
-                "default": "fr"
             }
         ]
     }

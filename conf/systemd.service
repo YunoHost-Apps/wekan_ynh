@@ -1,0 +1,28 @@
+[Unit]
+Description=Wekan, task board
+Wants=mongod.service
+After=network.target mongod.service
+
+[Service]
+Type=simple
+User=__APP__
+Group=__APP__
+ExecStartPre=__NODEJS__
+Environment="PATH=__ENV_PATH__"
+Environment=NODE_ENV=production
+Environment=MONGO_URL=mongodb://127.0.0.1:27017/__DB_NAME__
+Environment=ROOT_URL=http://127.0.0.1:__PORT____URI__ PORT=__PORT__
+WorkingDirectory=__FINALPATH__
+ExecStart=/opt/node_n/bin/node __FINALPATH__/main.js
+Restart=on-failure
+#StartLimitInterval=86400
+#StartLimitBurst=5
+RestartSec=10
+ExecReload=/bin/kill -USR1 $MAINPID
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=__APP__
+
+[Install]
+WantedBy=multi-user.target
