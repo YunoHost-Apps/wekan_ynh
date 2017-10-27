@@ -133,3 +133,4 @@ fi
 # RELOAD NGINX
 #=================================================
 systemctl reload nginx
+systemctl start $app
