@@ -40,9 +40,12 @@ ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 
-if [ "${version}" = "0.45-1" ]; then
+if ynh_version_gt "0.45-2" "${version}" ; then
     ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
     systemctl daemon-reload
+fi
+if ynh_version_gt "0.45-3" "${version}" ; then
+    yunohost service add wekan
 fi
 
 #=================================================
