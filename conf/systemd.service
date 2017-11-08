@@ -11,7 +11,7 @@ ExecStartPre=__NODEJS__
 Environment="PATH=__ENV_PATH__"
 Environment=NODE_ENV=production
 Environment=MONGO_URL=mongodb://127.0.0.1:27017/__DB_NAME__
-Environment=ROOT_URL=http://127.0.0.1:__PORT____URI__ PORT=__PORT__
+Environment=ROOT_URL=https://__DOMAIN__:__PORT____URI__ PORT=__PORT__
 WorkingDirectory=__FINALPATH__
 ExecStart=/opt/node_n/bin/node __FINALPATH__/main.js
 Restart=on-failure

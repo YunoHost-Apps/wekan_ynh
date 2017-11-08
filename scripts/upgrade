@@ -19,7 +19,7 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path_url)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
-port=$(ynh_app_setting_get $app final_path)
+port=$(ynh_app_setting_get $app port)
 
 #=================================================
 # Check version
@@ -40,9 +40,10 @@ ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 
-#if [ "${version}" = "20160501-7" ]; then
-    
-#fi
+if [ "${version}" = "0.45-1" ]; then
+    ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
+    systemctl daemon-reload
+fi
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -67,4 +68,5 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # RELOAD NGINX
 #=================================================
+systemctl restart $app
 systemctl reload nginx
