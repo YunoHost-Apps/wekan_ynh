@@ -45,7 +45,7 @@ if ynh_version_gt "0.45-2" "${version}" ; then
     systemctl daemon-reload
 fi
 if ynh_version_gt "0.45-3" "${version}" ; then
-    yunohost service add wekan
+    yunohost service add $app
 fi
 if ynh_version_gt "0.54-2" "${version}" ; then
     systemctl enable mongod

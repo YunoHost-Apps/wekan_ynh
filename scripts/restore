@@ -93,7 +93,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 # ADD SERVICE IN ADMIN PANEL
 #=================================================
 yunohost service add mongod --log "/var/log/mongodb.log"
-yunohost service add wekan
+yunohost service add $app
 
 #=================================================
 # SETUP SSOWAT
