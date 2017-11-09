@@ -64,8 +64,8 @@ ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell m
 # RESTORE DB
 #=================================================
 # Start mogodb
-systemctl start mongod
 systemctl enable mongod
+systemctl start mongod
 mongorestore --db $app ./dump
 
 #=================================================
