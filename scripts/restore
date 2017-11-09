@@ -109,4 +109,5 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+systemctl restart $app
 systemctl reload nginx
