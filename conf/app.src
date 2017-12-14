@@ -1,6 +1,6 @@
-SOURCE_URL=https://github.com/wekan/wekan/releases/download/v0.54/wekan-0.54.tar.gz
-SOURCE_SUM=fc3be49f1f317182a838f4b0deb058c35226e9d4609af9ea2050b4b866b2d4b1
+SOURCE_URL=https://github.com/wekan/wekan/releases/download/v0.62/wekan-0.62.tar.gz
+SOURCE_SUM=b5da8106cc49e6615f665e9bd941b44fb5ee326414f68d44bf4756b139cfdfc6
 SOURCE_SUM_PRG=sha256sum
 ARCH_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=wekan-0.54.tar.gz
+SOURCE_FILENAME=wekan-0.62.tar.gz
