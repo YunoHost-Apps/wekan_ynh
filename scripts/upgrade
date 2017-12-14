@@ -51,6 +51,10 @@ if ynh_version_gt "0.54-2" "${version}" ; then
     systemctl enable mongod
     systemctl restart mongod
 fi
+if ynh_version_gt "0.54-3" "${version}" ; then
+    apt-key del EA312927
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+fi
 
 #=================================================
 # STANDARD UPGRADE STEPS
