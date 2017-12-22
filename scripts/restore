@@ -52,7 +52,7 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_install_nodejs 4.8.4
+ynh_install_nodejs 4.8.7
 
 # Install mongodb
 apt-key adv --fetch-keys https://www.mongodb.org/static/pgp/server-3.2.asc

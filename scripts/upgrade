@@ -55,6 +55,9 @@ if ynh_version_gt "0.54-3" "${version}" ; then
     apt-key del EA312927
     apt-key adv --fetch-keys https://www.mongodb.org/static/pgp/server-3.2.asc
 fi
+if ynh_version_gt "0.63-1" "${version}" ; then
+    ynh_install_nodejs 4.8.7
+fi
 
 #=================================================
 # STANDARD UPGRADE STEPS
