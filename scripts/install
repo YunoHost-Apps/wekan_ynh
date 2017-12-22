@@ -51,7 +51,7 @@ ynh_app_setting_set $app port $port
 ynh_install_nodejs 4.8.4
 
 # Install mongodb
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6 
+apt-key adv --fetch-keys https://www.mongodb.org/static/pgp/server-3.2.asc
 echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 
 ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell mongodb-org-mongos mongodb-org-tools"
