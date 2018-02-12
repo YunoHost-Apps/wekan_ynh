@@ -14,7 +14,7 @@ The main drawback at the moment is that it's [not integrated with the LDAP](http
 **Categories:** Productivity, Task
 
 **Upgrade this package:**  
-`sudo yunohost app upgrade --verbose LimeSurvey -u https://github.com/YunoHost-Apps/wekan_ynh`
+`sudo yunohost app upgrade --verbose wekan -u https://github.com/YunoHost-Apps/wekan_ynh`
 
 **Multi-user:** Yes. 
 
