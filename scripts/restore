@@ -52,10 +52,10 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_install_nodejs 4.8.4
+ynh_install_nodejs 4.8.7
 
 # Install mongodb
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+wget https://www.mongodb.org/static/pgp/server-3.2.asc -o - | apt-key add -
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-3.2.list
 
 ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell mongodb-org-mongos mongodb-org-tools"
@@ -64,8 +64,8 @@ ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell m
 # RESTORE DB
 #=================================================
 # Start mogodb
-systemctl start mongod
 systemctl enable mongod
+systemctl start mongod
 mongorestore --db $app ./dump
 
 #=================================================
@@ -93,6 +93,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 # ADD SERVICE IN ADMIN PANEL
 #=================================================
 yunohost service add mongod --log "/var/log/mongodb.log"
+yunohost service add $app
 
 #=================================================
 # SETUP SSOWAT
@@ -108,4 +109,5 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+systemctl restart $app
 systemctl reload nginx
