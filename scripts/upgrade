@@ -19,7 +19,7 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path_url)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
-port=$(ynh_app_setting_get $app final_path)
+port=$(ynh_app_setting_get $app port)
 
 #=================================================
 # Check version
@@ -40,9 +40,24 @@ ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 
-#if [ "${version}" = "20160501-7" ]; then
-    
-#fi
+if ynh_version_gt "0.45-2" "${version}" ; then
+    ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
+    systemctl daemon-reload
+fi
+if ynh_version_gt "0.45-3" "${version}" ; then
+    yunohost service add $app
+fi
+if ynh_version_gt "0.54-2" "${version}" ; then
+    systemctl enable mongod
+    systemctl restart mongod
+fi
+if ynh_version_gt "0.54-3" "${version}" ; then
+    apt-key del EA312927
+    wget https://www.mongodb.org/static/pgp/server-3.2.asc -o - | apt-key add -
+fi
+if ynh_version_gt "0.63-1" "${version}" ; then
+    ynh_install_nodejs 4.8.7
+fi
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -67,4 +82,5 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # RELOAD NGINX
 #=================================================
+systemctl restart $app
 systemctl reload nginx

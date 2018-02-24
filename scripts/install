@@ -48,11 +48,11 @@ ynh_app_setting_set $app port $port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_install_nodejs 4.8.4
+ynh_install_nodejs 4.8.7
 
 # Install mongodb
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-3.2.list
+wget https://www.mongodb.org/static/pgp/server-3.2.asc -o - | apt-key add -
+echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 
 ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell mongodb-org-mongos mongodb-org-tools"
    
@@ -89,8 +89,8 @@ npm install
 popd
 
 # Start mogodb
-systemctl start mongod
 systemctl enable mongod
+systemctl restart mongod
 
 #=================================================
 # SETUP SYSTEMD
@@ -99,8 +99,9 @@ systemctl enable mongod
 ynh_replace_string "__NODEJS__" "$nodejs_use_version" "../conf/systemd.service"
 ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
 ynh_replace_string "__DB_NAME__" "$app" "../conf/systemd.service"
-ynh_replace_string "__URI__" "$path_url" "../conf/systemd.service"
+ynh_replace_string "__URI__" "$path_url/" "../conf/systemd.service"
 ynh_replace_string "__PORT__" "$port" "../conf/systemd.service"
+ynh_replace_string "__DOMAIN__" "$domain" "../conf/systemd.service"
 ynh_add_systemd_config
 
 #=================================================
@@ -117,6 +118,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 # ADD SERVICE IN ADMIN PANEL
 #=================================================
 yunohost service add mongod --log "/var/log/mongodb.log"
+yunohost service add $app
 
 #=================================================
 # SETUP SSOWAT
@@ -132,5 +134,5 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+systemctl restart $app
 systemctl reload nginx
-systemctl start $app
