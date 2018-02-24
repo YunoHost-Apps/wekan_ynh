@@ -53,7 +53,7 @@ if ynh_version_gt "0.54-2" "${version}" ; then
 fi
 if ynh_version_gt "0.54-3" "${version}" ; then
     apt-key del EA312927
-    wget https://www.mongodb.org/static/pgp/server-3.2.asc -o - | apt-key add -
+    wget https://www.mongodb.org/static/pgp/server-3.2.asc -O - | apt-key add -
 fi
 if ynh_version_gt "0.63-1" "${version}" ; then
     ynh_install_nodejs 4.8.7
