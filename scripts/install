@@ -48,7 +48,7 @@ ynh_app_setting_set $app port $port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_install_nodejs 4.8.7
+ynh_install_nodejs 8.9.3
 
 # Install mongodb
 wget https://www.mongodb.org/static/pgp/server-3.2.asc -O - | apt-key add -
@@ -96,12 +96,12 @@ systemctl restart mongod
 # SETUP SYSTEMD
 #=================================================
 # Create a dedicated systemd config
-ynh_replace_string "__NODEJS__" "$nodejs_use_version" "../conf/systemd.service"
-ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
-ynh_replace_string "__DB_NAME__" "$app" "../conf/systemd.service"
-ynh_replace_string "__URI__" "$path_url/" "../conf/systemd.service"
-ynh_replace_string "__PORT__" "$port" "../conf/systemd.service"
-ynh_replace_string "__DOMAIN__" "$domain" "../conf/systemd.service"
+ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
+ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
+ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
+ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
+ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
 ynh_add_systemd_config
 
 #=================================================
