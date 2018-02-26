@@ -16,7 +16,7 @@ source /usr/share/yunohost/helpers
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
-path_url=$(ynh_app_setting_get $app path_url)
+path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
 port=$(ynh_app_setting_get $app port)
@@ -61,12 +61,12 @@ fi
 if ynh_version_gt "0.77-2" "${version}" ; then
     ynh_install_nodejs 8.9.3
     # Create a dedicated systemd config
-    ynh_replace_string "__NODEJS__" "$nodejs_use_version" "../conf/systemd.service"
-    ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
-    ynh_replace_string "__DB_NAME__" "$app" "../conf/systemd.service"
-    ynh_replace_string "__URI__" "$path_url/" "../conf/systemd.service"
-    ynh_replace_string "__PORT__" "$port" "../conf/systemd.service"
-    ynh_replace_string "__DOMAIN__" "$domain" "../conf/systemd.service"
+    ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
+    ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
+    ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
+    ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
+    ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
     ynh_add_systemd_config
 fi
 
