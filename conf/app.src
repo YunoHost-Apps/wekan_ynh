@@ -1,6 +1,6 @@
-SOURCE_URL=https://releases.wekan.team/wekan-0.77.tar.gz
-SOURCE_SUM=4d911547504fd6388779faf9f79cc4e527c2f2b4f40b8b7b82ad05783e2cd0a3
+SOURCE_URL=https://releases.wekan.team/wekan-0.85.tar.gz
+SOURCE_SUM=0ff753fce7b1595a1bfcf1c26fd5776ed1fe534d0f64731d2933977eac450b48
 SOURCE_SUM_PRG=sha256sum
 ARCH_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=wekan-0.77.tar.gz
+SOURCE_FILENAME=wekan-0.85.tar.gz
