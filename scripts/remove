@@ -49,22 +49,11 @@ ynh_remove_app_dependencies
 
 ynh_remove_nodejs
 
-
-#=================================================
-# REMOVE MONGODB
-#=================================================
-# TODO / FIXME : remove the keys added ?
-#apt-key del EA312927
-#apt-key del 0C49F3730359A14518585931BC711F9BA15703C6
-        
-#rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
-
 #=================================================
 # REMOVE THE MAIN DIR OF THE APP
 #=================================================
 
 ynh_secure_remove "/var/www/$app"
-
 
 #=================================================
 # REMOVE THE NGINX CONFIGURATION
