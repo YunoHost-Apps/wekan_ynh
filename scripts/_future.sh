@@ -210,4 +210,4 @@ EOF
     chmod +x "/etc/cron.daily/node_update"
 }
 
-ynh_version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+ynh_version_gt() { dpkg --compare-versions "$1" gt "$2" }
