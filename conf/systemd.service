@@ -1,7 +1,7 @@
 [Unit]
 Description=Wekan, task board
-Wants=mongod.service
-After=network.target mongod.service
+Wants=mongodb.service
+After=network.target mongodb.service
 
 [Service]
 Type=simple

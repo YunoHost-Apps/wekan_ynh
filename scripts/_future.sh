@@ -160,6 +160,7 @@ ynh_remove_nodejs () {
         ynh_secure_remove "$n_install_dir"
         ynh_secure_remove "/usr/local/n"
         sed --in-place "/N_PREFIX/d" /root/.bashrc
+	rm -f /etc/cron.daily/node_update
     fi
 }
 
@@ -210,4 +211,4 @@ EOF
     chmod +x "/etc/cron.daily/node_update"
 }
 
-ynh_version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+ynh_version_gt() { dpkg --compare-versions "$1" gt "$2" }

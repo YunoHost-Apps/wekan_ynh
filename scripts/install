@@ -50,12 +50,7 @@ ynh_app_setting_set $app port $port
 #=================================================
 ynh_install_nodejs 8.9.3
 
-# Install mongodb
-wget https://www.mongodb.org/static/pgp/server-3.2.asc -O - | apt-key add -
-echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-
-ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell mongodb-org-mongos mongodb-org-tools"
-   
+ynh_install_app_dependencies "mongodb mongodb-server"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -89,8 +84,8 @@ npm install
 popd
 
 # Start mogodb
-systemctl enable mongod
-systemctl restart mongod
+systemctl enable mongodb
+systemctl restart mongodb
 
 #=================================================
 # SETUP SYSTEMD
@@ -117,7 +112,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # ADD SERVICE IN ADMIN PANEL
 #=================================================
-yunohost service add mongod --log "/var/log/mongodb.log"
+yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 
 #=================================================
