@@ -211,4 +211,7 @@ EOF
     chmod +x "/etc/cron.daily/node_update"
 }
 
-ynh_version_gt() { dpkg --compare-versions "$1" gt "$2" }
+ynh_version_gt ()
+{
+    dpkg --compare-versions "$1" gt "$2"
+}
