@@ -29,6 +29,8 @@ app=$YNH_APP_INSTANCE_NAME
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
+path_url=$(ynh_normalize_url_path $path_url)
+
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
@@ -104,7 +106,7 @@ ynh_print_info "Adding wekan systemd service ..."
 ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
 ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
 ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
-ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+ynh_replace_string "__URI__"      "$path_url"          "../conf/systemd.service"
 ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
 ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
 ynh_add_systemd_config
