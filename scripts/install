@@ -48,18 +48,18 @@ ynh_app_setting_set $app port $port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
+
+ynh_print_info "Installing nodejs ..."
 ynh_install_nodejs 8.9.3
 
-# Install mongodb
-wget https://www.mongodb.org/static/pgp/server-3.2.asc -O - | apt-key add -
-echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-
-ynh_install_app_dependencies "mongodb-org mongodb-org-server mongodb-org-shell mongodb-org-mongos mongodb-org-tools"
-   
+ynh_print_info "Installing mongodb dependencies ..."
+ynh_install_app_dependencies "mongodb mongodb-server"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+
+ynh_print_info "Setting up Wekan's sources ..."
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
 # For this app sources are in app subdirectory 
@@ -68,7 +68,9 @@ ynh_setup_source "$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+
 # Create a dedicated nginx config
+ynh_print_info "Configuring nginx ..."
 ynh_add_nginx_config
 
 #=================================================
@@ -82,6 +84,7 @@ ynh_system_user_create $app "$final_path"
 # SPECIFIC SETUP
 #=================================================
 # Install wekan dependencies
+ynh_print_info "Installing npm dependencies ..."
 chown -R $app $final_path
 pushd $final_path/programs/server
 ynh_use_nodejs
@@ -89,13 +92,15 @@ npm install
 popd
 
 # Start mogodb
-systemctl enable mongod
-systemctl restart mongod
+ynh_print_info "Starting mongodb ..."
+systemctl enable mongodb
+systemctl restart mongodb
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
 # Create a dedicated systemd config
+ynh_print_info "Adding wekan systemd service ..."
 ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
 ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
 ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
@@ -109,6 +114,7 @@ ynh_add_systemd_config
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
+ynh_print_info "Fixing permissions ..."
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
@@ -117,7 +123,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # ADD SERVICE IN ADMIN PANEL
 #=================================================
-yunohost service add mongod --log "/var/log/mongodb.log"
+yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 
 #=================================================
@@ -134,5 +140,9 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Starting wekan ..."
 systemctl restart $app
 systemctl reload nginx
+
+ynh_print_info "Waiting for wekan to be up ..."
+sleep 10

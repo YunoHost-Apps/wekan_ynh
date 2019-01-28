@@ -1,6 +1,8 @@
-SOURCE_URL=https://releases.wekan.team/wekan-1.02.tar.gz
-SOURCE_SUM=892efb817ef3b7db34abd5c42f9751953338fea027db74babcf66cf5d2f4549e
+# This is on YunoHost server just to avoid the file from disappearing
+# Original source is https://releases.wekan.team/
+SOURCE_URL=https://build.yunohost.org/apps/wekan-1.07.tar.gz
+SOURCE_SUM=34105938c067b6ebcacaa3e2472061c919eb9e00aaa8e114c0e6b31a89772735
 SOURCE_SUM_PRG=sha256sum
 ARCH_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=wekan-1.02.tar.gz
+SOURCE_FILENAME=wekan-1.07.tar.gz
