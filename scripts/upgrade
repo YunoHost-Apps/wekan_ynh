@@ -25,6 +25,8 @@ port=$(ynh_app_setting_get $app port)
 # Check version
 #=================================================
 abort_if_up_to_date
+# previous function is what defines 'version', more precisely the 'previous version'
+previous_version="${version}"
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
@@ -40,25 +42,14 @@ ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 
-if ynh_version_gt "0.45-2" "${version}" ; then
+if ynh_version_gt "0.45-2" "${previous_version}" ; then
     ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
     systemctl daemon-reload
 fi
-if ynh_version_gt "0.45-3" "${version}" ; then
+if ynh_version_gt "0.45-3" "${previous_version}" ; then
     yunohost service add $app
 fi
-if ynh_version_gt "0.54-2" "${version}" ; then
-    systemctl enable mongod
-    systemctl restart mongod
-fi
-if ynh_version_gt "0.54-3" "${version}" ; then
-    apt-key del EA312927
-    wget https://www.mongodb.org/static/pgp/server-3.2.asc -O - | apt-key add -
-fi
-if ynh_version_gt "0.63-1" "${version}" ; then
-    ynh_install_nodejs 4.8.7
-fi
-if ynh_version_gt "0.77-2" "${version}" ; then
+if ynh_version_gt "0.77-2" "${previous_version}" ; then
     ynh_install_nodejs 8.9.3
     # Create a dedicated systemd config
     ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
@@ -68,6 +59,27 @@ if ynh_version_gt "0.77-2" "${version}" ; then
     ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
     ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
     ynh_add_systemd_config
+fi
+if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
+
+   # Replace mongodb packages
+   # Assume no other app needs it >.>
+   rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
+   ynh_remove_app_dependencies
+   ynh_install_app_dependencies "mongodb mongodb-server"
+   yunohost service remove mongod
+   yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
+
+   # Gotta regen the systemd config because mongodb service name changed
+   nodejs_version=$(ynh_app_setting_get $app nodejs_version)
+   nodejs_use_version="$n_install_dir/bin/n -q $nodejs_version"
+   ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
+   ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
+   ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
+   ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+   ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
+   ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
+   ynh_add_systemd_config
 fi
 
 
