@@ -145,4 +145,4 @@ systemctl restart $app
 systemctl reload nginx
 
 ynh_print_info "Waiting for wekan to be up ..."
-sleep 10
+sleep 20
