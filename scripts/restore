@@ -28,6 +28,7 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
 port=$(ynh_app_setting_get $app final_path)
 
 #=================================================
@@ -66,7 +67,7 @@ ynh_install_app_dependencies "mongodb mongodb-server"
 # Start mogodb
 systemctl enable mongodb
 systemctl start mongodb
-mongorestore --db $app ./dump/$app
+mongorestore --db $db_name ./dump/$app
 
 #=================================================
 # SPECIFIC SETUP

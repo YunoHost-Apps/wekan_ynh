@@ -13,6 +13,10 @@ source /usr/share/yunohost/helpers
 # MANAGE SCRIPT FAILURE
 #=================================================
 
+ynh_clean_setup () {
+	### Remove this function if there's nothing to clean before calling the remove script.
+	true
+}
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
@@ -24,6 +28,7 @@ app=$YNH_APP_INSTANCE_NAME
 
 final_path=$(ynh_app_setting_get $app final_path)
 domain=$(ynh_app_setting_get $app domain)
+db_name=$(ynh_app_setting_get $app db_name)
 
 #=================================================
 # STANDARD BACKUP STEPS
@@ -39,5 +44,5 @@ ynh_backup "/etc/systemd/system/$app.service"
 # BACKUP OF MONGODB
 #=================================================
 
-mongodump --db "$app" -o "./dump"
+mongodump --db "$db_name" -o "./dump"
 
