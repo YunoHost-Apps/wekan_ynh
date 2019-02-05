@@ -29,7 +29,6 @@ then
     ynh_app_setting_set "$app" db_name "$db_name"
 fi
 
-
 #=================================================
 # CHECK VERSION
 #=================================================
@@ -116,9 +115,6 @@ ynh_setup_source "$final_path"
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create $app
-
-
-
 
 #=================================================
 # GENERIC FINALIZATION
