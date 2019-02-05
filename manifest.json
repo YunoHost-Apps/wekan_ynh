@@ -2,11 +2,11 @@
     "name": "Wekan",
     "id": "wekan",
     "packaging_format": 1,
-    "version": "1.07~ynh2",
     "description": {
         "en": "Trello-like kanban",
         "fr": "Un kanban similaire à Trello"
     },
+    "version": "2.09~ynh2",
     "url": "https://wekan.io",
     "license": "MIT",
     "maintainer": {
