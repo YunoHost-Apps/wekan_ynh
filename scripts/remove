@@ -13,6 +13,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
+
 readonly app=$YNH_APP_INSTANCE_NAME
 readonly domain=$(ynh_app_setting_get "$app" domain)
 readonly final_path=$(ynh_app_setting_get "$app" final_path)
@@ -42,6 +43,7 @@ ynh_remove_systemd_config
 #=================================================
 # REMOVE DB
 #=================================================
+
 mongo $app --eval "db.dropDatabase()"
 
 #=================================================
@@ -103,5 +105,3 @@ ynh_secure_remove "/var/log/$app/"
 
 # Delete a system user
 ynh_system_user_delete $app
-
-

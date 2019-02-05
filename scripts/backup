@@ -50,4 +50,3 @@ ynh_backup "/etc/systemd/system/$app.service"
 #=================================================
 
 mongodump --db "$app" -o "./dump"
-

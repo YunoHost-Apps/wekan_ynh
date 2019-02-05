@@ -14,13 +14,14 @@ source /usr/share/yunohost/helpers
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
+
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
-
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
@@ -96,6 +97,7 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
+
 # Install wekan dependencies
 ynh_print_info "Installing npm dependencies ..."
 chown -R $app $final_path
@@ -112,6 +114,7 @@ systemctl restart mongodb
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+
 # Create a dedicated systemd config
 ynh_print_info "Adding wekan systemd service ..."
 ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
@@ -127,6 +130,7 @@ ynh_add_systemd_config
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
+
 ynh_print_info "Fixing permissions ..."
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
@@ -136,6 +140,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # ADD SERVICE IN ADMIN PANEL
 #=================================================
+
 yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 

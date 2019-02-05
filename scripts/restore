@@ -80,6 +80,7 @@ ynh_install_app_dependencies "mongodb mongodb-server"
 #=================================================
 # RESTORE DB
 #=================================================
+
 # Start mogodb
 systemctl enable mongodb
 systemctl start mongodb
@@ -99,6 +100,7 @@ popd
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
+
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
@@ -114,6 +116,7 @@ systemctl enable $app.service
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
+
 yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 

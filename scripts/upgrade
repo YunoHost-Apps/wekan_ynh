@@ -26,6 +26,7 @@ port=$(ynh_app_setting_get $app port)
 #=================================================
 # Check version
 #=================================================
+
 abort_if_up_to_date
 # previous function is what defines 'version', more precisely the 'previous version'
 previous_version="${version}"
@@ -89,7 +90,6 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
    ynh_add_systemd_config
 fi
-
 
 #=================================================
 # STANDARD UPGRADE STEPS
