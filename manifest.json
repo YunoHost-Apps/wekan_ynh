@@ -19,8 +19,7 @@
     },
     "multi_instance": true,
     "services": [
-        "nginx",
-        "mongod"
+        "nginx"
     ],
     "arguments": {
         "install" : [
