@@ -1,9 +1,12 @@
 #!/bin/bash
+
 #=================================================
-# GENERIC STARTING
+# GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
+
+source _common.sh
 source _future.sh
 source /usr/share/yunohost/helpers
 

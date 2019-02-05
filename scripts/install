@@ -1,9 +1,12 @@
 #!/bin/bash
+
 #=================================================
 # GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
+
+source _common.sh
 source _future.sh
 source ynh_systemd_action
 source /usr/share/yunohost/helpers
