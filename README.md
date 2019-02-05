@@ -5,6 +5,8 @@ Wekan is an open-source kanban board (task manager and organizer)
 [![Integration level](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan)  
 [![Install Wordpress with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wekan)
 
+**Shipped version:** 2.09
+
 ## Screenshot
 
 ![](screenshot.jpg)
