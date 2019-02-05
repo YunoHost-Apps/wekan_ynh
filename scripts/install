@@ -5,6 +5,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 source _future.sh
+source ynh_systemd_action
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -146,9 +147,11 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Starting wekan ..."
-systemctl restart $app
+
 systemctl reload nginx
 
-ynh_print_info "Waiting for wekan to be up ..."
-sleep 20
+#=================================================
+# START SERVICE
+#=================================================
+
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd"
