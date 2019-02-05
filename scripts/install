@@ -143,11 +143,11 @@ yunohost service add $app
 # SETUP SSOWAT
 #=================================================
 
-# Make app public if necessary or protect it
+# Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-    # unprotected_uris allows SSO credentials to be passed anyway.
-    ynh_app_setting_set "$app" unprotected_uris "/"
+	# unprotected_uris allows SSO credentials to be passed anyway.
+	ynh_app_setting_set $app unprotected_uris "/"
 fi
 
 #=================================================
