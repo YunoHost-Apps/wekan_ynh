@@ -8,8 +8,6 @@
 
 source _common.sh
 source ynh_systemd_action
-source ynh_read_manifest_2
-source ynh_check_app_version_changed
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -35,7 +33,7 @@ fi
 # CHECK VERSION
 #=================================================
 
-ynh_check_app_version_changed
+abort_if_up_to_date
 # previous function is what defines 'version', more precisely the 'previous version'
 previous_version="${version}"
 
