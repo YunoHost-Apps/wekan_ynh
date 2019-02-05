@@ -70,9 +70,8 @@ if ynh_version_gt "0.77-2" "${previous_version}" ; then
     # Create a dedicated systemd config
     ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
     ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
-    ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+    ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
     ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
-    ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
     ynh_add_systemd_config
 fi
 
@@ -90,9 +89,8 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    # Gotta regen the systemd config because mongodb service name changed
    ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
    ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
-   ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+    ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
-   ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
    ynh_add_systemd_config
 fi
 
