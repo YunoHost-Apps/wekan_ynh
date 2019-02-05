@@ -25,6 +25,7 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
@@ -160,7 +161,7 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-# Install Wekan
+# INSTALL WEKAN
 #=================================================
 
 # Install wekan dependencies
@@ -174,6 +175,7 @@ popd
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+
 ### `ynh_systemd_config` is used to configure a systemd script for an app.
 ### It can be used for apps that use sysvinit (with adaptation) or systemd.
 ### Have a look at the app to be sure this app needs a systemd script.
@@ -198,6 +200,10 @@ ynh_add_systemd_config
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
+
+### For security reason, any app should set the permissions to root: before anything else.
+### Then, if write authorization is needed, any access should be given only to directories
+### that really need such authorization.
 ynh_print_info "Fixing permissions ..."
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
