@@ -20,7 +20,15 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
 port=$(ynh_app_setting_get $app port)
+
+if [ -z "$db_name" ]
+then
+    db_name=$app
+    ynh_app_setting_set "$app" db_name "$db_name"
+fi
+
 
 #=================================================
 # Check version
@@ -55,7 +63,7 @@ if ynh_version_gt "0.77-2" "${previous_version}" ; then
     # Create a dedicated systemd config
     ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
     ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
-    ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
+    ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
     ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
     ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
     ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
@@ -76,7 +84,7 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    nodejs_use_version="$n_install_dir/bin/n -q $nodejs_version"
    ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
    ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
-   ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
+   ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
    ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
    ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"

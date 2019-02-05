@@ -15,6 +15,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 readonly app=$YNH_APP_INSTANCE_NAME
 readonly domain=$(ynh_app_setting_get "$app" domain)
+db_name=$(ynh_app_setting_get $app db_name)
 readonly final_path=$(ynh_app_setting_get "$app" final_path)
 
 #=================================================
@@ -38,7 +39,7 @@ fi
 #=================================================
 # REMOVE DB
 #=================================================
-mongo $app --eval "db.dropDatabase()"
+mongo $db_name --eval "db.dropDatabase()"
 
 #=================================================
 # REMOVE DEPENDENCIES
