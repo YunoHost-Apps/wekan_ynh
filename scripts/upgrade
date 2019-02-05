@@ -31,8 +31,9 @@ fi
 
 
 #=================================================
-# Check version
+# CHECK VERSION
 #=================================================
+
 abort_if_up_to_date
 # previous function is what defines 'version', more precisely the 'previous version'
 previous_version="${version}"
@@ -41,11 +42,14 @@ previous_version="${version}"
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
 
-ynh_backup_before_upgrade	# Backup the current version of the app
+# Backup the current version of the app
+ynh_backup_before_upgrade
 ynh_clean_setup () {
-	ynh_restore_upgradebackup	# restore it if the upgrade fails
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
 }
-ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -55,9 +59,11 @@ if ynh_version_gt "0.45-2" "${previous_version}" ; then
     ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
     systemctl daemon-reload
 fi
+
 if ynh_version_gt "0.45-3" "${previous_version}" ; then
     yunohost service add $app
 fi
+
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
     ynh_install_nodejs 8.9.3
     # Create a dedicated systemd config
@@ -69,6 +75,7 @@ if ynh_version_gt "0.77-2" "${previous_version}" ; then
     ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
     ynh_add_systemd_config
 fi
+
 if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 
    # Replace mongodb packages
@@ -91,6 +98,12 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    ynh_add_systemd_config
 fi
 
+#=================================================
+# CHECK THE PATH
+#=================================================
+
+# Normalize the URL path syntax
+path_url=$(ynh_normalize_url_path $path_url)
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -99,8 +112,17 @@ fi
 #=================================================
 
 # Download, check integrity, uncompress and patch the source from app.src
-# For this app sources are in app subdirectory 
 ynh_setup_source "$final_path"
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create $app
+
+
+
 
 #=================================================
 # GENERIC FINALIZATION
@@ -108,15 +130,15 @@ ynh_setup_source "$final_path"
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Set strong right permissions to app files
+# Set permissions on app files
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
 
 # Relaunch a npm install
 pushd $final_path/programs/server
-ynh_use_nodejs
-npm install
+    ynh_use_nodejs
+    npm install
 popd
 
 #=================================================
