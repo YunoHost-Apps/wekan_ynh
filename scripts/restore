@@ -94,7 +94,7 @@ ynh_install_app_dependencies "mongodb mongodb-server"
 # Start mogodb
 systemctl enable mongodb
 systemctl start mongodb
-mongorestore --db $db_name ./dump/$app
+mongorestore --db $db_name ./dump/$db_name
 
 #=================================================
 # RESTORE SYSTEMD
