@@ -28,11 +28,21 @@ domain=$(ynh_app_setting_get $app domain)
 #=================================================
 # STANDARD BACKUP STEPS
 #=================================================
-# BACKUP OF THE MAIN DIR OF THE APP
+# BACKUP THE APP MAIN DIR
 #=================================================
 
 ynh_backup "$final_path"
+
+#=================================================
+# BACKUP THE NGINX CONFIGURATION
+#=================================================
+
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
+
+#=================================================
+# BACKUP SYSTEMD
+#=================================================
+
 ynh_backup "/etc/systemd/system/$app.service"
 
 #=================================================
