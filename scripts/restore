@@ -53,7 +53,7 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_install_nodejs 4.8.7
+ynh_install_nodejs 8.9.3
 
 # Install mongodb
 ynh_install_app_dependencies "mongodb mongodb-server"
