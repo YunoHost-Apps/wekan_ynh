@@ -58,7 +58,8 @@ First registered user will be admin, and next ones normal users. If you want oth
 ## Links
 
  * Report a bug: https://github.com/YunoHost-Apps/wekan_ynh/issues
- * App website: Link to the official website of this app
+ * App website: https://wekan.github.io/
+ * Github App website: https://github.com/wekan/wekan
  * YunoHost website: https://yunohost.org/
 
 ---
