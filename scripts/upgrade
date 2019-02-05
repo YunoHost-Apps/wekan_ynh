@@ -66,8 +66,9 @@ fi
 
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
     ynh_install_nodejs 8.9.3
+	ynh_use_nodejs
     # Create a dedicated systemd config
-    ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
+    ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
     ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
     ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
     ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
@@ -84,9 +85,10 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    ynh_install_app_dependencies "mongodb mongodb-server"
    yunohost service remove mongod
    yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
+   ynh_use_nodejs
 
    # Gotta regen the systemd config because mongodb service name changed
-   ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
+   ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
    ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
    ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
