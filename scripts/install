@@ -1,9 +1,12 @@
 #!/bin/bash
+
 #=================================================
 # GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
+
+source _common.sh
 source _future.sh
 source ynh_systemd_action
 source /usr/share/yunohost/helpers
@@ -11,13 +14,14 @@ source /usr/share/yunohost/helpers
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
+
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
-
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
@@ -42,6 +46,9 @@ ynh_webpath_register $app $domain $path_url
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+
+ynh_app_setting_set $app domain $domain
+ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app is_public $is_public
 
 #=================================================
@@ -90,12 +97,13 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
+
 # Install wekan dependencies
 ynh_print_info "Installing npm dependencies ..."
 chown -R $app $final_path
 pushd $final_path/programs/server
-ynh_use_nodejs
-npm install
+    ynh_use_nodejs
+    npm install
 popd
 
 # Start mogodb
@@ -106,6 +114,7 @@ systemctl restart mongodb
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+
 # Create a dedicated systemd config
 ynh_print_info "Adding wekan systemd service ..."
 ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
@@ -121,6 +130,7 @@ ynh_add_systemd_config
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
+
 ynh_print_info "Fixing permissions ..."
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
@@ -130,6 +140,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # ADD SERVICE IN ADMIN PANEL
 #=================================================
+
 yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 
@@ -137,11 +148,11 @@ yunohost service add $app
 # SETUP SSOWAT
 #=================================================
 
-# Make app public if necessary or protect it
+# Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-    # unprotected_uris allows SSO credentials to be passed anyway.
-    ynh_app_setting_set "$app" unprotected_uris "/"
+	# unprotected_uris allows SSO credentials to be passed anyway.
+	ynh_app_setting_set $app unprotected_uris "/"
 fi
 
 #=================================================
