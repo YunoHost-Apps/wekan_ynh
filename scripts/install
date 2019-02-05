@@ -155,3 +155,4 @@ systemctl reload nginx
 #=================================================
 
 ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Finishing add-custom-html-before-body-end migration"
+sleep 10
