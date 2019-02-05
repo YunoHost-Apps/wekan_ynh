@@ -72,7 +72,7 @@ mongorestore --db $app ./dump/$app
 
 # Install wekan dependencies
 chown -R $app $final_path
-pushd $final_path/bundle/programs/server
+pushd $final_path/programs/server
 ynh_use_nodejs
 npm install
 popd
