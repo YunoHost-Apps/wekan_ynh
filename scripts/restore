@@ -32,10 +32,10 @@ port=$(ynh_app_setting_get $app final_path)
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-yunohost app checkurl "${domain}${path_url}" -a "$app" \
-    || ynh_die "Path not available: ${domain}${path_url}"
+ynh_webpath_available $domain $path_url \
+	|| ynh_die "Path not available: ${domain}${path_url}"
 test ! -d $final_path \
-|| ynh_die "There is already a directory: $final_path "
+	|| ynh_die "There is already a directory: $final_path "
 
 #=================================================
 # STANDARD RESTORE STEPS
@@ -71,11 +71,11 @@ mongorestore --db $app ./dump/$app
 #=================================================
 
 # Install wekan dependencies
-chown -R $app $final_path
-pushd $final_path/programs/server
-ynh_use_nodejs
-npm install
-popd
+#chown -R $app $final_path
+#pushd $final_path/programs/server
+#ynh_use_nodejs
+#npm install
+#popd
 
 #=================================================
 # GENERIC FINALIZATION
@@ -115,3 +115,4 @@ systemctl reload nginx
 #=================================================
 
 ynh_systemd_action --action=start --service_name=$app --log_path="systemd" 
+sleep 10
