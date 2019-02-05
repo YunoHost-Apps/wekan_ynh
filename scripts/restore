@@ -6,6 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 source ../settings/scripts/_future.sh
+source ../settings/scripts/ynh_systemd_action
 source /usr/share/yunohost/helpers
 
 #=================================================
