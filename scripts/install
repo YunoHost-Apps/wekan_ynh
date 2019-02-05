@@ -189,9 +189,8 @@ popd
 ynh_print_info "Adding wekan systemd service ..."
 ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
 ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
-ynh_replace_string "__URI__"      "$path_url"          "../conf/systemd.service"
+ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
 ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
-ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
 ynh_add_systemd_config
 
 #=================================================
