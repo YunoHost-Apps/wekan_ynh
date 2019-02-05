@@ -187,7 +187,6 @@ popd
 
 # Create a dedicated systemd config
 ynh_print_info "Adding wekan systemd service ..."
-ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
 ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
 ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
 ynh_replace_string "__URI__"      "$path_url"          "../conf/systemd.service"
