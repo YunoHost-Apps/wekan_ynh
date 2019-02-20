@@ -44,6 +44,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
+ynh_print_info "Validating installation parameters..."
 
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
 [[ $(uname -m) == "x86_64" ]] || ynh_die "Sorry, but this app can only be installed on a x86, 64 bits machine :("
@@ -62,6 +63,7 @@ ynh_webpath_register $app $domain $path_url
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+ynh_print_info "Storing installation settings..."
 
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
@@ -72,6 +74,7 @@ ynh_app_setting_set $app is_public $is_public
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
+ynh_print_info "Configuring firewall..."
 
 ### Use these lines if you have to open a port for the application
 ### `ynh_find_port` will find the first available port starting from the given port.
@@ -81,12 +84,13 @@ ynh_app_setting_set $app is_public $is_public
 # Find a free port
 port=$(ynh_find_port 8095)
 # Open this port
-#yunohost firewall allow --no-upnp TCP $port 2>&1
+#ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
 ynh_app_setting_set $app port $port
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
+ynh_print_info "Installing dependencies..."
 
 ### `ynh_install_app_dependencies` allows you to add any "apt" dependencies to the package.
 ### Those deb packages will be installed as dependencies of this package.
@@ -113,6 +117,7 @@ systemctl restart mongodb
 #=================================================
 # CREATE A MONGODB DATABASE
 #=================================================
+ynh_print_info "Creating a MongoDB database..."
 
 ### Use these lines if you need a database for the application.
 ### `ynh_mysql_setup_db` will create a database, an associated user and a ramdom password.
@@ -130,12 +135,12 @@ ynh_app_setting_set $app db_name $db_name
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_print_info "Setting up source files..."
 
 ### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
 ### downloaded from an upstream source, like a git repository.
 ### `ynh_setup_source` use the file conf/app.src
 
-ynh_print_info "Setting up Wekan's sources ..."
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source "$final_path"
@@ -143,16 +148,17 @@ ynh_setup_source "$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Configuring nginx web server..."
 
 ### `ynh_add_nginx_config` will use the file conf/nginx.conf
 
 # Create a dedicated nginx config
-ynh_print_info "Configuring nginx ..."
 ynh_add_nginx_config
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_print_info "Configuring system user..."
 
 # Create a system user
 ynh_system_user_create $app "$final_path"
@@ -160,11 +166,11 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-# INSTALL WEKAN
+# INSTALL WEKAN NPM DEPENDENCIES
 #=================================================
+ynh_print_info "Installing wekan npm dependencies ..."
 
 # Install wekan dependencies
-ynh_print_info "Installing npm dependencies ..."
 chown -R $app $final_path
 pushd $final_path/programs/server
     ynh_use_nodejs
@@ -174,6 +180,7 @@ popd
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+ynh_print_info "Configuring a systemd service..."
 
 ### `ynh_systemd_config` is used to configure a systemd script for an app.
 ### It can be used for apps that use sysvinit (with adaptation) or systemd.
@@ -199,11 +206,11 @@ ynh_add_systemd_config
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
+ynh_print_info "Fixing permissions ..."
 
 ### For security reason, any app should set the permissions to root: before anything else.
 ### Then, if write authorization is needed, any access should be given only to directories
 ### that really need such authorization.
-ynh_print_info "Fixing permissions ..."
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
@@ -227,6 +234,7 @@ yunohost service add $app
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_print_info "Configuring SSOwat..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
@@ -238,6 +246,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
 
@@ -247,3 +256,9 @@ systemctl reload nginx
 
 ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Finishing add-custom-html-before-body-end migration"
 sleep 10
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Installation of $app completed"

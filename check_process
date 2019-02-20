@@ -1,5 +1,3 @@
-# See here for more informations
-# https://github.com/YunoHost/package_check#syntax-check_process-file
 ;; Test complet
 	; Manifest
 		domain="domain.tld"	(DOMAIN)

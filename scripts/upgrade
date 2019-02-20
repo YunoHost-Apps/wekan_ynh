@@ -14,6 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -41,6 +42,7 @@ previous_version="${version}"
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
+ynh_print_info "Backing up the app before upgrading (may take a while)..."
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -54,6 +56,7 @@ ynh_abort_if_errors
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
+ynh_print_info "Ensuring downward compatibility..."
 
 if ynh_version_gt "0.45-2" "${previous_version}" ; then
     ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
@@ -106,6 +109,7 @@ path_url=$(ynh_normalize_url_path $path_url)
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_print_info "Upgrading source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source "$final_path"
@@ -113,6 +117,7 @@ ynh_setup_source "$final_path"
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_print_info "Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create $app
@@ -128,6 +133,11 @@ chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
 
+#=================================================
+# INSTALL WEKAN NPM DEPENDENCIES
+#=================================================
+ynh_print_info "Installing wekan npm dependencies ..."
+
 # Relaunch a npm install
 pushd $final_path/programs/server
     ynh_use_nodejs
@@ -135,8 +145,21 @@ pushd $final_path/programs/server
 popd
 
 #=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_print_info "Upgrading SSOwat configuration..."
+
+# Make app public if necessary
+if [ $is_public -eq 1 ]
+then
+	# unprotected_uris allows SSO credentials to be passed anyway
+	ynh_app_setting_set $app unprotected_uris "/"
+fi
+
+#=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
 
@@ -146,3 +169,9 @@ systemctl reload nginx
 
 ynh_systemd_action --action=restart --service_name=$app --log_path="systemd" 
 sleep 10
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Upgrade of $app completed"
