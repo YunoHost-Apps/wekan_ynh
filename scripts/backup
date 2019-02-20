@@ -23,6 +23,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -35,18 +36,21 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 # BACKUP THE APP MAIN DIR
 #=================================================
+ynh_print_info "Backing up the main app directory..."
 
 ynh_backup "$final_path"
 
 #=================================================
 # BACKUP THE NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Backing up nginx web server configuration..."
 
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # BACKUP THE MONGODB DATABASE
 #=================================================
+ynh_print_info "Backing up the MongoDB database..."
 
 mongodump --db "$db_name" -o "./dump"
 
@@ -55,5 +59,12 @@ mongodump --db "$db_name" -o "./dump"
 #=================================================
 # BACKUP SYSTEMD
 #=================================================
+ynh_print_info "Backing up systemd configuration..."
 
 ynh_backup "/etc/systemd/system/$app.service"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Backup script completed for $app. (YunoHost will then actually copy those files to the archive)."
