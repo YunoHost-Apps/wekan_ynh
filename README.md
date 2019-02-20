@@ -48,7 +48,7 @@ First registered user will be admin, and next ones normal users. If you want oth
 #### Supported architectures
 
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wekan%20%28Community%29.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/wekan%20%28Community%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/wekan/)
+* ARMv8-A - Not supported
 * Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/wekan%20%28Community%29.svg)](https://ci-stretch.nohost.me/ci/apps/wekan/)
 
 ## Limitations
