@@ -166,16 +166,11 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-# INSTALL WEKAN NPM DEPENDENCIES
-#=================================================
-ynh_print_info "Installing wekan npm dependencies ..."
 
-# Install wekan dependencies
-chown -R $app $final_path
-pushd $final_path/programs/server
-    ynh_use_nodejs
-    npm install
-popd
+# Start mogodb
+ynh_print_info "Starting mongodb ..."
+systemctl enable mongodb
+systemctl restart mongodb
 
 #=================================================
 # SETUP SYSTEMD
