@@ -138,17 +138,6 @@ chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
 
 #=================================================
-# INSTALL WEKAN NPM DEPENDENCIES
-#=================================================
-ynh_print_info "Installing wekan npm dependencies ..."
-
-# Relaunch a npm install
-pushd $final_path/programs/server
-    ynh_use_nodejs
-    npm install
-popd
-
-#=================================================
 # SETUP SSOWAT
 #=================================================
 ynh_print_info "Upgrading SSOwat configuration..."
