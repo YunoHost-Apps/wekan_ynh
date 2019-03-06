@@ -6,6 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 source ../settings/scripts/_future.sh
+source ../settings/scripts/ynh_systemd_action
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -31,10 +32,10 @@ port=$(ynh_app_setting_get $app final_path)
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-yunohost app checkurl "${domain}${path_url}" -a "$app" \
-    || ynh_die "Path not available: ${domain}${path_url}"
+ynh_webpath_available $domain $path_url \
+	|| ynh_die "Path not available: ${domain}${path_url}"
 test ! -d $final_path \
-|| ynh_die "There is already a directory: $final_path "
+	|| ynh_die "There is already a directory: $final_path "
 
 #=================================================
 # STANDARD RESTORE STEPS
@@ -52,7 +53,7 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_install_nodejs 4.8.7
+ynh_install_nodejs 8.9.3
 
 # Install mongodb
 ynh_install_app_dependencies "mongodb mongodb-server"
@@ -63,18 +64,18 @@ ynh_install_app_dependencies "mongodb mongodb-server"
 # Start mogodb
 systemctl enable mongodb
 systemctl start mongodb
-mongorestore --db $app ./dump
+mongorestore --db $app ./dump/$app
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 
 # Install wekan dependencies
-chown -R $app $final_path
-pushd $final_path/bundle/programs/server
-ynh_use_nodejs
-npm install
-popd
+#chown -R $app $final_path
+#pushd $final_path/programs/server
+#ynh_use_nodejs
+#npm install
+#popd
 
 #=================================================
 # GENERIC FINALIZATION
@@ -106,5 +107,12 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-systemctl restart $app
+
 systemctl reload nginx
+
+#=================================================
+# START SERVICE
+#=================================================
+
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd" 
+sleep 10
