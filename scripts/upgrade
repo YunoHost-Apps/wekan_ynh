@@ -69,7 +69,7 @@ fi
 
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
     ynh_remove_nodejs
-    ynh_install_nodejs 8.15.1
+    ynh_install_nodejs 8.14.1
     ynh_use_nodejs
     # Create a dedicated systemd config
     ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
