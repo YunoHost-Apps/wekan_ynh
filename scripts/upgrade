@@ -105,12 +105,6 @@ chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
 
-# Relaunch a npm install
-pushd $final_path/programs/server
-ynh_use_nodejs
-npm install
-popd
-
 #=================================================
 # RELOAD NGINX
 #=================================================
