@@ -5,7 +5,8 @@
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
-source ../settings/scripts/_future.sh
+
+source ../settings/scripts/_common.sh
 source ../settings/scripts/ynh_systemd_action
 source /usr/share/yunohost/helpers
 
@@ -13,12 +14,17 @@ source /usr/share/yunohost/helpers
 # MANAGE SCRIPT FAILURE
 #=================================================
 
+ynh_clean_setup () {
+	#### Remove this function if there's nothing to clean before calling the remove script.
+	true
+}
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Loading settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -26,11 +32,13 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
 port=$(ynh_app_setting_get $app final_path)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
+ynh_print_info "Validating restoration parameters..."
 
 ynh_webpath_available $domain $path_url \
 	|| ynh_die "Path not available: ${domain}${path_url}"
@@ -38,75 +46,81 @@ test ! -d $final_path \
 	|| ynh_die "There is already a directory: $final_path "
 
 #=================================================
-# STANDARD RESTORE STEPS
+# STANDARD RESTORATION STEPS
 #=================================================
-ynh_restore
-
-#=================================================
-# CREATE DEDICATED USER
+# RESTORE THE NGINX CONFIGURATION
 #=================================================
 
-# Create a system user
+ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
+
+#=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_print_info "Restoring the app main directory..."
+
+ynh_restore_file "$final_path"
+
+#=================================================
+# RECREATE THE DEDICATED USER
+#=================================================
+ynh_print_info "Recreating the dedicated system user..."
+
+# Create the dedicated user (if not existing)
 ynh_system_user_create $app "$final_path"
 
+#=================================================
+# RESTORE USER RIGHTS
+#=================================================
+
+# Restore permissions on app files
+chown -R $app: "$final_path"
+chmod -R 640 "$final_path"
+find "$final_path" -type d -print0 | xargs -0 chmod 750
 
 #=================================================
-# INSTALL DEPENDENCIES
+# SPECIFIC RESTORATION
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_print_info "Reinstalling dependencies..."
+
+# Define and install dependencies
 ynh_install_nodejs 8.9.3
 
 # Install mongodb
 ynh_install_app_dependencies "mongodb mongodb-server"
 
 #=================================================
-# RESTORE DB
+# RESTORE THE MONGODB DATABASE
 #=================================================
+ynh_print_info "Restoring the MongoDB database..."
+
 # Start mogodb
 systemctl enable mongodb
 systemctl start mongodb
-mongorestore --db $app ./dump/$app
+mongorestore --db $db_name ./dump/$db_name
 
 #=================================================
-# SPECIFIC SETUP
+# RESTORE SYSTEMD
 #=================================================
+ynh_print_info "Restoring the systemd configuration..."
 
-# Install wekan dependencies
-#chown -R $app $final_path
-#pushd $final_path/programs/server
-#ynh_use_nodejs
-#npm install
-#popd
+ynh_restore_file "/etc/systemd/system/$app.service"
+systemctl enable $app.service
 
 #=================================================
-# GENERIC FINALIZATION
+# ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-# Set strong right permissions to app files
-chown -R $app: "$final_path"
-chmod -R 640 "$final_path"
-find "$final_path" -type d -print0 | xargs -0 chmod 750
 
-#=================================================
-# ADD SERVICE IN ADMIN PANEL
-#=================================================
 yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 
 #=================================================
-# SETUP SSOWAT
-#=================================================
-
-# Make app public if necessary or protect it
-if [ $is_public -eq 1 ]
-then
-    # unprotected_uris allows SSO credentials to be passed anyway.
-    ynh_app_setting_set "$app" unprotected_uris "/"
-fi
-
+# GENERIC FINALIZATION
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
 
@@ -116,3 +130,9 @@ systemctl reload nginx
 
 ynh_systemd_action --action=start --service_name=$app --log_path="systemd" 
 sleep 10
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Restoration completed for $app"

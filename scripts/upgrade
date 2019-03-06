@@ -6,13 +6,15 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-source _future.sh
+source _common.sh
+source ynh_package_version
 source ynh_systemd_action
 source /usr/share/yunohost/helpers
 
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -20,11 +22,19 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
 port=$(ynh_app_setting_get $app port)
 
+if [ -z "$db_name" ]
+then
+    db_name=$app
+    ynh_app_setting_set "$app" db_name "$db_name"
+fi
+
 #=================================================
-# Check version
+# CHECK VERSION
 #=================================================
+
 abort_if_up_to_date
 # previous function is what defines 'version', more precisely the 'previous version'
 previous_version="${version}"
@@ -32,35 +42,42 @@ previous_version="${version}"
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
+ynh_print_info "Backing up the app before upgrading (may take a while)..."
 
-ynh_backup_before_upgrade	# Backup the current version of the app
+# Backup the current version of the app
+ynh_backup_before_upgrade
 ynh_clean_setup () {
-	ynh_restore_upgradebackup	# restore it if the upgrade fails
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
 }
-ynh_abort_if_errors	# Exit if an error occurs during the execution of the script
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
+ynh_print_info "Ensuring downward compatibility..."
 
 if ynh_version_gt "0.45-2" "${previous_version}" ; then
     ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
     systemctl daemon-reload
 fi
+
 if ynh_version_gt "0.45-3" "${previous_version}" ; then
     yunohost service add $app
 fi
+
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
     ynh_install_nodejs 8.9.3
+	ynh_use_nodejs
     # Create a dedicated systemd config
-    ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
-    ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
-    ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
-    ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+    ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
+    ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
+    ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
     ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
-    ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
     ynh_add_systemd_config
 fi
+
 if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 
    # Replace mongodb packages
@@ -70,29 +87,40 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    ynh_install_app_dependencies "mongodb mongodb-server"
    yunohost service remove mongod
    yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
+   ynh_use_nodejs
 
    # Gotta regen the systemd config because mongodb service name changed
-   nodejs_version=$(ynh_app_setting_get $app nodejs_version)
-   nodejs_use_version="$n_install_dir/bin/n -q $nodejs_version"
-   ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
-   ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
-   ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
-   ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+   ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
+   ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
+    ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
-   ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
    ynh_add_systemd_config
 fi
 
+#=================================================
+# CHECK THE PATH
+#=================================================
+
+# Normalize the URL path syntax
+path_url=$(ynh_normalize_url_path $path_url)
 
 #=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_print_info "Upgrading source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
-# For this app sources are in app subdirectory 
 ynh_setup_source "$final_path"
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_print_info "Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create $app
 
 #=================================================
 # GENERIC FINALIZATION
@@ -100,20 +128,38 @@ ynh_setup_source "$final_path"
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Set strong right permissions to app files
+# Set permissions on app files
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
 
+#=================================================
+# INSTALL WEKAN NPM DEPENDENCIES
+#=================================================
+ynh_print_info "Installing wekan npm dependencies ..."
+
 # Relaunch a npm install
 pushd $final_path/programs/server
-ynh_use_nodejs
-npm install
+    ynh_use_nodejs
+    npm install
 popd
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_print_info "Upgrading SSOwat configuration..."
+
+# Make app public if necessary
+if [ $is_public -eq 1 ]
+then
+	# unprotected_uris allows SSO credentials to be passed anyway
+	ynh_app_setting_set $app unprotected_uris "/"
+fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
 
@@ -123,3 +169,9 @@ systemctl reload nginx
 
 ynh_systemd_action --action=restart --service_name=$app --log_path="systemd" 
 sleep 10
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Upgrade of $app completed"
