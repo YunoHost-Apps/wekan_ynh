@@ -20,9 +20,6 @@ old_path=$YNH_APP_OLD_PATH
 new_domain=$YNH_APP_NEW_DOMAIN
 new_path=$YNH_APP_NEW_PATH
 
-db_name=$(ynh_app_setting_get $app db_name)
-port=$(ynh_app_setting_get $app port)
-
 app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
@@ -36,6 +33,8 @@ final_path=$(ynh_app_setting_get $app final_path)
 # Add settings here as needed by your application
 #db_name=$(ynh_app_setting_get "$app" db_name)
 #db_pwd=$(ynh_app_setting_get $app db_pwd)
+db_name=$(ynh_app_setting_get $app db_name)
+port=$(ynh_app_setting_get $app port)
 
 #=================================================
 # CHECK THE SYNTAX OF THE PATHS
@@ -80,7 +79,7 @@ then
 	domain="$old_domain"
 	path_url="$new_path"
 	# Create a dedicated nginx config
-	ynh_add_nginx_config port
+	ynh_add_nginx_config
 fi
 
 # Change the domain for nginx
