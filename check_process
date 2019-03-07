@@ -22,7 +22,7 @@
 	Level 3=auto
 # Level 4: If the app supports LDAP and SSOwat, turn level 4 to '1' and add a link to an issue or a part of your code to show it.
 # If the app does not use LDAP nor SSOwat, and can't use them, turn level 4 to 'na' and explain as well.
-	#LDAP to be implemented in wekan_ynh: https://github.com/wekan/wekan/wiki/LDAP
+	#LDAP Implemented but not SSOwat
 	Level 4=0
 	Level 5=auto
 	Level 6=auto
