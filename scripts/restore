@@ -86,6 +86,7 @@ ynh_print_info "Reinstalling dependencies..."
 
 # Define and install dependencies
 ynh_install_nodejs 8.15.1
+ynh_use_nodejs
 
 # Install mongodb
 ynh_install_app_dependencies "mongodb mongodb-server"
@@ -128,8 +129,7 @@ systemctl reload nginx
 # START SERVICE
 #=================================================
 
-ynh_systemd_action --action=start --service_name=$app --log_path="systemd" 
-sleep 10
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
 
 #=================================================
 # END OF SCRIPT

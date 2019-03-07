@@ -101,6 +101,7 @@ ynh_print_info "Installing dependencies..."
 
 ynh_print_info "Installing nodejs ..."
 ynh_install_nodejs 8.15.1
+ynh_use_nodejs
 
 ynh_print_info "Installing mongodb dependencies ..."
 ynh_install_app_dependencies "mongodb mongodb-server"
@@ -269,8 +270,7 @@ systemctl reload nginx
 # START SERVICE
 #=================================================
 
-ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Finishing add-custom-html-before-body-end migration"
-sleep 10
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
 
 #=================================================
 # END OF SCRIPT
