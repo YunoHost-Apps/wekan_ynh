@@ -7,6 +7,7 @@
 #=================================================
 
 source _common.sh
+source ynh_systemd_action
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -96,10 +97,13 @@ fi
 #=================================================
 ynh_print_info "Updating .env configuration..."
 
+ynh_systemd_action --action=stop --service_name=$app --log_path="systemd"
 ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
 ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
 ynh_replace_string "__DOMAIN_URI__" "$new_domain$new_path" "$final_path/.env"
 ynh_replace_string "__PORT__" "$port" "$final_path/.env"
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Finishing add-custom-html-before-body-end migration"
+sleep 10
 
 #=================================================
 # GENERIC FINALISATION
