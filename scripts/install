@@ -271,6 +271,7 @@ systemctl reload nginx
 #=================================================
 
 ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
+sleep 10
 
 #=================================================
 # END OF SCRIPT
