@@ -166,16 +166,11 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-# INSTALL WEKAN NPM DEPENDENCIES
-#=================================================
-ynh_print_info "Installing wekan npm dependencies ..."
 
-# Install wekan dependencies
-chown -R $app $final_path
-pushd $final_path/programs/server
-    ynh_use_nodejs
-    npm install
-popd
+# Start mogodb
+ynh_print_info "Starting mongodb ..."
+systemctl enable mongodb
+systemctl restart mongodb
 
 #=================================================
 # SETUP SYSTEMD
@@ -194,12 +189,31 @@ ynh_print_info "Configuring a systemd service..."
 ###		- And the section "SETUP SYSTEMD" in the upgrade script
 
 # Create a dedicated systemd config
-ynh_print_info "Adding wekan systemd service ..."
-ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
-ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
-ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
-ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
 ynh_add_systemd_config
+
+#=================================================
+# MODIFY A CONFIG FILE
+#=================================================
+
+### `ynh_replace_string` is used to replace a string in a file.
+### (It's compatible with sed regular expressions syntax)
+cp "../conf/.env" "$final_path/.env"
+
+ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
+ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
+ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "$final_path/.env"
+ynh_replace_string "__PORT__" "$port" "$final_path/.env"
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+
+### `ynh_store_file_checksum` is used to store the checksum of a file.
+### That way, during the upgrade script, by using `ynh_backup_if_checksum_is_different`,
+### you can make a backup of this file before modifying it again if the admin had modified it.
+
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum "$final_path/.env"
 
 #=================================================
 # GENERIC FINALIZATION
