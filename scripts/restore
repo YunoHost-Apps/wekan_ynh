@@ -85,7 +85,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 ynh_print_info "Reinstalling dependencies..."
 
 # Define and install dependencies
-ynh_install_nodejs 8.9.3
+ynh_install_nodejs 8.15.1
 
 # Install mongodb
 ynh_install_app_dependencies "mongodb mongodb-server"
