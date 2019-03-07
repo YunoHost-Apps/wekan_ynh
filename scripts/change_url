@@ -102,6 +102,7 @@ ynh_print_info "Updating .env configuration..."
 ynh_systemd_action --action=stop --service_name=$app --log_path="systemd"
 ynh_replace_string "$old_domain$old_path" "$new_domain$new_path" "$final_path/.env"
 ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
+sleep 10
 
 #=================================================
 # GENERIC FINALISATION
