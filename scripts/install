@@ -269,7 +269,7 @@ systemctl reload nginx
 # START SERVICE
 #=================================================
 
-ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Finishing add-custom-html-before-body-end migration"
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
 sleep 10
 
 #=================================================
