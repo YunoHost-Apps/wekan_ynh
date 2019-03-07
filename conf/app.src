@@ -1,7 +1,7 @@
 # This is on YunoHost server just to avoid the file from disappearing
 # Original source is https://releases.wekan.team/
-SOURCE_URL=https://raw.githubusercontent.com/yalh76/wekan_ynh/2.37/conf/wekan-2.37.tar.gz
-SOURCE_SUM=471c3c9190119da0b988a9ae0c28aa80388e07bd8d3720ff44e8a9ecac681c5b
+SOURCE_URL=https://raw.githubusercontent.com/yalh76/wekan_ynh/2.40/conf/wekan-2.40.tar.gz
+SOURCE_SUM=d49ca72918f979ad1488dfa0f23b099e241eef1eabcbc865fa42f32e6c490018
 SOURCE_SUM_PRG=sha256sum
 ARCH_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
