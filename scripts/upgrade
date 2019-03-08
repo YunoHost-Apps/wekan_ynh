@@ -68,20 +68,15 @@ if ynh_version_gt "0.45-3" "${previous_version}" ; then
 fi
 
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
-    ynh_remove_nodejs
-    ynh_install_nodejs 8.15.1
-    ynh_use_nodejs
+    ynh_install_nodejs 8.9.3
     # Create a dedicated systemd config
-    ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "../conf/systemd.service"
+    ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
+    ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
+    ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
+    ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
+    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
+    ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
     ynh_add_systemd_config
-    # Create a dedicated .env config
-    ynh_backup_if_checksum_is_different "$final_path/.env"
-    cp "../conf/.env" "$final_path/.env"
-    ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
-    ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
-    ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "$final_path/.env"
-    ynh_replace_string "__PORT__" "$port" "$final_path/.env"
-    ynh_store_file_checksum "$final_path/.env"
 fi
 
 if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
@@ -101,6 +96,23 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
    ynh_add_systemd_config
+fi
+
+if ynh_version_gt "2.42~ynh1" "${previous_version}" ; then
+    ynh_remove_nodejs
+    ynh_install_nodejs 8.15.1
+    ynh_use_nodejs
+    # Create a dedicated systemd config
+    ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "../conf/systemd.service"
+    ynh_add_systemd_config
+    # Create a dedicated .env config
+    ynh_backup_if_checksum_is_different "$final_path/.env"
+    cp "../conf/.env" "$final_path/.env"
+    ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
+    ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
+    ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "$final_path/.env"
+    ynh_replace_string "__PORT__" "$port" "$final_path/.env"
+    ynh_store_file_checksum "$final_path/.env"
 fi
 
 #=================================================
