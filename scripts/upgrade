@@ -25,6 +25,7 @@ final_path=$(ynh_app_setting_get $app final_path)
 db_name=$(ynh_app_setting_get $app db_name)
 port=$(ynh_app_setting_get $app port)
 
+# Previous versions of the app did not have the db_name setting
 if [ -z "$db_name" ]
 then
     db_name=$app
@@ -69,12 +70,11 @@ fi
 
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
     ynh_install_nodejs 8.9.3
-	ynh_use_nodejs
     # Create a dedicated systemd config
-    ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
-    ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
-    ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
-    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
+    ynh_replace_string "__ENV_PATH__"   "$nodejs_path"     "../conf/systemd.service"
+    ynh_replace_string "__DB_NAME__"    "$db_name"         "../conf/systemd.service"
+    ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "../conf/systemd.service"
+    ynh_replace_string "__PORT__"       "$port"            "../conf/systemd.service"
     ynh_add_systemd_config
 fi
 
@@ -89,11 +89,10 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 
    # Gotta regen the systemd config because mongodb service name changed
-   ynh_use_nodejs
-   ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
-   ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
-   ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
-   ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
+   ynh_replace_string "__ENV_PATH__"   "$nodejs_path"     "../conf/systemd.service"
+   ynh_replace_string "__DB_NAME__"    "$db_name"         "../conf/systemd.service"
+   ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "../conf/systemd.service"
+   ynh_replace_string "__PORT__"       "$port"            "../conf/systemd.service"
    ynh_add_systemd_config
 fi
 
@@ -166,6 +165,7 @@ systemctl reload nginx
 #=================================================
 # START SERVICE
 #=================================================
+ynh_print_info "Now restarting Wekan service..."
 
 ynh_systemd_action --action=restart --service_name=$app --log_path="systemd" 
 sleep 10
