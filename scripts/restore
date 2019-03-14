@@ -88,8 +88,7 @@ ynh_print_info "Reinstalling dependencies..."
 ynh_install_nodejs 8.15.1
 ynh_use_nodejs
 
-# Install mongodb
-ynh_install_app_dependencies "mongodb mongodb-server"
+ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # RESTORE THE MONGODB DATABASE
