@@ -95,7 +95,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 ynh_print_info "Restoring the MongoDB database..."
 
-# Start mogodb
+# Start mongodb
 systemctl enable mongodb
 systemctl start mongodb
 mongorestore --db $db_name ./dump/$db_name
