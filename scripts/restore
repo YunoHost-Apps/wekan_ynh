@@ -106,6 +106,7 @@ mongorestore --db $db_name ./dump/$db_name
 ynh_print_info "Restoring the systemd configuration..."
 
 ynh_restore_file "/etc/systemd/system/$app.service"
+systemctl daemon-reload
 systemctl enable $app.service
 
 #=================================================
@@ -127,6 +128,7 @@ systemctl reload nginx
 #=================================================
 # START SERVICE
 #=================================================
+ynh_print_info "Now starting Wekan service..."
 
 ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
 sleep 10

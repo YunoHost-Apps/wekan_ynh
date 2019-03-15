@@ -52,10 +52,6 @@ LDAP is supported but and HTTP auth is stil not supported
 * ARMv8-A - Not supported
 * Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/wekan%20%28Community%29.svg)](https://ci-stretch.nohost.me/ci/apps/wekan/)
 
-## Limitations
-
-* Any known limitations.
-
 ## Links
 
  * Report a bug: https://github.com/YunoHost-Apps/wekan_ynh/issues
