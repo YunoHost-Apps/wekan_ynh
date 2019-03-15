@@ -109,7 +109,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 ynh_print_info "Starting mongodb ..."
 
-# Start mogodb
+# Start mongodb
 systemctl enable mongodb
 systemctl restart mongodb
 
