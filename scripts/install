@@ -165,13 +165,6 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-
-# Start mogodb
-ynh_print_info "Starting mongodb ..."
-systemctl enable mongodb
-systemctl restart mongodb
-
-#=================================================
 # SETUP SYSTEMD
 #=================================================
 ynh_print_info "Configuring a systemd service..."
