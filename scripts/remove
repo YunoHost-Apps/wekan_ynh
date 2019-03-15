@@ -1,72 +1,99 @@
 #!/bin/bash
+
 #=================================================
-# GENERIC STARTING
+# GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
-source _future.sh
+
+source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # LOAD SETTINGS
 #=================================================
-readonly app=$YNH_APP_INSTANCE_NAME
-readonly domain=$(ynh_app_setting_get "$app" domain)
-readonly final_path=$(ynh_app_setting_get "$app" final_path)
+ynh_print_info "Loading installation settings..."
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get $app domain)
+port=$(ynh_app_setting_get $app port)
+db_name=$(ynh_app_setting_get $app db_name)
+
+final_path=$(ynh_app_setting_get $app final_path)
 
 #=================================================
 # STANDARD REMOVE
 #=================================================
-# STOP AND REMOVE SERVICE
+# REMOVE SERVICE FROM ADMIN PANEL
 #=================================================
 
-ynh_remove_systemd_config
-
-#=================================================
-# DISABLE SERVICE IN ADMIN PANEL
-#=================================================
-
-if yunohost service status | grep -q $app   # Test l'existence du service dans Yunohost
+# Remove a service from the admin panel, added by `yunohost service add`
+if yunohost service status | grep -q $app
 then
-    echo "Remove $app service"
-    yunohost service remove $app
+	ynh_print_info "Removing $app service"
+	yunohost service remove $app
 fi
 
 #=================================================
-# REMOVE DB
+# STOP AND REMOVE SERVICE
 #=================================================
-mongo $app --eval "db.dropDatabase()"
+ynh_print_info "Stopping and removing the systemd service"
+
+# Remove the dedicated systemd config
+ynh_remove_systemd_config
+
+#=================================================
+# REMOVE THE MONGODB DATABASE
+#=================================================
+ynh_print_info "Removing the MongoDB database"
+
+# Remove a database if it exists, along with the associated user
+mongo $db_name --eval "db.dropDatabase()"
 
 #=================================================
 # REMOVE DEPENDENCIES
 #=================================================
+ynh_print_info "Removing dependencies"
 
+# Remove metapackage and its dependencies
 ynh_remove_app_dependencies
 
 #=================================================
 # REMOVE NODEJS
 #=================================================
+ynh_print_info "Removing nodejs"
 
 ynh_remove_nodejs
 
 #=================================================
-# REMOVE THE MAIN DIR OF THE APP
+# REMOVE APP MAIN DIR
 #=================================================
+ynh_print_info "Removing app main directory"
 
-ynh_secure_remove "/var/www/$app"
-
-#=================================================
-# REMOVE THE NGINX CONFIGURATION
-#=================================================
-
-ynh_remove_nginx_config 
+# Remove the app directory securely
+ynh_secure_remove "$final_path"
 
 #=================================================
-# GENERIC FINALISATION
+# REMOVE NGINX CONFIGURATION
+#=================================================
+ynh_print_info "Removing nginx web server configuration"
+
+# Remove the dedicated nginx config
+ynh_remove_nginx_config
+
+#=================================================
+# GENERIC FINALIZATION
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
+ynh_print_info "Removing the dedicated system user"
 
+# Delete a system user
 ynh_system_user_delete $app
 
+#=================================================
+# END OF SCRIPT
+#=================================================
 
+ynh_print_info "Removal of $app completed"
