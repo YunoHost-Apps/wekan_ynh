@@ -15,7 +15,7 @@
         "url": "https://github.com/alexAubin/"
     },
     "requirements": {
-        "yunohost": ">= 3.0.0"
+        "yunohost": ">= 3.4"
     },
     "multi_instance": true,
     "services": [
