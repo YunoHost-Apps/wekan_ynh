@@ -45,7 +45,7 @@ First registered user will be admin, and next ones normal users. If you want oth
 
 #### Multi-users support
 
-LDAP is supported but and HTTP auth is stil not supported
+LDAP is supported but HTTP auth is still not supported
 #### Supported architectures
 
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wekan%20%28Community%29.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/)
