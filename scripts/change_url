@@ -32,17 +32,7 @@ final_path=$(ynh_app_setting_get $app final_path)
 
 # Add settings here as needed by your application
 
-db_name=$(ynh_app_setting_get $app db_name)
 port=$(ynh_app_setting_get $app port)
-
-#=================================================
-# CHECK THE SYNTAX OF THE PATHS
-#=================================================
-
-test -n "$old_path" || old_path="/"
-test -n "$new_path" || new_path="/"
-new_path=$(ynh_normalize_url_path $new_path)
-old_path=$(ynh_normalize_url_path $old_path)
 
 #=================================================
 # CHECK WHICH PARTS SHOULD BE CHANGED
