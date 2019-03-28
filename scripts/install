@@ -38,9 +38,6 @@ ynh_print_info "Validating installation parameters..."
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path $path_url)
-
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
@@ -81,7 +78,7 @@ ynh_print_info "Starting mongodb ..."
 
 # Start mongodb
 systemctl enable mongodb
-systemctl restart mongodb
+systemctl start mongodb
 
 # Registering db name
 db_name=$(ynh_sanitize_dbid $app)
@@ -90,7 +87,7 @@ ynh_app_setting_set $app db_name $db_name
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_print_info "Setting up wekan source files..."
+ynh_print_info "Setting up source files..."
 
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
