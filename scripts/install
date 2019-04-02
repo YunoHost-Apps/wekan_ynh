@@ -14,10 +14,6 @@ source /usr/share/yunohost/helpers
 # MANAGE SCRIPT FAILURE
 #=================================================
 
-ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
-	true
-}
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
@@ -25,10 +21,11 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-app=$YNH_APP_INSTANCE_NAME
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
+
+app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -38,8 +35,6 @@ ynh_print_info "Validating installation parameters..."
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
 [[ $(uname -m) == "x86_64" ]] || ynh_die "Sorry, but this app can only be installed on a x86, 64 bits machine :("
 
-### If the app uses nginx as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
-### If the app provides an internal web server (or uses another application server such as uwsgi), the final path should be "/opt/yunohost/$app"
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
@@ -54,45 +49,47 @@ ynh_print_info "Storing installation settings..."
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app is_public $is_public
-ynh_app_setting_set $app final_path $final_path
+
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+ynh_print_info "Configuring firewall..."
 
 # Find a free port
 port=$(ynh_find_port 8095)
 ynh_app_setting_set $app port $port
-
-# Registering db name
-db_name=$(ynh_sanitize_dbid $app)
-ynh_app_setting_set $app db_name $db_name
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
 ynh_print_info "Installing dependencies..."
 
-ynh_print_info "Installing nodejs ..."
-ynh_install_nodejs 8.9.3
+ynh_install_nodejs 8.15.1
+ynh_use_nodejs
 
-ynh_print_info "Installing mongodb dependencies ..."
-ynh_install_app_dependencies "mongodb mongodb-server"
+ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# Start MONGODB
+# START MONGODB
 #=================================================
-
-# Start mogodb
 ynh_print_info "Starting mongodb ..."
+
+# Start mongodb
 systemctl enable mongodb
-systemctl restart mongodb
+systemctl start mongodb
+
+# Registering db name
+db_name=$(ynh_sanitize_dbid $app)
+ynh_app_setting_set $app db_name $db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_print_info "Setting up wekan source files..."
+ynh_print_info "Setting up source files..."
 
-### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
-### downloaded from an upstream source, like a git repository.
-### `ynh_setup_source` use the file conf/app.src
-
+ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source "$final_path"
 
@@ -100,8 +97,6 @@ ynh_setup_source "$final_path"
 # NGINX CONFIGURATION
 #=================================================
 ynh_print_info "Configuring nginx web server..."
-
-### `ynh_add_nginx_config` will use the file conf/nginx.conf
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -121,24 +116,27 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 ynh_print_info "Configuring a systemd service..."
 
-### `ynh_systemd_config` is used to configure a systemd script for an app.
-### It can be used for apps that use sysvinit (with adaptation) or systemd.
-### Have a look at the app to be sure this app needs a systemd script.
-### `ynh_systemd_config` will use the file conf/systemd.service
-### If you're not using these lines:
-###		- You can remove those files in conf/.
-###		- Remove the section "BACKUP SYSTEMD" in the backup script
-###		- Remove also the section "STOP AND REMOVE SERVICE" in the remove script
-###		- As well as the section "RESTORE SYSTEMD" in the restore script
-###		- And the section "SETUP SYSTEMD" in the upgrade script
-
 # Create a dedicated systemd config
-ynh_print_info "Adding wekan systemd service ..."
-ynh_replace_string "__ENV_PATH__" "$nodejs_path"               "../conf/systemd.service"
-ynh_replace_string "__DB_NAME__"  "$db_name"                "../conf/systemd.service"
-ynh_replace_string "__DOMAIN_URI__"      "$domain$path_url"          "../conf/systemd.service"
-ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
+ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "../conf/systemd.service"
 ynh_add_systemd_config
+
+#=================================================
+# MODIFY A CONFIG FILE
+#=================================================
+
+cp "../conf/.env" "$final_path/.env"
+
+ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
+ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
+ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "$final_path/.env"
+ynh_replace_string "__PORT__" "$port" "$final_path/.env"
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum "$final_path/.env"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -147,9 +145,6 @@ ynh_add_systemd_config
 #=================================================
 ynh_print_info "Configuring file permissions ..."
 
-### For security reason, any app should set the permissions to root: before anything else.
-### Then, if write authorization is needed, any access should be given only to directories
-### that really need such authorization.
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
@@ -158,14 +153,6 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
-
-### `yunohost service add` is a CLI yunohost command to add a service in the admin panel.
-### You'll find the service in the 'services' section of YunoHost admin panel.
-### This CLI command would be useless if the app does not have any services (systemd or sysvinit)
-### If you're not using these lines:
-###		- You can remove these files in conf/.
-###		- Remove the section "REMOVE SERVICE FROM ADMIN PANEL" in the remove script
-###		- As well as the section ADVERTISE SERVICE IN ADMIN PANEL" in the restore script
 
 yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
@@ -194,7 +181,7 @@ systemctl reload nginx
 #=================================================
 ynh_print_info "Now starting Wekan service..."
 
-ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Finishing add-custom-html-before-body-end migration"
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
 sleep 10
 
 #=================================================

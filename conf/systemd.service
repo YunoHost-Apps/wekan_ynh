@@ -7,12 +7,9 @@ After=network.target mongodb.service
 Type=simple
 User=__APP__
 Group=__APP__
-Environment="PATH=__ENV_PATH__"
-Environment=NODE_ENV=production
-Environment=MONGO_URL=mongodb://127.0.0.1:27017/__DB_NAME__
-Environment=ROOT_URL=https://__DOMAIN_URI__ PORT=__PORT__
+EnvironmentFile=__FINALPATH__/.env
 WorkingDirectory=__FINALPATH__
-ExecStart=/opt/node_n/bin/node __FINALPATH__/main.js
+ExecStart=__NODEJS_PATH__/node __FINALPATH__/main.js
 Restart=on-failure
 #StartLimitInterval=86400
 #StartLimitBurst=5

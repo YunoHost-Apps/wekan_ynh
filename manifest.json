@@ -6,7 +6,7 @@
         "en": "Trello-like kanban",
         "fr": "Un kanban similaire à Trello"
     },
-    "version": "2.09~ynh1",
+    "version": "2.48~ynh1",
     "url": "https://wekan.io",
     "license": "MIT",
     "maintainer": {
@@ -15,7 +15,7 @@
         "url": "https://github.com/alexAubin/"
     },
     "requirements": {
-        "yunohost": ">= 3.0.0"
+        "yunohost": ">= 3.4"
     },
     "multi_instance": true,
     "services": [

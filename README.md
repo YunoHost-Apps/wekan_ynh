@@ -9,7 +9,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 ## Overview
 Wekan is an open-source kanban board (task manager and organizer)
 
-**Shipped version:** 2.09
+**Shipped version:** 2.48
 
 ## Screenshots
 
@@ -19,7 +19,7 @@ Wekan is an open-source kanban board (task manager and organizer)
 
 - This app **only works on x86, 64bits architecture** ! In particular, it won't work on 32 bit machines or ARM. See the discussion [here](https://github.com/YunoHost-Apps/wekan_ynh/issues/1#issuecomment-401612500). On the long term, [support for ARM64 might happen](https://blog.wekan.team/2018/01/wekan-progress-on-x64-and-arm/index.html)...
 
-- There is currently **no SSO/LDAP integration** though it might be integrated at some point in the app, now that it's supported in Meteor/Wekan. c.f. discussion in [here](https://github.com/YunoHost-Apps/wekan_ynh/issues/4). In the meantime, users can create accounts (in fact, they can create infinite number of accounts) manually, and need to login manually specifically in Wekan.
+- There is currently **no SSO integration** though it might be integrated at some point in the app, now that it's supported in Meteor/Wekan. In the meantime, users can create accounts (in fact, they can create infinite number of accounts) manually, and need to login manually specifically in Wekan.
 
 ## Infos
 
@@ -33,8 +33,6 @@ Wekan is an open-source kanban board (task manager and organizer)
 
 **Private/Public mode:** In private mode, only authorized YunoHost members can access to the wekan. 
 
-**SSO/LDAP:** SSO and LDAP are not configured.
-
 ## Configuration
 
 First registered user will be admin, and next ones normal users. If you want other admins too, you can change their permission to admin at Wekan Admin Panel.
@@ -45,6 +43,9 @@ First registered user will be admin, and next ones normal users. If you want oth
 
 ## YunoHost specific features
 
+#### Multi-users support
+
+LDAP is supported but HTTP auth is still not supported
 #### Supported architectures
 
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wekan%20%28Community%29.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/)
