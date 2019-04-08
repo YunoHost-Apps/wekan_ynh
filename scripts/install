@@ -1,23 +1,26 @@
 #!/bin/bash
+
 #=================================================
 # GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
-source _future.sh
+
+source _common.sh
 source ynh_systemd_action
 source /usr/share/yunohost/helpers
 
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
+
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
-
 
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
@@ -27,6 +30,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
+ynh_print_info "Validating installation parameters..."
 
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
 [[ $(uname -m) == "x86_64" ]] || ynh_die "Sorry, but this app can only be installed on a x86, 64 bits machine :("
@@ -34,55 +38,73 @@ app=$YNH_APP_INSTANCE_NAME
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
-path_url=$(ynh_normalize_url_path $path_url)
-
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+ynh_print_info "Storing installation settings..."
+
+ynh_app_setting_set $app domain $domain
+ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app is_public $is_public
 
 #=================================================
+# STANDARD MODIFICATIONS
+#=================================================
 # FIND AND OPEN A PORT
 #=================================================
+ynh_print_info "Configuring firewall..."
 
 # Find a free port
-port=$(ynh_find_port 8081)
+port=$(ynh_find_port 8095)
 ynh_app_setting_set $app port $port
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
+ynh_print_info "Installing dependencies..."
 
-ynh_print_info "Installing nodejs ..."
-ynh_install_nodejs 8.9.3
+ynh_install_nodejs 8.15.1
+ynh_use_nodejs
 
-ynh_print_info "Installing mongodb dependencies ..."
-ynh_install_app_dependencies "mongodb mongodb-server"
+ynh_install_app_dependencies $pkg_dependencies
+
+#=================================================
+# START MONGODB
+#=================================================
+ynh_print_info "Starting mongodb ..."
+
+# Start mongodb
+systemctl enable mongodb
+systemctl start mongodb
+
+# Registering db name
+db_name=$(ynh_sanitize_dbid $app)
+ynh_app_setting_set $app db_name $db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_print_info "Setting up source files..."
 
-ynh_print_info "Setting up Wekan's sources ..."
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity, uncompress and patch the source from app.src
-# For this app sources are in app subdirectory 
 ynh_setup_source "$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Configuring nginx web server..."
 
 # Create a dedicated nginx config
-ynh_print_info "Configuring nginx ..."
 ynh_add_nginx_config
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_print_info "Configuring system user..."
 
 # Create a system user
 ynh_system_user_create $app "$final_path"
@@ -90,69 +112,80 @@ ynh_system_user_create $app "$final_path"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-# Install wekan dependencies
-ynh_print_info "Installing npm dependencies ..."
-chown -R $app $final_path
-pushd $final_path/programs/server
-ynh_use_nodejs
-npm install
-popd
-
-# Start mogodb
-ynh_print_info "Starting mongodb ..."
-systemctl enable mongodb
-systemctl restart mongodb
-
-#=================================================
 # SETUP SYSTEMD
 #=================================================
+ynh_print_info "Configuring a systemd service..."
+
 # Create a dedicated systemd config
-ynh_print_info "Adding wekan systemd service ..."
-ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
-ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
-ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
-ynh_replace_string "__URI__"      "$path_url"          "../conf/systemd.service"
-ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
-ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
+ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "../conf/systemd.service"
 ynh_add_systemd_config
+
+#=================================================
+# MODIFY A CONFIG FILE
+#=================================================
+
+cp "../conf/.env" "$final_path/.env"
+
+ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
+ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
+ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "$final_path/.env"
+ynh_replace_string "__PORT__" "$port" "$final_path/.env"
+
+#=================================================
+# STORE THE CONFIG FILE CHECKSUM
+#=================================================
+
+# Calculate and store the config file checksum into the app settings
+ynh_store_file_checksum "$final_path/.env"
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
-ynh_print_info "Fixing permissions ..."
+ynh_print_info "Configuring file permissions ..."
+
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
 
 #=================================================
-# ADD SERVICE IN ADMIN PANEL
+# ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
+
 yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_print_info "Configuring SSOwat..."
 
-# Make app public if necessary or protect it
+# Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-    # unprotected_uris allows SSO credentials to be passed anyway.
-    ynh_app_setting_set "$app" unprotected_uris "/"
+	# unprotected_uris allows SSO credentials to be passed anyway.
+	ynh_app_setting_set $app unprotected_uris "/"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
 
 #=================================================
 # START SERVICE
 #=================================================
+ynh_print_info "Now starting Wekan service..."
 
-ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Finishing add-custom-html-before-body-end migration"
+ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
 sleep 10
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Installation of $app completed"
