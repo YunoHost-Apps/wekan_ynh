@@ -9,6 +9,7 @@
 source _common.sh
 source ynh_package_version
 source ynh_systemd_action
+source detect_arch
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -131,7 +132,7 @@ path_url=$(ynh_normalize_url_path $path_url)
 ynh_print_info "Upgrading source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
+ynh_setup_source "$final_path" --source_id=$architecture
 
 #=================================================
 # CREATE DEDICATED USER

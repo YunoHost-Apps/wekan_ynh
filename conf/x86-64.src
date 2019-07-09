@@ -1,0 +1,8 @@
+# This is on YunoHost server just to avoid the file from disappearing
+# Original source is https://releases.wekan.team/
+SOURCE_URL=https://releases.wekan.team/wekan-2.98-meteor1.8-x64.tar.gz
+SOURCE_SUM=0f851e74eb35ef34415701c212f2953e55028d7cded5f427a161b20318e36885
+SOURCE_SUM_PRG=sha256sum
+ARCH_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
