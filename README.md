@@ -3,7 +3,7 @@
 [![Integration level](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan)  
 [![Install Wekan with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wekan)
 
-> *This package allow you to install wekan quickly and simply on a YunoHost server.  
+> *This package allow you to install Wekan quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
 ## Overview
@@ -17,7 +17,7 @@ Wekan is an open-source kanban board (task manager and organizer)
 
 ## Status
 
-- This app **only works on x86, 64bits architecture** ! In particular, it won't work on 32 bit machines or ARM. See the discussion [here](https://github.com/YunoHost-Apps/wekan_ynh/issues/1#issuecomment-401612500). On the long term, [support for ARM64 might happen](https://blog.wekan.team/2018/01/wekan-progress-on-x64-and-arm/index.html)...
+- This app **only works on x86, 64bits architecture** ! In particular, it won't work on 32 bit machines or ARM. See the discussion [here](https://github.com/YunoHost-Apps/wekan_ynh/issues/1#issuecomment-401612500).
 
 - There is currently **no SSO integration** though it might be integrated at some point in the app, now that it's supported in Meteor/Wekan. In the meantime, users can create accounts (in fact, they can create infinite number of accounts) manually, and need to login manually specifically in Wekan.
 
@@ -26,16 +26,11 @@ Wekan is an open-source kanban board (task manager and organizer)
 **Package by:** ljf & Aleks
 **Categories:** Productivity, Task
 
-**Upgrade this package:**  
-`sudo yunohost app upgrade --verbose wekan -u https://github.com/YunoHost-Apps/wekan_ynh`
-
-**Multi-user:** Yes. 
-
-**Private/Public mode:** In private mode, only authorized YunoHost members can access to the wekan. 
-
 ## Configuration
 
 First registered user will be admin, and next ones normal users. If you want other admins too, you can change their permission to admin at Wekan Admin Panel.
+
+**Private/Public mode:** In private mode, only authorized YunoHost members can access to the wekan. 
 
 ## Documentation
 
@@ -56,7 +51,7 @@ LDAP is supported but HTTP auth is still not supported
 
  * Report a bug: https://github.com/YunoHost-Apps/wekan_ynh/issues
  * App website: https://wekan.github.io/
- * Github App website: https://github.com/wekan/wekan
+ * Upstream app repository: https://github.com/wekan/wekan
  * YunoHost website: https://yunohost.org/
 
 ---

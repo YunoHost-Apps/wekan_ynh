@@ -7,7 +7,6 @@
 #=================================================
 
 source _common.sh
-source ynh_systemd_action
 source detect_arch
 source /usr/share/yunohost/helpers
 
@@ -15,6 +14,9 @@ source /usr/share/yunohost/helpers
 # MANAGE SCRIPT FAILURE
 #=================================================
 
+ynh_clean_setup () {
+	ynh_clean_check_starting
+}
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
@@ -31,46 +33,46 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_print_info "Validating installation parameters..."
+ynh_print_info --message="Validating installation parameters..."
 
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
 if [ $architecture == "x86_64" ] && [ $architecture == "arm" ]
 then
-	ynh_die "Sorry, but this app can only be installed on a x86, 64 bits machine :("
+	ynh_die --message="Sorry, but this app can only be installed on a x86, 64 bits machine :("
 fi
 
 final_path=/var/www/$app
-test ! -e "$final_path" || ynh_die "This path already contains a folder"
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 # Register (book) web path
-ynh_webpath_register $app $domain $path_url
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_print_info "Storing installation settings..."
+ynh_print_info --message="Storing installation settings..."
 
-ynh_app_setting_set $app domain $domain
-ynh_app_setting_set $app path $path_url
-ynh_app_setting_set $app is_public $is_public
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_print_info "Configuring firewall..."
+ynh_print_info --message="Configuring firewall..."
 
 # Find a free port
-port=$(ynh_find_port 8095)
-ynh_app_setting_set $app port $port
+port=$(ynh_find_port --port=8095)
+ynh_app_setting_set --app=$app --key=port --value=$port
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_print_info "Installing dependencies..."
+ynh_print_info --message="Installing dependencies..."
 
-ynh_install_nodejs 8.15.1
+ynh_install_nodejs --nodejs_version="8.16.0"
 ynh_use_nodejs
 
 ynh_install_app_dependencies $pkg_dependencies
@@ -78,29 +80,29 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 # START MONGODB
 #=================================================
-ynh_print_info "Starting mongodb ..."
+ynh_print_info --message="Starting mongodb ..."
 
 # Start mongodb
 systemctl enable mongodb
 systemctl start mongodb
 
 # Registering db name
-db_name=$(ynh_sanitize_dbid $app)
-ynh_app_setting_set $app db_name $db_name
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_print_info "Setting up source files..."
+ynh_print_info --message="Setting up source files..."
 
-ynh_app_setting_set $app final_path $final_path
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path" --source_id=$architecture
+ynh_setup_source -dest_dir="$final_path" --source_id=$architecture
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_print_info "Configuring nginx web server..."
+ynh_print_info --message="Configuring nginx web server..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -108,46 +110,47 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info "Configuring system user..."
+ynh_print_info --message="Configuring system user..."
 
 # Create a system user
-ynh_system_user_create $app "$final_path"
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_print_info "Configuring a systemd service..."
+ynh_print_info --message="Configuring a systemd service..."
 
 # Create a dedicated systemd config
-ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "../conf/systemd.service"
+ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
 ynh_add_systemd_config
 
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 
-cp "../conf/.env" "$final_path/.env"
+config_file="$final_path/.env"
+cp "../conf/.env" $config_file
 
-ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
-ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
-ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "$final_path/.env"
-ynh_replace_string "__PORT__" "$port" "$final_path/.env"
+ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="$config_file"
+ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$config_file"
+ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
+ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
 
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/.env"
+ynh_store_file_checksum --file="$config_file"
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
-ynh_print_info "Configuring file permissions ..."
+ynh_print_info --message="Configuring file permissions ..."
 
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
@@ -162,34 +165,35 @@ yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 yunohost service add $app
 
 #=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_print_info --message="Starting a systemd service..."
+
+# Start a systemd service
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
+sleep 10
+
+#=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_print_info "Configuring SSOwat..."
+ynh_print_info --message="Configuring SSOwat..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
 	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set $app unprotected_uris "/"
+	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_print_info --message="Reloading nginx web server..."
 
-systemctl reload nginx
-
-#=================================================
-# START SERVICE
-#=================================================
-ynh_print_info "Now starting Wekan service..."
-
-ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
-sleep 10
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Installation of $app completed"
+ynh_print_info --message="Installation of $app completed"
