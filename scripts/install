@@ -97,7 +97,7 @@ ynh_print_info --message="Setting up source files..."
 
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source -dest_dir="$final_path" --source_id=$architecture
+ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
 
 #=================================================
 # NGINX CONFIGURATION
