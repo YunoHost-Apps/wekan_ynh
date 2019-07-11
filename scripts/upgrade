@@ -65,9 +65,9 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
-# MANAGE UPGRADE
+# MANAGE UPGRADE FROM PREVIOUS VERSION
 #=================================================
-ynh_print_info --message="Ensuring downward compatibility..."
+ynh_print_info --message="Managing upgrade from previous version..."
 
 if ynh_version_gt "0.45-2" "${previous_version}" ; then
     ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
