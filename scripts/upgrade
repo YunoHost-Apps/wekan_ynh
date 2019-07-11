@@ -142,7 +142,7 @@ path_url=$(ynh_normalize_url_path --path_url=$path_url)
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Stopping a systemd service..."
+ynh_print_info --message="Stopping $app service..."
 
 ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
 
