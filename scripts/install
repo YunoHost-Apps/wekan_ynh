@@ -7,7 +7,7 @@
 #=================================================
 
 source _common.sh
-source detect_arch
+source ynh_detect_arch__2
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -35,6 +35,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 ynh_print_info --message="Validating installation parameters..."
 
+architecture=$(ynh_detect_arch)
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
 if [ $architecture == "x86_64" ] || [ $architecture == "arm" ]
 then

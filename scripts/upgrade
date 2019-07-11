@@ -8,7 +8,7 @@
 
 source _common.sh
 source ynh_package_version
-source detect_arch
+source ynh_detect_arch__2
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -154,7 +154,8 @@ if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_print_info --message="Upgrading source files..."
 	
-	# Download, check integrity, uncompress and patch the source from app.src
+	architecture=$(ynh_detect_arch)
+  # Download, check integrity, uncompress and patch the source from app.src
 	ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
 fi
 
