@@ -101,7 +101,7 @@ ynh_replace_string --match_string="$old_domain$old_path" --replace_string="$new_
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Starting a systemd service..."
+ynh_print_info --message="Starting $app service..."
 
 ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Started Wekan, task board"
 sleep 30
