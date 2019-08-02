@@ -8,32 +8,42 @@
 
 source _common.sh
 source ynh_package_version
-source ynh_systemd_action
+source ynh_detect_arch__2
 source /usr/share/yunohost/helpers
 
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info "Loading installation settings..."
+ynh_print_info --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get $app domain)
-path_url=$(ynh_app_setting_get $app path)
-is_public=$(ynh_app_setting_get $app is_public)
-final_path=$(ynh_app_setting_get $app final_path)
-db_name=$(ynh_app_setting_get $app db_name)
-port=$(ynh_app_setting_get $app port)
-
-# Previous versions of the app did not have the db_name setting
-if [ -z "$db_name" ]
-then
-    db_name=$app
-    ynh_app_setting_set "$app" db_name "$db_name"
-fi
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+port=$(ynh_app_setting_get --app=$app --key=port)
 
 #=================================================
 # CHECK VERSION
+#=================================================
+
+upgrade_type=$(ynh_check_app_version_changed)
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_print_info --message="Ensuring downward compatibility..."
+
+# If db_name doesn't exist, create it
+if [ -z "$db_name" ]; then
+    db_name=$(ynh_sanitize_dbid --db_name=$app)
+    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+fi
+
+#=================================================
+# CHECK VERSION NUMBER
 #=================================================
 
 abort_if_up_to_date
@@ -43,7 +53,7 @@ previous_version="${version}"
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_print_info "Backing up the app before upgrading (may take a while)..."
+ynh_print_info --message="Backing up the app before upgrading (may take a while)..."
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -55,12 +65,12 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
-# ENSURE DOWNWARD COMPATIBILITY
+# MANAGE UPGRADE FROM PREVIOUS VERSION
 #=================================================
-ynh_print_info "Ensuring downward compatibility..."
+ynh_print_info --message="Managing upgrade from previous version..."
 
 if ynh_version_gt "0.45-2" "${previous_version}" ; then
-    ynh_replace_string "Environment=ROOT_URL=http://127.0.0.1:$port$path_url" "Environment=ROOT_URL=https://$domain$path_url/" "/etc/systemd/system/$app.service"
+    ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
     systemctl daemon-reload
 fi
 
@@ -69,14 +79,16 @@ if ynh_version_gt "0.45-3" "${previous_version}" ; then
 fi
 
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
-    ynh_install_nodejs 8.9.3
+    ynh_install_nodejs --nodejs_version="8.9.3"
+    ynh_use_nodejs
+
     # Create a dedicated systemd config
-    ynh_replace_string "__NODEJS__"   "$nodejs_use_version" "../conf/systemd.service"
-    ynh_replace_string "__ENV_PATH__" "$PATH"               "../conf/systemd.service"
-    ynh_replace_string "__DB_NAME__"  "$app"                "../conf/systemd.service"
-    ynh_replace_string "__URI__"      "$path_url/"          "../conf/systemd.service"
-    ynh_replace_string "__PORT__"     "$port"               "../conf/systemd.service"
-    ynh_replace_string "__DOMAIN__"   "$domain"             "../conf/systemd.service"
+    ynh_replace_string --match_string="__NODEJS__" --replace_string="$nodejs_use_version" --target_file="../conf/systemd.service"
+    ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
+    ynh_replace_string --match_string="__DB_NAME__" --replace_string="$app" --target_file="../conf/systemd.service"
+    ynh_replace_string --match_string="__URI__" --replace_string="$path_url/" --target_file="../conf/systemd.service"
+    ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="../conf/systemd.service"
+    ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="../conf/systemd.service"
     ynh_add_systemd_config
 fi
 
@@ -92,28 +104,32 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 
    # Gotta regen the systemd config because mongodb service name changed
    ynh_use_nodejs
-   ynh_replace_string "__ENV_PATH__"   "$nodejs_path"     "../conf/systemd.service"
-   ynh_replace_string "__DB_NAME__"    "$db_name"         "../conf/systemd.service"
-   ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "../conf/systemd.service"
-   ynh_replace_string "__PORT__"       "$port"            "../conf/systemd.service"
+   ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
+   ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="../conf/systemd.service"
+   ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="../conf/systemd.service"
+   ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="../conf/systemd.service"
    ynh_add_systemd_config
 fi
 
 if ynh_version_gt "2.48~ynh1" "${previous_version}" ; then
+    # Install dependencies
     ynh_remove_nodejs
-    ynh_install_nodejs 8.15.1
+    ynh_install_nodejs --nodejs_version="8.16.0"
     ynh_use_nodejs
+    
     # Create a dedicated systemd config
-    ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "../conf/systemd.service"
+    ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
     ynh_add_systemd_config
+    
     # Create a dedicated .env config
-    ynh_backup_if_checksum_is_different "$final_path/.env"
-    cp "../conf/.env" "$final_path/.env"
-    ynh_replace_string "__NODEJS_PATH__" "$nodejs_path" "$final_path/.env"
-    ynh_replace_string "__DB_NAME__" "$db_name" "$final_path/.env"
-    ynh_replace_string "__DOMAIN_URI__" "$domain$path_url" "$final_path/.env"
-    ynh_replace_string "__PORT__" "$port" "$final_path/.env"
-    ynh_store_file_checksum "$final_path/.env"
+    config_file="$final_path/.env"
+    ynh_backup_if_checksum_is_different --file="$config_file"
+    cp "../conf/.env" "$config_file"
+    ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file"$config_file"
+    ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file"$config_file"
+    ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file"$config_file"
+    ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file"$config_file"
+    ynh_store_file_checksum "$config_file"
 fi
 
 #=================================================
@@ -121,25 +137,79 @@ fi
 #=================================================
 
 # Normalize the URL path syntax
-path_url=$(ynh_normalize_url_path $path_url)
+path_url=$(ynh_normalize_url_path --path_url=$path_url)
 
 #=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_print_info --message="Stopping $app service..."
+
+ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_print_info "Upgrading source files..."
 
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+	ynh_print_info --message="Upgrading source files..."
+		
+  # Create a temporary directory
+  tmpdir="$(mktemp -d)"
+
+  # Backup the env file in the temp dir
+  cp -a "$final_path/.env" "$tmpdir/.env"
+
+  # Remove the app directory securely
+  ynh_secure_remove --file="$final_path"
+
+  architecture=$(ynh_detect_arch)
+  # Download, check integrity, uncompress and patch the source from app.src
+	ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
+  
+  #Copy the admin saved settings from tmp directory to final path
+  cp -a  "$tmpdir/.env" "$final_path/.env"
+  
+  # Remove the tmp directory securely
+  ynh_secure_remove --file="$tmpdir"
+fi
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_print_info --message="Upgrading nginx web server configuration..."
+
+# Create a dedicated nginx config
+ynh_add_nginx_config
+
+#=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_print_info --message="Upgrading dependencies..."
+
+ynh_install_nodejs --nodejs_version="8.16.0"
+ynh_use_nodejs
+
+ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info "Making sure dedicated system user exists..."
+ynh_print_info --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create $app
+ynh_system_user_create --username=$app --home_dir="$final_path"
+
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_print_info --message="Upgrading systemd configuration..."
+
+# Create a dedicated systemd config
+ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
+ynh_add_systemd_config
 
 #=================================================
 # GENERIC FINALIZATION
@@ -155,32 +225,32 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_print_info "Upgrading SSOwat configuration..."
+ynh_print_info --message="Upgrading SSOwat configuration..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
 	# unprotected_uris allows SSO credentials to be passed anyway
-	ynh_app_setting_set $app unprotected_uris "/"
+	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
 fi
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_print_info --message="Starting a systemd service..."
+
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Started Wekan, task board"
+sleep 30
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_print_info --message="Reloading nginx web server..."
 
-systemctl reload nginx
-
-#=================================================
-# START SERVICE
-#=================================================
-ynh_print_info "Now restarting Wekan service..."
-
-ynh_systemd_action --action=restart --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
-sleep 10
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Upgrade of $app completed"
+ynh_print_info --message="Upgrade of $app completed"

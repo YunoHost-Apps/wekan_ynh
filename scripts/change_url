@@ -7,7 +7,6 @@
 #=================================================
 
 source _common.sh
-source ynh_systemd_action
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -25,14 +24,14 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info "Loading installation settings..."
+ynh_print_info --message="Loading installation settings..."
 
 # Needed for helper "ynh_add_nginx_config"
-final_path=$(ynh_app_setting_get $app final_path)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 # Add settings here as needed by your application
 
-port=$(ynh_app_setting_get $app port)
+port=$(ynh_app_setting_get --app=$app --key=port)
 
 #=================================================
 # CHECK WHICH PARTS SHOULD BE CHANGED
@@ -53,9 +52,16 @@ fi
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_print_info --message="Stopping $app service..."
+
+ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
+
+#=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_print_info "Updating nginx web server configuration..."
+ynh_print_info --message="Updating nginx web server configuration..."
 
 nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 
@@ -63,7 +69,7 @@ nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 if [ $change_path -eq 1 ]
 then
 	# Make a backup of the original nginx config file if modified
-	ynh_backup_if_checksum_is_different "$nginx_conf_path"
+	ynh_backup_if_checksum_is_different --file="$nginx_conf_path"
 	# Set global variables for nginx helper
 	domain="$old_domain"
 	path_url="$new_path"
@@ -75,10 +81,10 @@ fi
 if [ $change_domain -eq 1 ]
 then
 	# Delete file checksum for the old conf file location
-	ynh_delete_file_checksum "$nginx_conf_path"
+	ynh_delete_file_checksum --file="$nginx_conf_path"
 	mv $nginx_conf_path /etc/nginx/conf.d/$new_domain.d/$app.conf
 	# Store file checksum for the new config file location
-	ynh_store_file_checksum "/etc/nginx/conf.d/$new_domain.d/$app.conf"
+	ynh_store_file_checksum --file="/etc/nginx/conf.d/$new_domain.d/$app.conf"
 fi
 
 #=================================================
@@ -86,24 +92,29 @@ fi
 #=================================================
 # MODIFY URL IN .ENV
 #=================================================
-ynh_print_info "Updating .env configuration..."
+ynh_print_info --message="Updating .env configuration..."
 
-ynh_systemd_action --action=stop --service_name=$app --log_path="systemd"
-ynh_replace_string "$old_domain$old_path" "$new_domain$new_path" "$final_path/.env"
-ynh_systemd_action --action=start --service_name=$app --log_path="systemd" --line_match="Kadira: completed instrumenting the app"
-sleep 10
+ynh_replace_string --match_string="$old_domain$old_path" --replace_string="$new_domain$new_path" --target_file="$final_path/.env"
 
 #=================================================
 # GENERIC FINALISATION
 #=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_print_info --message="Starting $app service..."
+
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Started Wekan, task board"
+sleep 30
+
+#=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_print_info --message="Reloading nginx web server..."
 
-systemctl reload nginx
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Change of URL completed for $app"
+ynh_print_info --message="Change of URL completed for $app"
