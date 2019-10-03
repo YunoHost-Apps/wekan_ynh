@@ -4,6 +4,6 @@
 SOURCE_URL=https://releases.wekan.team/raspi3/wekan-3.45-arm64.zip
 SOURCE_SUM=854c4a47125b616da3a36b7a766dbcf23adc1d926060c3e8b370e6c16b53bc25
 SOURCE_SUM_PRG=sha256sum
-ARCH_FORMAT=tar.gz
+SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
 SOURCE_FILENAME=wekan-3.45-arm64.zip

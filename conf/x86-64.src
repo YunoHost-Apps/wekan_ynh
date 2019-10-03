@@ -4,6 +4,6 @@
 SOURCE_URL=https://releases.wekan.team/wekan-3.45.zip
 SOURCE_SUM=b5385e2aadefe01a5f21d669475f8c33bd34992d2b019a5417576dbfc4ed77b1
 SOURCE_SUM_PRG=sha256sum
-ARCH_FORMAT=tar.gz
+SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
 SOURCE_FILENAME=wekan-3.45.zip
