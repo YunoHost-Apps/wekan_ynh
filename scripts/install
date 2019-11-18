@@ -37,7 +37,7 @@ ynh_print_info --message="Validating installation parameters..."
 
 architecture=$(ynh_detect_arch)
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
-if [ $architecture == "x86_64" ] || [ $architecture == "arm" ]
+if [ $architecture == "i386" ] || [ $architecture == "arm" ]
 then
 	ynh_die --message="Sorry, but this app can only be installed on a x86, 64 bits machine :("
 fi
