@@ -132,10 +132,10 @@ if ynh_version_gt "2.48~ynh1" "${previous_version}" ; then
     ynh_store_file_checksum "$config_file"
 fi
 
-if ynh_version_gt "3.45~ynh1" "${previous_version}" ; then
+if ynh_version_gt "3.55~ynh1" "${previous_version}" ; then
     # Install dependencies
     ynh_remove_nodejs
-    ynh_install_nodejs --nodejs_version="8.16.1"
+    ynh_install_nodejs --nodejs_version="8.16.2"
     ynh_use_nodejs
     
     # Create a dedicated systemd config
