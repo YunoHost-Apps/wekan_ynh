@@ -1,7 +1,7 @@
 # This is on YunoHost server just to avoid the file from disappearing
 # Original source is https://releases.wekan.team/wekan-3.55.zip
 # YunoHost source is https://build.yunohost.org/apps/wekan-3.55.zip
-SOURCE_URL=https://releases.wekan.team/wekan-3.55.zip
+SOURCE_URL=https://build.yunohost.org/apps/wekan-3.55.zip
 SOURCE_SUM=9b5c9d7d3a72d3864ee68cc537f924738430dde208aac0e3139b8faccd3a8197
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
