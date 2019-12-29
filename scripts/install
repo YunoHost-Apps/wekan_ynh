@@ -13,6 +13,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
+ynh_print_info --message="Managing script failure..."
 
 ynh_clean_setup () {
 	ynh_clean_check_starting
@@ -23,6 +24,7 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+ynh_print_info --message="Retrieving arguments from the manifest..."
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
@@ -64,7 +66,7 @@ ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 #=================================================
 ynh_print_info --message="Configuring firewall..."
 
-# Find a free port
+# Find an available port
 port=$(ynh_find_port --port=8095)
 ynh_app_setting_set --app=$app --key=port --value=$port
 
@@ -79,9 +81,9 @@ ynh_use_nodejs
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# START MONGODB
+# CREATE A MONGODB DATABASE
 #=================================================
-ynh_print_info --message="Starting mongodb ..."
+ynh_print_info --message="Creating a MongoDB database..."
 
 # Start mongodb
 systemctl enable mongodb
@@ -130,6 +132,7 @@ ynh_add_systemd_config
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
+ynh_print_info --message="Modifying a config file..."
 
 config_file="$final_path/.env"
 cp "../conf/.env" $config_file
@@ -143,6 +146,7 @@ ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_f
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
+ynh_print_info --message="Storing the config file checksum..."
 
 # Calculate and store the config file checksum into the app settings
 ynh_store_file_checksum --file="$config_file"
@@ -152,7 +156,7 @@ ynh_store_file_checksum --file="$config_file"
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
-ynh_print_info --message="Configuring file permissions ..."
+ynh_print_info --message="Securing files and directories..."
 
 # Set strong right permissions to app files
 chown -R $app: "$final_path"
@@ -160,20 +164,24 @@ chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
 
 #=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
+# INTEGRATE SERVICE IN YUNOHOST
 #=================================================
+ynh_print_info --message="Integrating service in YunoHost..."
 
-yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
-yunohost service add $app
+yunohost service add $app --description "Wekan daemon"
+yunohost service add mongodb --description "MongoDB daemon" --log "/var/log/mongodb/mongodb.log"
+
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Starting $app service..."
+ynh_print_info --message="Starting a systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Meteor APM: completed instrumenting the app"
-sleep 30
+ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Meteor APM: completed instrumenting the app"
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+	sleep 60
+fi
 
 #=================================================
 # SETUP SSOWAT
