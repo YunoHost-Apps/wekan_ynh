@@ -214,7 +214,6 @@ ynh_add_nginx_config
 #=================================================
 ynh_print_info --message="Upgrading dependencies..."
 
-ynh_remove_nodejs
 ynh_install_nodejs --nodejs_version="8.16.0"
 ynh_use_nodejs
 
