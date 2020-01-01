@@ -46,6 +46,9 @@ fi
 # CHECK VERSION NUMBER
 #=================================================
 
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+  sleep 60
+fi
 abort_if_up_to_date
 # previous function is what defines 'version', more precisely the 'previous version'
 previous_version="${version}"
@@ -166,9 +169,9 @@ path_url=$(ynh_normalize_url_path --path_url=$path_url)
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Stopping $app service..."
+ynh_print_info --message="Stopping a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
+ynh_systemd_action --service_name=$app --action="stop" --log_path=systemd
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -238,6 +241,7 @@ ynh_add_systemd_config
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
+ynh_print_info --message="Securing files and directories..."
 
 # Set permissions on app files
 chown -R $app: "$final_path"
@@ -261,8 +265,10 @@ fi
 #=================================================
 ynh_print_info --message="Starting a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Started Wekan, task board"
-sleep 30
+ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Started Wekan, task board"
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+  sleep 60
+fi
 
 #=================================================
 # RELOAD NGINX
