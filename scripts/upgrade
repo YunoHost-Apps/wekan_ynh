@@ -157,13 +157,6 @@ if ynh_version_gt "3.55~ynh1" "${previous_version}" ; then
     ynh_store_file_checksum "$config_file"
 fi
 
-if ynh_version_gt "3.79~ynh1" "${previous_version}" ; then
-    # Install dependencies
-    ynh_remove_nodejs
-    ynh_install_nodejs --nodejs_version=$nodejs_version
-    ynh_use_nodejs
-fi
-
 #=================================================
 # CHECK THE PATH
 #=================================================
