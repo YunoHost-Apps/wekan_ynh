@@ -6,7 +6,7 @@
 
 # dependencies used by the app
 pkg_dependencies="mongodb mongodb-server mongo-tools"
-nodejs_version=12.15.0
+nodejsversion=12.15.0
 
 #=================================================
 # PERSONAL HELPERS

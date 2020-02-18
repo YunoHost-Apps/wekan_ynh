@@ -73,15 +73,18 @@ ynh_abort_if_errors
 ynh_print_info --message="Managing upgrade from previous version..."
 
 if ynh_version_gt "0.45-2" "${previous_version}" ; then
+    ynh_print_info --message="Upgrading to 0.45-2..."
     ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
     systemctl daemon-reload
 fi
 
 if ynh_version_gt "0.45-3" "${previous_version}" ; then
+    ynh_print_info --message="Upgrading to 0.45-3..."
     yunohost service add $app
 fi
 
 if ynh_version_gt "0.77-2" "${previous_version}" ; then
+    ynh_print_info --message="Upgrading to 0.77-2..."
     ynh_install_nodejs --nodejs_version="8.9.3"
     ynh_use_nodejs
 
@@ -96,6 +99,7 @@ if ynh_version_gt "0.77-2" "${previous_version}" ; then
 fi
 
 if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
+    ynh_print_info --message="Upgrading to 1.07~ynh2..."
 
    # Replace mongodb packages
    # Assume no other app needs it >.>
@@ -115,6 +119,7 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 fi
 
 if ynh_version_gt "2.48~ynh1" "${previous_version}" ; then
+    ynh_print_info --message="Upgrading to 2.48~ynh1..."
     # Install dependencies
     ynh_remove_nodejs
     ynh_install_nodejs --nodejs_version="8.16.0"
@@ -136,9 +141,10 @@ if ynh_version_gt "2.48~ynh1" "${previous_version}" ; then
 fi
 
 if ynh_version_gt "3.55~ynh1" "${previous_version}" ; then
+    ynh_print_info --message="Upgrading to 3.55~ynh1..."
     # Install dependencies
     ynh_remove_nodejs
-    ynh_install_nodejs --nodejs_version=$nodejs_version
+    ynh_install_nodejs --nodejs_version=$nodejsversion
     ynh_use_nodejs
     
     # Create a dedicated systemd config
@@ -155,6 +161,14 @@ if ynh_version_gt "3.55~ynh1" "${previous_version}" ; then
     ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
     ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
     ynh_store_file_checksum "$config_file"
+fi
+
+if ynh_version_gt "3.79~ynh1" "${previous_version}" ; then
+    ynh_print_info --message="Upgrading to 3.79~ynh1..."
+    # Install dependencies
+    ynh_remove_nodejs
+    ynh_install_nodejs --nodejs_version=$nodejsversion
+    ynh_use_nodejs
 fi
 
 #=================================================
@@ -214,7 +228,7 @@ ynh_add_nginx_config
 #=================================================
 ynh_print_info --message="Upgrading dependencies..."
 
-ynh_install_nodejs --nodejs_version=$nodejs_version
+ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
 ynh_install_app_dependencies $pkg_dependencies
