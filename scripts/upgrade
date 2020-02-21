@@ -113,9 +113,6 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
-    # Install dependencies
-    ynh_remove_nodejs
-    ynh_install_nodejs --nodejs_version="8.16.2"
     ynh_use_nodejs
     
     # Create a dedicated systemd config
@@ -124,15 +121,7 @@ if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
     
     # Create a dedicated .env config
     config_file="$final_path/.env"
-    ynh_backup_if_checksum_is_different --file="$config_file"
-    cp "../conf/.env" "$config_file"
-    ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="$config_file"
-    ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$config_file"
-    ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$config_file"
-    ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
-    ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
-    ynh_store_file_checksum "$config_file"
-    ynh_systemd_action --service_name=$app --action="stop" --log_path=systemd
+    touch $config_file
 fi
 
 #=================================================
