@@ -132,6 +132,7 @@ if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
     ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
     ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
     ynh_store_file_checksum "$config_file"
+    ynh_systemd_action --service_name=$app --action="stop" --log_path=systemd
 fi
 
 #=================================================
