@@ -84,7 +84,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 ynh_print_info --message="Reinstalling dependencies..."
 
 # Define and install dependencies
-ynh_install_nodejs --nodejs_version="8.16.2"
+ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
 ynh_install_app_dependencies $pkg_dependencies
