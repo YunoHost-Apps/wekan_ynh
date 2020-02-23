@@ -113,12 +113,6 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
-    ynh_use_nodejs
-    
-    # Create a dedicated systemd config
-    ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
-    ynh_add_systemd_config
-    
     # Create a dedicated .env config
     config_file="$final_path/.env"
     touch $config_file
@@ -165,6 +159,7 @@ ynh_add_nginx_config
 #=================================================
 ynh_print_info --message="Upgrading dependencies..."
 
+ynh_remove_nodejs
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
