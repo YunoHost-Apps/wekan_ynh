@@ -7,6 +7,7 @@
 #=================================================
 
 source _common.sh
+source ynh_add_extra_apt_repos__3
 source ynh_package_version
 source ynh_detect_arch__2
 source /usr/share/yunohost/helpers
@@ -163,7 +164,7 @@ ynh_remove_nodejs
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
-ynh_install_app_dependencies $pkg_dependencies
+ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package=$pkg_dependencies --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
 
 #=================================================
 # CREATE DEDICATED USER
