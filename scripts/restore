@@ -87,7 +87,11 @@ ynh_print_info --message="Reinstalling dependencies..."
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
-ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
+if [ "$(lsb_release --codename --short)" = "buster" ]; then
+	ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
+else
+	ynh_install_app_dependencies $pkg_dependencies
+fi
 
 #=================================================
 # RESTORE THE MONGODB DATABASE
