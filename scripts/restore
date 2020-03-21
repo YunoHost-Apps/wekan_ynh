@@ -89,8 +89,10 @@ ynh_use_nodejs
 
 if [ "$(lsb_release --codename --short)" = "buster" ]; then
 	ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies_buster" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
+	mongodb_servicename=$mongodb_buster
 else
 	ynh_install_app_dependencies $pkg_dependencies
+	mongodb_servicename=$mongodb_stretch
 fi
 
 #=================================================
@@ -99,8 +101,8 @@ fi
 ynh_print_info --message="Restoring the MongoDB database..."
 
 # Start mongodb
-systemctl enable mongodb
-systemctl start mongodb
+systemctl enable $mongodb_servicename
+systemctl start $mongodb_servicename
 mongorestore --db $db_name ./dump/$db_name
 
 #=================================================
