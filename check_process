@@ -12,17 +12,17 @@
 		setup_public=1
 		upgrade=1
 		# 1.07~ynh2
-		upgrade=1	from_commit=37d226544f2738bd37f97b612ff4798545b3dc5a
+		# upgrade=1	from_commit=37d226544f2738bd37f97b612ff4798545b3dc5a
 		# 2.09~ynh1
-		upgrade=1	from_commit=3105eb5a3c515ea55a38b8b80c9b5dda1277a82e
+		# upgrade=1	from_commit=3105eb5a3c515ea55a38b8b80c9b5dda1277a82e
 		# 2.56~ynh2
-		upgrade=1	from_commit=b26768aad2627da739677da740429591ffbb9a6e
+		# upgrade=1	from_commit=b26768aad2627da739677da740429591ffbb9a6e
 		# 2.98~ynh2
-		upgrade=1	from_commit=dab614bd7679f2f7978d1df2e360fba7ae0edfa4
+		# upgrade=1	from_commit=dab614bd7679f2f7978d1df2e360fba7ae0edfa4
 		# 3.45~ynh1
-		upgrade=1	from_commit=2e6131af03c723cf9eaf82e13aa9488f42c085f9
+		# upgrade=1	from_commit=2e6131af03c723cf9eaf82e13aa9488f42c085f9
 		# 3.55~ynh1
-		upgrade=1	from_commit=3be3f1d7290b534f7689222645a42c06f3103589
+		# upgrade=1	from_commit=3be3f1d7290b534f7689222645a42c06f3103589
 		backup_restore=1
 		multi_instance=1
 		# This test is no longer necessary since the version 2.7 (PR: https://github.com/YunoHost/yunohost/pull/304), you can still do it if your app could be installed with this version.
