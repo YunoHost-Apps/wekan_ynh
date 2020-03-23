@@ -7,6 +7,7 @@
 #=================================================
 
 source _common.sh
+source ynh_add_extra_apt_repos__3
 source ynh_package_version
 source ynh_detect_arch__2
 source /usr/share/yunohost/helpers
@@ -163,7 +164,13 @@ ynh_remove_nodejs
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
-ynh_install_app_dependencies $pkg_dependencies
+if [ "$(lsb_release --codename --short)" = "buster" ]; then
+  ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies_buster" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
+  mongodb_servicename=$mongodb_buster
+else
+  ynh_install_app_dependencies $pkg_dependencies
+  mongodb_servicename=$mongodb_stretch
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -196,6 +203,7 @@ ynh_print_info --message="Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
 ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
+ynh_replace_string --match_string="__MOGODB_SERVICENAME__" --replace_string="$mongodb_servicename" --target_file="../conf/systemd.service"
 ynh_add_systemd_config
 
 #=================================================

@@ -8,6 +8,7 @@
 
 source _common.sh
 source ynh_detect_arch__2
+source ynh_add_extra_apt_repos__3
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -78,7 +79,13 @@ ynh_print_info --message="Installing dependencies..."
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
-ynh_install_app_dependencies $pkg_dependencies
+if [ "$(lsb_release --codename --short)" = "buster" ]; then
+	ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies_buster" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
+	mongodb_servicename=$mongodb_buster
+else
+	ynh_install_app_dependencies $pkg_dependencies
+	mongodb_servicename=$mongodb_stretch
+fi
 
 #=================================================
 # CREATE A MONGODB DATABASE
@@ -86,8 +93,8 @@ ynh_install_app_dependencies $pkg_dependencies
 ynh_print_info --message="Creating a MongoDB database..."
 
 # Start mongodb
-systemctl enable mongodb
-systemctl start mongodb
+systemctl enable $mongodb_servicename
+systemctl start $mongodb_servicename
 
 # Registering db name
 db_name=$(ynh_sanitize_dbid --db_name=$app)
@@ -127,6 +134,7 @@ ynh_print_info --message="Configuring a systemd service..."
 
 # Create a dedicated systemd config
 ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
+ynh_replace_string --match_string="__MOGODB_SERVICENAME__" --replace_string="$mongodb_servicename" --target_file="../conf/systemd.service"
 ynh_add_systemd_config
 
 #=================================================
