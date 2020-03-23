@@ -203,7 +203,7 @@ ynh_print_info --message="Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
 ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
-ynh_replace_string --match_string="__MOGODB_SERVICENAME__" --replace_string="$mongodb_servicename" --target_file="../conf/systemd.service"
+ynh_replace_string --match_string="__MONGODB_SERVICENAME__" --replace_string="$mongodb_servicename" --target_file="../conf/systemd.service"
 ynh_add_systemd_config
 
 #=================================================
