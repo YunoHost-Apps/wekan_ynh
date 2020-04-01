@@ -197,6 +197,8 @@ fi
 #=================================================
 ynh_print_info --message="Configuring SSOwat..."
 
+ynh_permission_create --permission="admin"
+
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then

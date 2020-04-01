@@ -63,6 +63,7 @@ ynh_remove_nodejs
 
 # Only remove the mongodb service if it is not installed.
 if ! ynh_package_is_installed --package="mongodb"
+then
 	yunohost service remove mongodb
 fi
 
