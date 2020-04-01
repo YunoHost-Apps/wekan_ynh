@@ -198,9 +198,7 @@ fi
 #=================================================
 ynh_print_info --message="Configuring SSOwat..."
 
-ynh_permission_create --permission="admin"
-
-yunohost user permission update $app.admin --add $admin
+ynh_permission_create --permission="admin" --allowed "$admin"
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
