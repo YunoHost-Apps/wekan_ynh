@@ -28,7 +28,8 @@ Wekan is an open-source kanban board (task manager and organizer)
 
 ## Configuration
 
-As LDAP authentification is enabled by default, wekan admins correspond to the permission `Wekan Admin`. To add an admin account, you can:
+As LDAP authentification is enabled by default, wekan admins correspond to the permission `Wekan Admin`. The user you choose during installation is member of this group.
+To add an admin account, you can:
 
 - [with the webadmin] go to Users > Groups and permissions > Add the user to the permission `Wekan Admin`
 - [or with the command line] `yunohost user permission update wekan.admin -a the_user_to_add`

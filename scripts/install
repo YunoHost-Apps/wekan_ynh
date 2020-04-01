@@ -29,6 +29,7 @@ ynh_print_info --message="Retrieving arguments from the manifest..."
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
+admin=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 app=$YNH_APP_INSTANCE_NAME
@@ -198,6 +199,8 @@ fi
 ynh_print_info --message="Configuring SSOwat..."
 
 ynh_permission_create --permission="admin"
+
+yunohost user permission update $app.admin --add $admin
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
