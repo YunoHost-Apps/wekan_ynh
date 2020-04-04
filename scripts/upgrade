@@ -21,7 +21,6 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 port=$(ynh_app_setting_get --app=$app --key=port)
@@ -119,6 +118,24 @@ if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
     touch $config_file
 fi
 
+# Create the permission "admin" only if it doesn't exist.
+if ! ynh_permission_exists --permission="admin"
+then
+  ynh_print_info --message="Upgrading Permission configuration..."
+
+	ynh_app_setting_delete --app=$app --key=unprotected_uris
+
+  is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+
+  if [ $is_public -eq 1 ]; then
+    ynh_permission_update --permission "main" --add "visitors"
+  fi
+
+	ynh_app_setting_delete --app=$app --key=is_public
+
+  ynh_permission_create --permission="admin"
+fi
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -194,6 +211,7 @@ ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --ta
 ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$config_file"
 ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
 ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="$config_file"
 ynh_store_file_checksum "$config_file"
 
 #=================================================
@@ -217,18 +235,6 @@ ynh_print_info --message="Securing files and directories..."
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_print_info --message="Upgrading SSOwat configuration..."
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-	# unprotected_uris allows SSO credentials to be passed anyway
-	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
-fi
 
 #=================================================
 # START SYSTEMD SERVICE

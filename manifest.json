@@ -6,7 +6,7 @@
         "en": "Trello-like kanban",
         "fr": "Un kanban similaire à Trello"
     },
-    "version": "3.79~ynh1",
+    "version": "3.79~ynh2",
     "url": "https://wekan.io",
     "license": "MIT",    
     "maintainer": [
@@ -19,7 +19,7 @@
             "name": "ljf"
     }],
     "requirements": {
-        "yunohost": ">= 3.5"
+        "yunohost": ">= 3.7"
     },
     "multi_instance": true,
     "services": [
@@ -45,6 +45,15 @@
                 },
                 "example": "/wekan",
                 "default": "/wekan"
+            },
+            {
+                "name": "admin",
+                "type": "user",
+                "ask": {
+                    "en": "Choose an admin user",
+                    "fr": "Choisissez l’administrateur"
+                },
+                "example": "johndoe"
             },
             {
                 "name": "is_public",

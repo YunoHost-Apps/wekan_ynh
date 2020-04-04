@@ -29,6 +29,7 @@ ynh_print_info --message="Retrieving arguments from the manifest..."
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
+admin=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 app=$YNH_APP_INSTANCE_NAME
@@ -150,6 +151,7 @@ ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --ta
 ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$config_file"
 ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
 ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="$config_file"
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
@@ -196,11 +198,12 @@ fi
 #=================================================
 ynh_print_info --message="Configuring SSOwat..."
 
+ynh_permission_create --permission="admin" --allowed "$admin"
+
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+	ynh_permission_update --permission "main" --add "visitors"
 fi
 
 #=================================================
