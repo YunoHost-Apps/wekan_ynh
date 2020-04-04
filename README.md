@@ -28,8 +28,13 @@ Wekan is an open-source kanban board (task manager and organizer)
 
 ## Configuration
 
-As LDAP authentification is enable by default, wekan admins are the members of the YunoHost LDAP admin group.
-To add an account in the YunoHost, you must first install [phpLDAPadmin](https://github.com/YunoHost-Apps/phpldapadmin_ynh) , connect to the interface and in the left panel go on `dc=yunohost,dc=org`, `ou=groups`, `cn=admins`. In the right panel, in the memberUid category, click on modify group members, add the account in the group, save changes and update object
+As LDAP authentification is enabled by default, wekan admins correspond to the permission `Wekan Admin`. The user you choose during installation is member of this group.
+To add an admin account, you can:
+
+- [with the webadmin] go to Users > Groups and permissions > Add the user to the permission `Wekan Admin`
+- [or with the command line] `yunohost user permission update wekan.admin -a the_user_to_add`
+
+All others YunhoHost user can access with LDAP authentication.
 
 If you have disable ldap authentication, first registered user will be admin, and next ones normal users. If you want other admins too, you can change their permission to admin at Wekan Admin Panel.
 
