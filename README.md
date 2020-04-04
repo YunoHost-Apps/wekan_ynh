@@ -34,6 +34,8 @@ To add an admin account, you can:
 - [with the webadmin] go to Users > Groups and permissions > Add the user to the permission `Wekan Admin`
 - [or with the command line] `yunohost user permission update wekan.admin -a the_user_to_add`
 
+All others YunhoHost user can access with LDAP authentication.
+
 If you have disable ldap authentication, first registered user will be admin, and next ones normal users. If you want other admins too, you can change their permission to admin at Wekan Admin Panel.
 
 **Private/Public mode:** In private mode, only authorized YunoHost members can access to the wekan. 
