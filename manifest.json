@@ -6,7 +6,7 @@
         "en": "Trello-like kanban",
         "fr": "Un kanban similaire à Trello"
     },
-    "version": "3.79~ynh2",
+    "version": "3.95~ynh1",
     "url": "https://wekan.io",
     "license": "MIT",    
     "maintainer": [
