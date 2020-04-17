@@ -9,7 +9,7 @@ pkg_dependencies="mongodb mongodb-server mongo-tools"
 pkg_dependencies_buster="mongodb-org mongodb-org-server mongodb-org-tools"
 mongodb_stretch="mongodb"
 mongodb_buster="mongod"
-nodejsversion=12.15.0
+nodejsversion=12.16.2
 
 #=================================================
 # PERSONAL HELPERS
