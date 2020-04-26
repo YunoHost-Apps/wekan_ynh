@@ -11,6 +11,7 @@ read_manifest () {
         read_json '../settings/manifest.json' "$1"
     fi
 }
+
 abort_if_up_to_date () {
     version=$(read_json "/etc/yunohost/apps/$YNH_APP_INSTANCE_NAME/manifest.json" 'version' 2> /dev/null || echo '20160501-7')
     last_version=$(read_manifest 'version')
