@@ -103,7 +103,7 @@ ynh_print_info --message="Restoring the MongoDB database..."
 # Start mongodb
 systemctl enable $mongodb_servicename
 systemctl start $mongodb_servicename
-mongorestore --db $db_name ./dump/$db_name >/dev/null
+mongorestore --db="$db_name" --archive="./dump/$db_name" --quiet
 
 #=================================================
 # RESTORE SYSTEMD

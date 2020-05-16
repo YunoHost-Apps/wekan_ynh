@@ -60,7 +60,7 @@ ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 ynh_print_info --message="Backing up the MongoDB database..."
 
-mongodump --db "$db_name" -o "./dump" >/dev/null
+mongodump --db="$db_name" --out="./dump" --quiet
 
 #=================================================
 # SPECIFIC BACKUP
