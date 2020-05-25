@@ -19,7 +19,7 @@
             "name": "ljf"
     }],
     "requirements": {
-        "yunohost": ">= 3.7"
+        "yunohost": ">= 3.8"
     },
     "multi_instance": true,
     "services": [
