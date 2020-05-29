@@ -7,7 +7,6 @@
 #=================================================
 
 source ../settings/scripts/_common.sh
-source ../settings/scripts/ynh_add_extra_apt_repos__3
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -103,7 +102,7 @@ ynh_print_info --message="Restoring the MongoDB database..."
 # Start mongodb
 systemctl enable $mongodb_servicename
 systemctl start $mongodb_servicename
-mongorestore --db $db_name ./dump/$db_name
+mongorestore --quiet --db="$db_name" "./dump/$db_name"
 
 #=================================================
 # RESTORE SYSTEMD
