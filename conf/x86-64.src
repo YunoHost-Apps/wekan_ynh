@@ -1,9 +1,9 @@
 # This is on YunoHost server just to avoid the file from disappearing
-# Original source is https://releases.wekan.team/wekan-3.95.zip
-# YunoHost source is https://build.yunohost.org/apps/wekan-3.95.zip
-SOURCE_URL=https://build.yunohost.org/apps/wekan-3.95.zip
-SOURCE_SUM=a3c69d3f95790d2e616bdd0355498b876ee735f01d83fdd4c99efdaeaf950374
+# Original source is https://releases.wekan.team/wekan-4.09.zip
+# YunoHost source is https://build.yunohost.org/apps/wekan-4.09.zip
+SOURCE_URL=https://build.yunohost.org/apps/wekan-4.09.zip
+SOURCE_SUM=e3dd35d138e393c7bc43816407dd424f03c2c86af8f07ec74893fae5ee05964a
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=wekan-3.95.zip
+SOURCE_FILENAME=wekan-4.09.zip
