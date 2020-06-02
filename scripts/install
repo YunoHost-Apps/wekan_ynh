@@ -180,7 +180,6 @@ ynh_print_info --message="Integrating service in YunoHost..."
 yunohost service add $app --description "Wekan daemon"
 yunohost service add mongodb --description "MongoDB daemon" --log "/var/log/mongodb/mongodb.log"
 
-
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
