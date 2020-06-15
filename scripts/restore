@@ -8,6 +8,7 @@
 
 #Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/_common.sh
+source ../settings/scripts/ynh_mongo_db
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -31,6 +32,7 @@ domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -103,7 +105,9 @@ ynh_script_progression --message="Restoring the MongoDB database..."
 # Start mongodb
 systemctl enable $mongodb_servicename
 systemctl start $mongodb_servicename
-mongorestore --quiet --db="$db_name" "./dump/$db_name"
+db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+ynh_mongo_restore_db --database="$db_name" < ./dump.bson
 
 #=================================================
 # RESTORE SYSTEMD

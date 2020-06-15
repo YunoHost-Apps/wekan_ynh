@@ -7,6 +7,7 @@
 #=================================================
 
 source _common.sh
+source ynh_mongo_db
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -49,7 +50,7 @@ ynh_remove_systemd_config
 ynh_script_progression --message="Removing the MongoDB database..."
 
 # Remove a database if it exists, along with the associated user
-mongo $db_name --eval "db.dropDatabase()"
+ynh_mongo_remove_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # REMOVE DEPENDENCIES

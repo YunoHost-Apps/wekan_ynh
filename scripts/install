@@ -9,6 +9,7 @@
 source _common.sh
 source ynh_detect_arch__2
 source ynh_add_config
+source ynh_mongo_db
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -97,7 +98,9 @@ systemctl start $mongodb_servicename
 
 # Registering db name
 db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
