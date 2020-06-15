@@ -15,7 +15,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info --message="Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -28,14 +28,14 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 #=================================================
 # CHECK VERSION
 #=================================================
-ynh_print_info --message="Checking version..."
+ynh_script_progression --message="Checking version..."
 
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_print_info --message="Ensuring downward compatibility..."
+ynh_script_progression --message="Ensuring downward compatibility..."
 
 # If db_name doesn't exist, create it
 if [ -z "$db_name" ]; then
@@ -57,7 +57,7 @@ previous_version="${version}"
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_print_info --message="Backing up the app before upgrading (may take a while)..."
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -80,36 +80,36 @@ path_url=$(ynh_normalize_url_path --path_url=$path_url)
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Stopping a systemd service..."
+ynh_script_progression --message="Stopping a systemd service..."
 
 ynh_systemd_action --service_name=$app --action="stop" --log_path=systemd
 
 #=================================================
 # MANAGE UPGRADE FROM PREVIOUS VERSION
 #=================================================
-ynh_print_info --message="Managing upgrade from previous version..."
+ynh_script_progression --message="Managing upgrade from previous version..."
 
 if ynh_version_gt "0.45-2" "${previous_version}" ; then
-	ynh_print_info --message="Upgrading to 0.45-2..."
+	ynh_script_progression --message="Upgrading to 0.45-2..."
 	ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
 	systemctl daemon-reload
 fi
 
 if ynh_version_gt "0.45-3" "${previous_version}" ; then
-	ynh_print_info --message="Upgrading to 0.45-3..."
-	yunohost service add $app
+	ynh_script_progression --message="Upgrading to 0.45-3..."
+	yunohost service add $app --description "Wekan daemon" --log_type "systemd"
 fi
 
 if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
-	ynh_print_info --message="Upgrading to 1.07~ynh2..."
+	ynh_script_progression --message="Upgrading to 1.07~ynh2..."
 
 	# Replace mongodb packages
 	# Assume no other app needs it >.>
 	rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
 	ynh_remove_app_dependencies
 	ynh_install_app_dependencies "mongodb mongodb-server"
-	yunohost service remove mongod
-	yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
+	yunohost service add $app --description "Wekan daemon" --log_type "systemd"
+	yunohost service add mongodb --description "MongoDB daemon" --log "/var/log/mongodb/mongodb.log"
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
@@ -121,7 +121,7 @@ fi
 # Create the permission "admin" only if it doesn't exist.
 if ! ynh_permission_exists --permission="admin"
 then
-	ynh_print_info --message="Upgrading Permission configuration..."
+	ynh_script_progression --message="Upgrading Permission configuration..."
 
 	ynh_app_setting_delete --app=$app --key=unprotected_uris
 
@@ -142,7 +142,7 @@ fi
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_print_info --message="Upgrading source files..."
+	ynh_script_progression --message="Upgrading source files..."
 	
 	# Create a temporary directory
 	tmpdir="$(mktemp -d)"
@@ -167,7 +167,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_print_info --message="Upgrading nginx web server configuration..."
+ynh_script_progression --message="Upgrading nginx web server configuration..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -175,7 +175,7 @@ ynh_add_nginx_config
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_print_info --message="Upgrading dependencies..."
+ynh_script_progression --message="Upgrading dependencies..."
 
 ynh_remove_nodejs
 ynh_install_nodejs --nodejs_version=$nodejsversion
@@ -192,7 +192,7 @@ fi
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info --message="Making sure dedicated system user exists..."
+ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create --username=$app --home_dir="$final_path"
@@ -200,7 +200,7 @@ ynh_system_user_create --username=$app --home_dir="$final_path"
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
-ynh_print_info --message="Modifying a config file..."
+ynh_script_progression --message="Modifying a config file..."
 
 # Create a dedicated .env config
 ynh_add_config
@@ -208,7 +208,7 @@ ynh_add_config
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_print_info --message="Upgrading systemd configuration..."
+ynh_script_progression --message="Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
 ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
@@ -218,7 +218,7 @@ ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
-ynh_print_info --message="Securing files and directories..."
+ynh_script_progression --message="Securing files and directories..."
 
 # Set permissions on app files
 chown -R $app: "$final_path"
@@ -228,9 +228,10 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Starting a systemd service..."
+ynh_script_progression --message="Starting a systemd service..."
 
 ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Started Wekan, task board"
+
 if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
 	sleep 60
 fi
@@ -238,7 +239,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -246,4 +247,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info --message="Upgrade of $app completed"
+ynh_script_progression --message="Upgrade of $app completed"
