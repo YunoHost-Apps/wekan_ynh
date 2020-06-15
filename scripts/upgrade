@@ -23,6 +23,7 @@ domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 port=$(ynh_app_setting_get --app=$app --key=port)
 
 #=================================================
@@ -109,13 +110,20 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 	ynh_remove_app_dependencies
 	ynh_install_app_dependencies "mongodb mongodb-server"
 	yunohost service add $app --description "Wekan daemon" --log_type "systemd"
-	yunohost service add mongodb --description "MongoDB daemon" --log "/var/log/mongodb/mongodb.log"
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
 	# Create a dedicated .env config
 	config_file="$final_path/.env"
 	touch $config_file
+fi
+
+if ynh_version_gt "4.09~ynh2" "${previous_version}" ; then
+	
+	# Enabling MongoDB Authentication
+	ynh_mongo_test_if_first_run
+
+	ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
 fi
 
 # Create the permission "admin" only if it doesn't exist.

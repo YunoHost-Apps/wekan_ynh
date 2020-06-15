@@ -102,9 +102,8 @@ fi
 #=================================================
 ynh_script_progression --message="Restoring the MongoDB database..."
 
-# Start mongodb
-systemctl enable $mongodb_servicename
-systemctl start $mongodb_servicename
+ynh_mongo_test_if_first_run
+
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
 ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
 ynh_mongo_restore_db --database="$db_name" < ./dump.bson
@@ -123,7 +122,6 @@ systemctl enable $app.service
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add $app --description "Wekan daemon" --log_type "systemd"
-yunohost service add mongodb --description "MongoDB daemon" --log "/var/log/mongodb/mongodb.log"
 
 #=================================================
 # START SYSTEMD SERVICE

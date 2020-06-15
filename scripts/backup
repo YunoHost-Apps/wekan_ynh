@@ -62,6 +62,8 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 #=================================================
 ynh_print_info --message="Backing up the MongoDB database..."
 
+ynh_mongo_test_if_first_run
+
 ynh_mongo_dump_db --database="$db_name" > ./dump.bson
 
 #=================================================
