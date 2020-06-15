@@ -8,6 +8,7 @@
 
 source _common.sh
 source ynh_detect_arch__2
+source ynh_add_config
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -133,32 +134,15 @@ ynh_system_user_create --username=$app --home_dir="$final_path"
 ynh_print_info --message="Configuring a systemd service..."
 
 # Create a dedicated systemd config
-ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
-ynh_replace_string --match_string="__MONGODB_SERVICENAME__" --replace_string="$mongodb_servicename" --target_file="../conf/systemd.service"
-ynh_add_systemd_config
+ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
 
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
 ynh_print_info --message="Modifying a config file..."
 
-config_file="$final_path/.env"
-cp "../conf/.env" $config_file
-
-ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="$config_file"
-ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$config_file"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$config_file"
-ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="$config_file"
-
-#=================================================
-# STORE THE CONFIG FILE CHECKSUM
-#=================================================
-ynh_print_info --message="Storing the config file checksum..."
-
-# Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum --file="$config_file"
+# Create a dedicated .env config
+ynh_add_config
 
 #=================================================
 # GENERIC FINALIZATION

@@ -9,6 +9,7 @@
 source _common.sh
 source ynh_package_version
 source ynh_detect_arch__2
+source ynh_add_config
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -38,8 +39,8 @@ ynh_print_info --message="Ensuring downward compatibility..."
 
 # If db_name doesn't exist, create it
 if [ -z "$db_name" ]; then
-    db_name=$(ynh_sanitize_dbid --db_name=$app)
-    ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+	db_name=$(ynh_sanitize_dbid --db_name=$app)
+	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 
 #=================================================
@@ -47,7 +48,7 @@ fi
 #=================================================
 
 if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
-  sleep 60
+	sleep 60
 fi
 abort_if_up_to_date
 # previous function is what defines 'version', more precisely the 'previous version'
@@ -89,50 +90,50 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path=systemd
 ynh_print_info --message="Managing upgrade from previous version..."
 
 if ynh_version_gt "0.45-2" "${previous_version}" ; then
-    ynh_print_info --message="Upgrading to 0.45-2..."
-    ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
-    systemctl daemon-reload
+	ynh_print_info --message="Upgrading to 0.45-2..."
+	ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
+	systemctl daemon-reload
 fi
 
 if ynh_version_gt "0.45-3" "${previous_version}" ; then
-    ynh_print_info --message="Upgrading to 0.45-3..."
-    yunohost service add $app
+	ynh_print_info --message="Upgrading to 0.45-3..."
+	yunohost service add $app
 fi
 
 if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
-    ynh_print_info --message="Upgrading to 1.07~ynh2..."
+	ynh_print_info --message="Upgrading to 1.07~ynh2..."
 
-   # Replace mongodb packages
-   # Assume no other app needs it >.>
-   rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
-   ynh_remove_app_dependencies
-   ynh_install_app_dependencies "mongodb mongodb-server"
-   yunohost service remove mongod
-   yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
+	# Replace mongodb packages
+	# Assume no other app needs it >.>
+	rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
+	ynh_remove_app_dependencies
+	ynh_install_app_dependencies "mongodb mongodb-server"
+	yunohost service remove mongod
+	yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
-    # Create a dedicated .env config
-    config_file="$final_path/.env"
-    touch $config_file
+	# Create a dedicated .env config
+	config_file="$final_path/.env"
+	touch $config_file
 fi
 
 # Create the permission "admin" only if it doesn't exist.
 if ! ynh_permission_exists --permission="admin"
 then
-  ynh_print_info --message="Upgrading Permission configuration..."
+	ynh_print_info --message="Upgrading Permission configuration..."
 
 	ynh_app_setting_delete --app=$app --key=unprotected_uris
 
-  is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+	is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 
-  if [ $is_public -eq 1 ]; then
-    ynh_permission_update --permission "main" --add "visitors"
-  fi
+	if [ $is_public -eq 1 ]; then
+		ynh_permission_update --permission "main" --add "visitors"
+	fi
 
 	ynh_app_setting_delete --app=$app --key=is_public
 
-  ynh_permission_create --permission="admin"
+	ynh_permission_create --permission="admin"
 fi
 
 #=================================================
@@ -142,25 +143,25 @@ fi
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_print_info --message="Upgrading source files..."
-		
-  # Create a temporary directory
-  tmpdir="$(mktemp -d)"
+	
+	# Create a temporary directory
+	tmpdir="$(mktemp -d)"
 
-  # Backup the env file in the temp dir
-  cp -a "$final_path/.env" "$tmpdir/.env"
+	# Backup the env file in the temp dir
+	cp -a "$final_path/.env" "$tmpdir/.env"
 
-  # Remove the app directory securely
-  ynh_secure_remove --file="$final_path"
+	# Remove the app directory securely
+	ynh_secure_remove --file="$final_path"
 
-  architecture=$(ynh_detect_arch)
-  # Download, check integrity, uncompress and patch the source from app.src
+	architecture=$(ynh_detect_arch)
+	# Download, check integrity, uncompress and patch the source from app.src
 	ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
   
-  #Copy the admin saved settings from tmp directory to final path
-  cp -a  "$tmpdir/.env" "$final_path/.env"
+	#Copy the admin saved settings from tmp directory to final path
+	cp -a  "$tmpdir/.env" "$final_path/.env"
   
-  # Remove the tmp directory securely
-  ynh_secure_remove --file="$tmpdir"
+	# Remove the tmp directory securely
+	ynh_secure_remove --file="$tmpdir"
 fi
 
 #=================================================
@@ -181,11 +182,11 @@ ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
 if [ "$(lsb_release --codename --short)" = "buster" ]; then
-  ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies_buster" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
-  mongodb_servicename=$mongodb_buster
+	ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies_buster" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
+	mongodb_servicename=$mongodb_buster
 else
-  ynh_install_app_dependencies $pkg_dependencies
-  mongodb_servicename=$mongodb_stretch
+	ynh_install_app_dependencies $pkg_dependencies
+	mongodb_servicename=$mongodb_stretch
 fi
 
 #=================================================
@@ -202,16 +203,7 @@ ynh_system_user_create --username=$app --home_dir="$final_path"
 ynh_print_info --message="Modifying a config file..."
 
 # Create a dedicated .env config
-config_file="$final_path/.env"
-ynh_backup_if_checksum_is_different --file="$config_file"
-cp "../conf/.env" "$config_file"
-ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="$config_file"
-ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$config_file"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$config_file"
-ynh_replace_string --match_string="__DOMAIN_URI__" --replace_string="$domain$path_url" --target_file="$config_file"
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config_file"
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="$config_file"
-ynh_store_file_checksum "$config_file"
+ynh_add_config
 
 #=================================================
 # SETUP SYSTEMD
@@ -219,9 +211,7 @@ ynh_store_file_checksum "$config_file"
 ynh_print_info --message="Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
-ynh_replace_string --match_string="__NODEJS_PATH__" --replace_string="$nodejs_path" --target_file="../conf/systemd.service"
-ynh_replace_string --match_string="__MONGODB_SERVICENAME__" --replace_string="$mongodb_servicename" --target_file="../conf/systemd.service"
-ynh_add_systemd_config
+ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -242,7 +232,7 @@ ynh_print_info --message="Starting a systemd service..."
 
 ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Started Wekan, task board"
 if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
-  sleep 60
+	sleep 60
 fi
 
 #=================================================
