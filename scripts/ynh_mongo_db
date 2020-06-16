@@ -5,21 +5,23 @@
 # example: ynh_mongo_eval_as --command='db.getMongo().getDBNames().indexOf("wekan")'
 # example: ynh_mongo_eval_as --command="db.getMongo().getDBNames().indexOf(\"wekan\")"
 #
-# usage: ynh_mongo_eval_as [--user=user] [--password=password] [--database=database] [--host=host] [--port=port] --command="command"
-# | arg: -u, --user=        - the user name to connect as
-# | arg: -p, --password=    - the user password
-# | arg: -d, --database=    - the database to connect to
-# | arg: -h, --host=        - the host to connect to
-# | arg: -P, --port=        - the port to connect to
-# | arg: -c, --command=     - the command to evaluate
+# usage: ynh_mongo_eval_as [--user=user] [--password=password] [--authenticationdatabase=authenticationdatabase] [--database=database] [--host=host] [--port=port] --command="command"
+# | arg: -u, --user=                      - the user name to connect as
+# | arg: -p, --password=                  - the user password
+# | arg: -d, --authenticationdatabase=    - the authenticationdatabase to connect to
+# | arg: -d, --database=                  - the database to connect to
+# | arg: -h, --host=                      - the host to connect to
+# | arg: -P, --port=                      - the port to connect to
+# | arg: -c, --command=                   - the command to evaluate
 #
 #
 ynh_mongo_eval_as() {
     # Declare an array to define the options of this helper.
-    local legacy_args=updhPc
-    local -A args_array=( [u]=user= [p]=password= [d]=database= [h]=host= [P]=port= [c]=command= )
+    local legacy_args=upadhPc
+    local -A args_array=( [u]=user= [p]=password= [a]=authenticationdatabase= [d]=database= [h]=host= [P]=port= [c]=command= )
     local user
     local password
+    local authenticationdatabase
     local database
     local host
     local port
@@ -28,7 +30,8 @@ ynh_mongo_eval_as() {
     ynh_handle_getopts_args "$@"
     user="${user:-}"
     password="${password:-}"
-    database="${database:-}"
+    authenticationdatabase="${authenticationdatabase:-"admin"}"
+    database="${database:-"admin"}"
     host="${host:-}"
     port="${port:-}"
 
@@ -36,22 +39,15 @@ ynh_mongo_eval_as() {
     if [ -n "$user" ]
     then
         user="--username=$user"
-        
-        # If password is provided
-        if [ -n "$password" ]
-        then
-            password="--password=$password"
-        fi
-
-        # If database is provided
-        if [ -n "$database" ]
-        then
-            database="--authenticationDatabase=$database"
-        fi
+        password="--password=$password"
+        authenticationdatabase="--authenticationDatabase=$authenticationdatabase"
     else
         password=""
-        database=""
+        authenticationdatabase=""
     fi
+
+    # Configure dabase connection
+    database="use $database"
 
     # If host is provided
     if [ -n "$host" ]
@@ -65,24 +61,25 @@ ynh_mongo_eval_as() {
         port="--port=$port"
     fi
 
-    mongo --quiet $user $password $database $host $port --eval="$command"
+    mongo --quiet $user $password $authenticationdatabase $host $port <<EOF
+$database
+${command}
+quit()
+EOF
 }
 
-# Create a database and grant optionnaly privilegies to a user
+# Create a database 
 #
 # [internal]
 #
-# usage: ynh_mongo_create_db db_name [db_user]
+# usage: ynh_mongo_create_db db_name
 # | arg: db_name - the database name to create
-# | arg: db_user - the user to grant privilegies
 #
 #
 ynh_mongo_create_db() {
     local db_name=$1
     local db_user=$2
 
-    # Set the user as admin of the db
-    ynh_mongo_eval_as --database="$db_name" --command='db.grantRolesToUser("'${db_user}'",[{ role: "clusterMonitor", db: "admin" }]);'
 }
 
 # Drop a database
@@ -92,12 +89,18 @@ ynh_mongo_create_db() {
 # If you intend to drop the database *and* the associated user,
 # consider using ynh_mongo_remove_db instead.
 #
-# usage: ynh_mongo_drop_db db
-# | arg: db - the database name to drop
+# usage: ynh_mongo_drop_db -database=db
+# | arg: -d, --database=    - the database name to drop
 #
 #
 ynh_mongo_drop_db() {
-    ynh_mongo_eval_as --database="${1}" --command='db.runCommand({dropDatabase: 1})'
+    local legacy_args=d
+    local -A args_array=( [d]=database= )
+    local database
+    # Manage arguments with getopts
+    ynh_handle_getopts_args "$@"
+
+    ynh_mongo_eval_as --database="${database}" --command='db.runCommand({dropDatabase: 1})'
 }
 
 # Dump a database
@@ -124,13 +127,27 @@ ynh_mongo_dump_db() {
 #
 # [internal]
 #
-# usage: ynh_mongo_create_user user pwd [host]
-# | arg: user - the user name to create
-# | arg: pwd - the password to identify user by
+# usage: ynh_mongo_create_user --db_user=db_user --db_pwd=db_pwd --db_name=db_name
+# | arg: -u, --db_user=    - the user name to create
+# | arg: -p, --db_pwd=     - the password to identify user by
+# | arg: -n, --db_name=     - Name of the database to grant privilegies
 #
 #
 ynh_mongo_create_user() {
-    ynh_mongo_eval_as --command='db.createUser( { user: "'${1}'", pwd: "'${2}'", roles: [ "readWrite" ] } );'
+    # Declare an array to define the options of this helper.
+    local legacy_args=unp
+    local -A args_array=( [u]=db_user= [n]=db_name= [p]=db_pwd= )
+    local db_user
+    local db_name
+    local db_pwd
+    # Manage arguments with getopts
+    ynh_handle_getopts_args "$@"
+
+    # Create the user and set the user as admin of the db
+    ynh_mongo_eval_as --database="$db_name" --command='db.createUser( { user: "'${db_user}'", pwd: "'${db_pwd}'", roles: [ { role: "readWrite", db: "'${db_name}'" } ] } );'
+    
+    # Add clustermonitoring rights
+    ynh_mongo_eval_as --database="$db_name" --command='db.grantRolesToUser("'${db_user}'",[{ role: "clusterMonitor", db: "admin" }]);'
 }
 
 # Check if a mongo database exists
@@ -179,12 +196,19 @@ ynh_mongo_restore_db() {
 #
 # [internal]
 #
-# usage: ynh_mongo_drop_user user
-# | arg: user - the user name to drop
+# usage: ynh_mongo_drop_user --db_user=user
+# | arg: -u, --db_user=     -the user to drop
 #
 #
 ynh_mongo_drop_user() {
-    ynh_mongo_eval_as --command='db.dropUser("'${1}'", {w: "majority", wtimeout: 5000})'
+    # Declare an array to define the options of this helper.
+    local legacy_args=u
+    local -A args_array=( [u]=db_user= )
+    local db_user
+    # Manage arguments with getopts
+    ynh_handle_getopts_args "$@"
+
+    ynh_mongo_eval_as --command='db.dropUser("'${db_user}'", {w: "majority", wtimeout: 5000})'
 }
 
 # Create a database, an user and its password. Then store the password in the app's config
@@ -204,7 +228,7 @@ ynh_mongo_setup_db() {
     local -A args_array=( [u]=db_user= [n]=db_name= [p]=db_pwd= )
     local db_user
     local db_name
-    local db_pwd=""
+    local db_pwd
     # Manage arguments with getopts
     ynh_handle_getopts_args "$@"
 
@@ -212,10 +236,10 @@ ynh_mongo_setup_db() {
     # If $db_pwd is not provided, use new_db_pwd instead for db_pwd
     db_pwd="${db_pwd:-$new_db_pwd}"
     
-    ynh_mongo_create_user "$db_user" "$db_pwd"  # Create the user
-    
-    ynh_mongo_create_db "$db_name" "$db_user"   # Create the database
-    ynh_app_setting_set --app=$app --key=mongopwd --value=$db_pwd # Store the password in the app's config
+    # Create the user and grant access to the database
+    ynh_mongo_create_user --db_user="$db_user" --db_pwd="$db_pwd" --db_name="$db_name"
+
+    ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd 
 }
 
 # Remove a database if it exists, and the associated user
@@ -234,13 +258,13 @@ ynh_mongo_remove_db() {
     # Manage arguments with getopts
     ynh_handle_getopts_args "$@"
 
-    if ynh_mongo_database_exists  --database=$db_name
+    if ynh_mongo_database_exists --database=$db_name
     then # Check if the database exists
-        ynh_mongo_drop_db $db_name  # Remove the database
+        ynh_mongo_drop_db --database="$db_name"  # Remove the database
     else
         ynh_print_warn --message="Database $db_name not found"
     fi
 
     # Remove mongo user if it exists
-    ynh_mongo_drop_user $db_user
+    ynh_mongo_drop_user --db_user=$db_user
 }
