@@ -17,7 +17,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_clean_setup () {
-	read -p "key"
 	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
@@ -96,7 +95,6 @@ db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-read -p "key"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
