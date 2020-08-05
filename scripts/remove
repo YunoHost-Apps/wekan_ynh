@@ -63,11 +63,7 @@ ynh_script_progression --message="Removing dependencies..."
 ynh_remove_app_dependencies
 ynh_remove_nodejs
 
-# Only remove the mongodb service if it is not installed.
-if ! ynh_package_is_installed --package="mongodb"
-then
-	yunohost service remove mongodb
-fi
+ynh_mongo_remove
 
 #=================================================
 # REMOVE APP MAIN DIR
