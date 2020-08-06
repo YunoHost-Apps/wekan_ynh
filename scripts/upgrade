@@ -10,6 +10,7 @@ source _common.sh
 source ynh_package_version
 source ynh_detect_arch__2
 source ynh_add_config
+source ynh_mongo_db
 source /usr/share/yunohost/helpers
 
 #=================================================
