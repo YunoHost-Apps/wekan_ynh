@@ -109,7 +109,6 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 	ynh_remove_app_dependencies
 	ynh_install_app_dependencies "mongodb mongodb-server"
 	yunohost service add $app --description "Wekan daemon" --log_type "systemd"
-	yunohost service add mongodb --description "MongoDB daemon" --log "/var/log/mongodb/mongodb.log"
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
@@ -181,13 +180,7 @@ ynh_remove_nodejs
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
-if [ "$(lsb_release --codename --short)" = "buster" ]; then
-	ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main" --package="$pkg_dependencies_buster" --key="https://www.mongodb.org/static/pgp/server-4.2.asc"
-	mongodb_servicename=$mongodb_buster
-else
-	ynh_install_app_dependencies $pkg_dependencies
-	mongodb_servicename=$mongodb_stretch
-fi
+ynh_mongo_install
 
 #=================================================
 # CREATE DEDICATED USER
