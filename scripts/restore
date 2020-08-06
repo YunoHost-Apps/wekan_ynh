@@ -86,6 +86,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 ynh_script_progression --message="Reinstalling dependencies..."
 
 # Define and install dependencies
+ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
@@ -96,9 +97,6 @@ ynh_mongo_install
 #=================================================
 ynh_script_progression --message="Restoring the MongoDB database..."
 
-# Start mongodb
-systemctl enable $mongodb_servicename
-systemctl start $mongodb_servicename
 db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
 ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
 ynh_mongo_restore_db --database="$db_name" < ./dump.bson

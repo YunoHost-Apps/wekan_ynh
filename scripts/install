@@ -76,6 +76,7 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 #=================================================
 ynh_script_progression --message="Installing dependencies..."
 
+ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 
@@ -85,10 +86,6 @@ ynh_mongo_install
 # CREATE A MONGODB DATABASE
 #=================================================
 ynh_script_progression --message="Creating a MongoDB database..."
-
-# Start mongodb
-systemctl enable $mongodb_servicename
-systemctl start $mongodb_servicename
 
 # Registering db name
 db_name=$(ynh_sanitize_dbid --db_name=$app)
