@@ -6,8 +6,8 @@ MONGO_DEPENDENCIES_STRETCH="mongodb mongodb-server mongo-tools"
 MONGO_DEPENDENCIES_BUSTER="mongodb-org mongodb-org-server mongodb-org-tools"
 MONGO_CONFIG_STRETCH="/etc/mongodb.conf"
 MONGO_CONFIG_BUSTER="/etc/mongod.conf"
-MONGO_REPO_BUSTER="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.2 main"
-MONGO_KEY_BUSTER="https://www.mongodb.org/static/pgp/server-4.2.asc"
+MONGO_REPO_BUSTER="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main"
+MONGO_KEY_BUSTER="https://www.mongodb.org/static/pgp/server-4.4.asc"
 
 # Execute a mongo command
 #
