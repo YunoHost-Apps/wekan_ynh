@@ -303,10 +303,10 @@ ynh_mongo_remove_db() {
 
 # Install MongoDB and integrate MongoDB service in YunoHost
 #
-# usage: ynh_mongo_install
+# usage: ynh_install_mongo
 #
 #
-ynh_mongo_install() {
+ynh_install_mongo() {
     # Define Mongo Service Name
     if [ "$(lsb_release --codename --short)" = "buster" ]; then
         ynh_install_extra_app_dependencies --repo="$MONGO_REPO_BUSTER" --package="$MONGO_DEPENDENCIES_BUSTER" --key="$MONGO_KEY_BUSTER"
@@ -329,10 +329,10 @@ ynh_mongo_install() {
 # Only remove the MongoDB service integration in YunoHost for now
 # if MongoDB package as been removed
 #
-# usage: ynh_mongo_remove
+# usage: ynh_remove_mongo
 #
 #
-ynh_mongo_remove() {
+ynh_remove_mongo() {
     # Only remove the mongodb service if it is not installed.
     if ! ynh_package_is_installed --package="mongodb*"
     then

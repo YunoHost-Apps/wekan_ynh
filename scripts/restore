@@ -89,8 +89,7 @@ ynh_script_progression --message="Reinstalling dependencies..."
 ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
-
-ynh_mongo_install
+ynh_install_mongo
 
 #=================================================
 # RESTORE THE MONGODB DATABASE
