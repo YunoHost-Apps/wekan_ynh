@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MONGO_ROOT_PWD_FILE=/etc/yunohost/mongo
+MONGO_ROOT_USER=mongoadmin
 MONGO_SERVICENAME_STRETCH="mongodb"
 MONGO_SERVICENAME_BUSTER="mongod"
 MONGO_DEPENDENCIES_STRETCH="mongodb mongodb-server mongo-tools"
@@ -109,6 +111,38 @@ EOF
         
         mongo --quiet $database $user $password $authenticationdatabase $host $port --eval="$command"
     fi
+
+}
+
+# Execute a mongo command as root user
+#
+# usage: ynh_mongo_exec_as_root [--database=database] --command="command" [--eval]
+# | arg: -d, --database=    - The database to connect to
+# | arg: -c, --command=     - The command to evaluate
+# | arg: -e, --eval         - Execute instead of execute the command.
+#
+#
+ynh_mongo_exec_as_root() {
+    # Declare an array to define the options of this helper.
+    local legacy_args=cde
+    local -A args_array=([d]=database= [c]=command= [e]=eval)
+    local command
+    local database
+    local eval
+    # Manage arguments with getopts
+    ynh_handle_getopts_args "$@"
+    database="${database:-}"
+    eval=${eval:-0}
+
+    # If eval is not provided
+    if [ $eval -eq 0 ]
+    then
+        eval=""
+    else
+        eval="--eval"
+    fi
+
+    ynh_mongo_exec --user="$MONGO_ROOT_USER" --password="$(cat $MONGO_ROOT_PWD_FILE)" --authenticationdatabase=admin --database="$database" --command="$command" $eval
 }
 
 # Drop a database
@@ -130,7 +164,7 @@ ynh_mongo_drop_db() {
     # Manage arguments with getopts
     ynh_handle_getopts_args "$@"
 
-    ynh_mongo_exec --database="$database" --command='db.runCommand({dropDatabase: 1})'
+    ynh_mongo_exec_as_root --database="$database" --command='db.runCommand({dropDatabase: 1})'
 }
 
 # Dump a database
@@ -174,10 +208,10 @@ ynh_mongo_create_user() {
     ynh_handle_getopts_args "$@"
 
     # Create the user and set the user as admin of the db
-    ynh_mongo_exec --database="$db_name" --command='db.createUser( { user: "'${db_user}'", pwd: "'${db_pwd}'", roles: [ { role: "readWrite", db: "'${db_name}'" } ] } );'
+    ynh_mongo_exec_as_root --database="$db_name" --command='db.createUser( { user: "'${db_user}'", pwd: "'${db_pwd}'", roles: [ { role: "readWrite", db: "'${db_name}'" } ] } );'
     
     # Add clustermonitoring rights
-    ynh_mongo_exec --database="$db_name" --command='db.grantRolesToUser("'${db_user}'",[{ role: "clusterMonitor", db: "admin" }]);'
+    ynh_mongo_exec_as_root --database="$db_name" --command='db.grantRolesToUser("'${db_user}'",[{ role: "clusterMonitor", db: "admin" }]);'
 }
 
 # Check if a mongo database exists
@@ -195,7 +229,7 @@ ynh_mongo_database_exists() {
     # Manage arguments with getopts
     ynh_handle_getopts_args "$@"
 
-    if [ $(ynh_mongo_exec --command='db.getMongo().getDBNames().indexOf("'${database}'")' --eval) -lt 0 ]
+    if [ $(ynh_mongo_exec_as_root --command='db.getMongo().getDBNames().indexOf("'${database}'")' --eval) -lt 0 ]
     then
         return 1
     else
@@ -240,7 +274,7 @@ ynh_mongo_drop_user() {
     # Manage arguments with getopts
     ynh_handle_getopts_args "$@"
 
-    ynh_mongo_exec --database="$db_name" --command='db.dropUser("'$db_user'", {w: "majority", wtimeout: 5000})'
+    ynh_mongo_exec_as_root --database="$db_name" --command='db.dropUser("'$db_user'", {w: "majority", wtimeout: 5000})'
 }
 
 # Create a database, an user and its password. Then store the password in the app's config
@@ -299,6 +333,53 @@ ynh_mongo_remove_db() {
 
     # Remove mongo user if it exists
     ynh_mongo_drop_user --db_user=$db_user --db_name=$db_name
+}
+
+# Create a master password and set up global settings
+# It also make sure that MongoDB is installed and running
+# Please always call this script in install and restore scripts
+#
+# provide a variable:
+# - mongodb_servicename: Representing the name of the mongodb service
+#
+# usage: ynh_mongo_test_if_first_run
+#
+#
+ynh_mongo_test_if_first_run() {
+
+    # Make sure Mongodb is indeed installed
+    dpkg --list | grep -q "ii  mongodb.*server" || ynh_die --message="MongoDB is not installed !?"
+
+    # Define Mongo Service Name
+    if [ "$(lsb_release --codename --short)" = "buster" ]; then
+        MONGODB_SERVICENAME=$MONGO_SERVICENAME_BUSTER
+    else
+        MONGODB_SERVICENAME=$MONGO_SERVICENAME_STRETCH
+    fi
+    mongodb_servicename=$MONGODB_SERVICENAME
+    
+    # Make sure MongoDB is started and enabled
+    systemctl is-enabled $MONGODB_SERVICENAME -q || systemctl enable $MONGODB_SERVICENAME --quiet
+    systemctl is-active $MONGODB_SERVICENAME -q || ynh_systemd_action --service_name=$MONGODB_SERVICENAME --action=restart
+
+    # If this is the very first time, we define the root password
+    # and configure a few things
+    if [ ! -f "$MONGO_ROOT_PWD_FILE" ]
+    then
+        local mongo_root_password="$(ynh_string_random)"
+        echo "$mongo_root_password" >$MONGO_ROOT_PWD_FILE
+        sleep 10
+        ynh_mongo_exec --database=admin --command='db.createUser( { user: "'${MONGO_ROOT_USER}'", pwd: "'${mongo_root_password}'", roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] } );'
+
+        ynh_systemd_action --service_name=$MONGODB_SERVICENAME --action=stop
+        # Enable access control
+        if [ "$(lsb_release --codename --short)" = "buster" ]; then
+            ynh_replace_string --match_string="#security:" --replace_string="security:\n  authorization: enabled" --target_file="$MONGO_CONFIG_BUSTER"
+        else
+            ynh_replace_string --match_string="#auth = true" --replace_string="auth = true" --target_file="$MONGO_CONFIG_STRETCH"
+        fi
+        ynh_systemd_action --service_name=$MONGODB_SERVICENAME --action=start
+    fi
 }
 
 # Install MongoDB and integrate MongoDB service in YunoHost
