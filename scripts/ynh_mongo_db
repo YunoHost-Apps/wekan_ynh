@@ -114,7 +114,7 @@ EOF
 # | arg: -c, --command=     - the command to evaluate
 # | arg: -e, --eval         - evaluate instead of execute the command.
 #
-# Requires YunoHost version 3.5.0 or higher.
+#
 ynh_mongo_exec_as_root() {
     # Declare an array to define the options of this helper.
     local legacy_args=cde
@@ -335,7 +335,7 @@ ynh_mongo_remove_db() {
 #
 # usage: ynh_mongo_test_if_first_run
 #
-# Requires YunoHost version 2.7.13 or higher.
+#
 ynh_mongo_test_if_first_run() {
 
     # Make sure Mongodb is indeed installed
@@ -376,6 +376,11 @@ ynh_mongo_test_if_first_run() {
     fi
 }
 
+# Install MongoDB
+#
+# usage: ynh_mongo_install
+#
+#
 ynh_mongo_install() {
     # Define Mongo Service Name
     if [ "$(lsb_release --codename --short)" = "buster" ]; then
@@ -385,10 +390,16 @@ ynh_mongo_install() {
     fi   
 }
 
-
+# Remove MongoDB
+# Only remove the MongoDB service integration in YunoHost for now
+# if MongoDB package as been removed
+#
+# usage: ynh_mongo_remove
+#
+#
 ynh_mongo_remove() {
     # Only remove the mongodb service if it is not installed.
-    if ! ynh_package_is_installed --package="mongodb"
+    if ! ynh_package_is_installed --package="mongodb*"
     then
         yunohost service remove $MONGODB_SERVICENAME
         # ynh_secure_remove --file=$MONGO_ROOT_PWD_FILE
