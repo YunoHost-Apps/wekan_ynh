@@ -404,6 +404,9 @@ ynh_install_mongo() {
     
     # Integrate MongoDB service in YunoHost
     yunohost service add $MONGODB_SERVICENAME --description "MongoDB daemon" --log "/var/log/mongodb/$MONGODB_SERVICENAME.log"
+
+    # Waiting Mongo DB to be fully started
+    sleep 10
 }
 
 # Remove MongoDB
