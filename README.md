@@ -1,4 +1,4 @@
-# Wekan for Yunohost
+# Wekan for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan) ![](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)  
 [![Install Wekan with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wekan)
