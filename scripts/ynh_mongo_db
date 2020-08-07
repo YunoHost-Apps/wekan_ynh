@@ -307,6 +307,8 @@ ynh_mongo_remove_db() {
 #
 #
 ynh_install_mongo() {
+    ynh_print_info --message="Installing MongoDB..."
+
     # Define Mongo Service Name
     if [ "$(lsb_release --codename --short)" = "buster" ]; then
         ynh_install_extra_app_dependencies --repo="$MONGO_REPO_BUSTER" --package="$MONGO_DEPENDENCIES_BUSTER" --key="$MONGO_KEY_BUSTER"
@@ -333,6 +335,8 @@ ynh_install_mongo() {
 #
 #
 ynh_remove_mongo() {
+    ynh_print_info --message="Removing MongoDB..."
+
     # Only remove the mongodb service if it is not installed.
     if ! ynh_package_is_installed --package="mongodb*"
     then
