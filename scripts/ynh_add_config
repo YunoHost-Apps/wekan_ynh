@@ -116,7 +116,7 @@ ynh_replace_vars () {
         ynh_replace_string --match_string="__YNH_NODE_LOAD_PATH__" --replace_string="$ynh_node_load_PATH" --target_file="$file"
     fi
 
-    # Replace othes variables
+    # Replace others variables
 
     # List other unique (__ __) variables in $file
     local uniques_vars=( $(grep -o '__[A-Z0-9_]*__' $file | sort --unique | sed "s@__\([^.]*\)__@\L\1@g" ))
