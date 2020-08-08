@@ -182,6 +182,7 @@ ynh_remove_nodejs
 ynh_install_nodejs --nodejs_version=$nodejsversion
 ynh_use_nodejs
 ynh_install_mongo
+ynh_mongo_test_if_first_run
 
 #=================================================
 # CREATE DEDICATED USER
