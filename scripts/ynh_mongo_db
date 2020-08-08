@@ -184,7 +184,13 @@ ynh_mongo_dump_db() {
     # Manage arguments with getopts
     ynh_handle_getopts_args "$@"
 
-    mongodump --quiet --db="$database" --archive
+    local connexion=""
+    if [ -f "$MONGO_ROOT_PWD_FILE" ]
+    then
+        connexion="--username=\"$MONGO_ROOT_USER\" --password=\"$(cat $MONGO_ROOT_PWD_FILE)\" --authenticationDatabase=admin"
+    fi
+
+    mongodump $connexion --quiet --db="$database" --archive
 }
 
 # Create a user
@@ -253,7 +259,13 @@ ynh_mongo_restore_db() {
     # Manage arguments with getopts
     ynh_handle_getopts_args "$@"
 
-    mongorestore --quiet --db="$database" --archive
+    local connexion=""
+    if [ -f "$MONGO_ROOT_PWD_FILE" ]
+    then
+        connexion="--username=\"$MONGO_ROOT_USER\" --password=\"$(cat $MONGO_ROOT_PWD_FILE)\" --authenticationDatabase=admin"
+    fi
+
+    mongorestore $connexion --quiet --db="$database" --archive
 }
 
 # Drop a user
@@ -366,7 +378,7 @@ ynh_mongo_test_if_first_run() {
         local mongo_root_password="$(ynh_string_random)"
         echo "$mongo_root_password" >$MONGO_ROOT_PWD_FILE
         
-        ynh_mongo_exec --database=admin --command='db.createUser( { user: "'${MONGO_ROOT_USER}'", pwd: "'${mongo_root_password}'", roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] } );'
+        ynh_mongo_exec --database=admin --command='db.createUser( { user: "'${MONGO_ROOT_USER}'", pwd: "'${mongo_root_password}'", roles: [ { role: "root", db: "admin" } ] } );'
 
         ynh_systemd_action --service_name=$MONGODB_SERVICENAME --action=stop
         # Enable access control
