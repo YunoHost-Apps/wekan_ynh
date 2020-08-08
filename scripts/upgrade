@@ -198,7 +198,7 @@ ynh_system_user_create --username=$app --home_dir="$final_path"
 ynh_script_progression --message="Modifying a config file..."
 
 # Create a dedicated .env config
-ynh_add_config
+ynh_add_config --template=".env" --destination="$final_path/.env"
 
 #=================================================
 # SETUP SYSTEMD
