@@ -108,7 +108,7 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
    ynh_remove_app_dependencies
    ynh_install_app_dependencies "mongodb mongodb-server"
    yunohost service remove mongod
-   yunohost service add mongodb --log "/var/log/mongodb/mongodb.log"
+   yunohost service add $mongodb_servicename --log "/var/log/mongodb/mongodb.log"
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
