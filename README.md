@@ -17,7 +17,7 @@ Wekan is an open-source kanban board (task manager and organizer)
 
 ## Status
 
-- This app **only works on x86, 64bits architecture** ! In particular, it won't work on 32 bit machines or ARM. See the discussion [here](https://github.com/YunoHost-Apps/wekan_ynh/issues/1#issuecomment-401612500).
+- This app **only works on x86, 64bits architecture**! In particular, it won't work on 32 bit machines or ARM. See the discussion [here](https://github.com/YunoHost-Apps/wekan_ynh/issues/1#issuecomment-401612500).
 
 - There is currently **no SSO integration** though it might be integrated at some point in the app, now that it's supported in Meteor/Wekan. In the meantime, users can create accounts (in fact, they can create infinite number of accounts) manually, and need to login manually specifically in Wekan.
 
@@ -43,6 +43,7 @@ If you have disable ldap authentication, first registered user will be admin, an
 ## Documentation
 
  * Official documentation: https://github.com/wekan/wekan/wiki
+ * YunoHost documentation: https://yunohost.org/#/app_wekan
 
 ## YunoHost specific features
 
@@ -65,7 +66,6 @@ LDAP is supported but HTTP auth is still not supported
 ---
 
 Developer info
-----------------
 
 Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/wekan_ynh/tree/testing).
 
