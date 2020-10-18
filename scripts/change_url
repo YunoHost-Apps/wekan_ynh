@@ -24,7 +24,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info --message="Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..."
 
 # Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -33,13 +33,12 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 #db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 #db_user=$db_name
 #db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
-
 port=$(ynh_app_setting_get --app=$app --key=port)
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_print_info --message="Backing up the app before changing its url (may take a while)..."
+ynh_script_progression --message="Backing up the app before changing its url (may take a while)..."
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -74,14 +73,14 @@ fi
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Stopping a systemd service..."
+ynh_script_progression --message="Stopping a systemd service..."
 
 ynh_systemd_action --service_name=$app --action="stop" --log_path=systemd
 
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_print_info --message="Updating nginx web server configuration..."
+ynh_script_progression --message="Updating nginx web server configuration..."
 
 nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 
@@ -112,18 +111,22 @@ fi
 #=================================================
 # MODIFY URL IN .ENV
 #=================================================
-ynh_print_info --message="Updating .env configuration..."
+ynh_script_progression --message="Updating .env configuration..."
 
+ynh_backup_if_checksum_is_different --file="$final_path/.env"
 ynh_replace_string --match_string="$old_domain$old_path" --replace_string="$new_domain$new_path" --target_file="$final_path/.env"
+ynh_store_file_checksum --file="$final_path/.env"
 
 #=================================================
 # GENERIC FINALISATION
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Starting a systemd service..."
+ynh_script_progression --message="Starting a systemd service..."
 
+# Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Started Wekan, task board"
+
 if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
 	sleep 60
 fi
@@ -131,7 +134,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -139,4 +142,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info --message="Change of URL completed for $app"
+ynh_script_progression --message="Change of URL completed for $app"
