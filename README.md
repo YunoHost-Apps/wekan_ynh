@@ -1,10 +1,10 @@
-# Wekan for Yunohost
+# Wekan for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan) ![](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)  
 [![Install Wekan with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wekan)
 
-> *This package allow you to install Wekan quickly and simply on a YunoHost server.  
-If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
+> *This package allows you to install Wekan quickly and simply on a YunoHost server.  
+If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
 
 ## Overview
 Wekan is an open-source kanban board (task manager and organizer)
@@ -28,7 +28,7 @@ Wekan is an open-source kanban board (task manager and organizer)
 
 ## Configuration
 
-As LDAP authentification is enabled by default, wekan admins correspond to the permission `Wekan Admin`. The user you choose during installation is member of this group.
+As LDAP authentification is enabled by default, Wekan admins correspond to the permission `Wekan Admin`. The user you choose during installation is member of this group.
 To add an admin account, you can:
 
 - [with the webadmin] go to Users > Groups and permissions > Add the user to the permission `Wekan Admin`
@@ -38,7 +38,7 @@ All others YunhoHost user can access with LDAP authentication.
 
 If you have disable ldap authentication, first registered user will be admin, and next ones normal users. If you want other admins too, you can change their permission to admin at Wekan Admin Panel.
 
-**Private/Public mode:** In private mode, only authorized YunoHost members can access to the wekan. 
+**Private/Public mode:** In private mode, only authorized YunoHost members can access to the Wekan. 
 
 ## Documentation
 
@@ -47,7 +47,7 @@ If you have disable ldap authentication, first registered user will be admin, an
 
 ## YunoHost specific features
 
-#### Multi-users support
+#### Multi-user support
 
 LDAP is supported but HTTP auth is still not supported
 
@@ -65,9 +65,9 @@ LDAP is supported but HTTP auth is still not supported
 
 ---
 
-## Developers info
+Developer info
 
-Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/wekan_ynh/tree/testing).
+Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/wekan_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.
 ```
