@@ -9,7 +9,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 ## Overview
 Wekan is an open-source kanban board (task manager and organizer)
 
-**Shipped version:** 4.09
+**Shipped version:** 4.43
 
 ## Screenshots
 
