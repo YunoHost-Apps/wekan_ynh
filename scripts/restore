@@ -106,7 +106,7 @@ ynh_mongo_restore_db --database="$db_name" < ./dump.bson
 ynh_script_progression --message="Restoring the systemd configuration..."
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
-systemctl enable $app.service
+systemctl enable $app.service --quiet
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
