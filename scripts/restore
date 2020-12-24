@@ -113,7 +113,7 @@ systemctl enable $app.service --quiet
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description "Wekan daemon" --log_type "systemd"
+yunohost service add $app --description "Wekan daemon"
 
 #=================================================
 # START SYSTEMD SERVICE

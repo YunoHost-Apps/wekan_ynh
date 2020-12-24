@@ -152,7 +152,7 @@ find "$final_path" -type d -print0 | xargs -0 chmod 750
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description "Wekan daemon" --log_type "systemd"
+yunohost service add $app --description "Wekan daemon"
 yunohost service add $mongodb_servicename --description "MongoDB daemon" --log "/var/log/mongodb/mongodb.log"
 
 #=================================================
