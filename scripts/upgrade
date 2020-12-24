@@ -91,7 +91,6 @@ fi
 
 if ynh_version_gt "0.45-3" "${previous_version}" ; then
 	ynh_script_progression --message="Upgrading to 0.45-3..."
-	yunohost service add $app --description "Wekan daemon"
 fi
 
 if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
@@ -102,7 +101,6 @@ if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
 	rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
 	ynh_remove_app_dependencies
 	ynh_install_app_dependencies "mongodb mongodb-server"
-	yunohost service add $app --description "Wekan daemon"
 fi
 
 if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
@@ -211,6 +209,13 @@ ynh_script_progression --message="Securing files and directories..."
 chown -R $app: "$final_path"
 chmod -R 640 "$final_path"
 find "$final_path" -type d -print0 | xargs -0 chmod 750
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..."
+
+yunohost service add $app --description "Wekan daemon"
 
 #=================================================
 # START SYSTEMD SERVICE
