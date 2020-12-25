@@ -6,7 +6,7 @@
         "en": "Trello-like kanban",
         "fr": "Un kanban similaire à Trello"
     },
-    "version": "4.43~ynh1",
+    "version": "4.64~ynh1",
     "url": "https://wekan.io",
     "license": "MIT",
     "maintainer": [
@@ -19,7 +19,7 @@
             "name": "ljf"
     }],
     "requirements": {
-        "yunohost": ">= 3.8"
+        "yunohost": ">= 3.8.1"
     },
     "multi_instance": true,
     "services": [
