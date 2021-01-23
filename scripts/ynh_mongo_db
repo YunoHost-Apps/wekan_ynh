@@ -335,11 +335,17 @@ ynh_install_mongo() {
 #
 #
 ynh_remove_mongo() {
-    ynh_print_info --message="Removing MongoDB..."
-
     # Only remove the mongodb service if it is not installed.
     if ! ynh_package_is_installed --package="mongodb*"
     then
+        ynh_print_info --message="Removing MongoDB service..."
+        # Define Mongo Service Name
+        if [ "$(lsb_release --codename --short)" = "buster" ]; then
+            MONGODB_SERVICENAME=$MONGO_SERVICENAME_BUSTER
+        else
+            MONGODB_SERVICENAME=$MONGO_SERVICENAME_STRETCH
+        fi
+        # Remove the mongodb service
         yunohost service remove $MONGODB_SERVICENAME
         # ynh_secure_remove --file=$MONGO_ROOT_PWD_FILE
     fi
