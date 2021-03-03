@@ -1,7 +1,7 @@
 # Wekan for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan) ![](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)  
-[![Install Wekan with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=wekan)
+[![Install Wekan with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wekan)
 
 > *This package allows you to install Wekan quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
@@ -9,7 +9,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 ## Overview
 Wekan is an open-source kanban board (task manager and organizer)
 
-**Shipped version:** 4.64
+**Shipped version:** 5.00
 
 ## Screenshots
 
@@ -65,7 +65,7 @@ LDAP is supported but HTTP auth is still not supported
 
 ---
 
-Developer info
+## Developer info
 
 Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/wekan_ynh/tree/testing).
 
