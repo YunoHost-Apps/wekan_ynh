@@ -176,14 +176,6 @@ ynh_install_mongo
 #=================================================
 # SPECIFIC UPGRADE
 #=================================================
-# SETUP SYSTEMD
-#=================================================
-ynh_script_progression --message="Upgrading systemd configuration..."
-
-# Create a dedicated systemd config
-ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
-
-#=================================================
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Updating a config file..."
@@ -192,6 +184,14 @@ ynh_add_config --template=".env" --destination="$final_path/.env"
 
 chmod 400 "$final_path/.env"
 chown $app:$app "$final_path/.env"
+
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Upgrading systemd configuration..."
+
+# Create a dedicated systemd config
+ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
 
 #=================================================
 # GENERIC FINALIZATION
