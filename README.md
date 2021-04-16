@@ -9,7 +9,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 ## Overview
 Wekan is an open-source kanban board (task manager and organizer)
 
-**Shipped version:** 5.00
+**Shipped version:** 5.17
 
 ## Screenshots
 
@@ -53,8 +53,8 @@ LDAP is supported but HTTP auth is still not supported
 
 #### Supported architectures
 
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wekan%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/wekan%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/wekan/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/wekan.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/wekan.svg)](https://ci-apps-arm.yunohost.org/ci/apps/wekan/)
 
 ## Links
 

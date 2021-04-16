@@ -75,16 +75,23 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-ynh_install_nodejs --nodejs_version=$nodejsversion
+ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
 ynh_use_nodejs
 ynh_install_mongo
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # CREATE A MONGODB DATABASE
 #=================================================
 ynh_script_progression --message="Creating a MongoDB database..."
 
-# Registering db name
 db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
@@ -99,24 +106,30 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
 
+chmod -R 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..."
+ynh_script_progression --message="Configuring NGINX web server..."
 
-# Create a dedicated nginx config
+# Create a dedicated NGINX config
 ynh_add_nginx_config
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..."
-
-# Create a system user
-ynh_system_user_create --username=$app --home_dir="$final_path"
-
-#=================================================
 # SPECIFIC SETUP
+#=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression --message="Adding a config file..."
+
+ynh_add_config --template=".env" --destination="$final_path/.env"
+
+chmod 400 "$final_path/.env"
+chown $app:$app "$final_path/.env"
+
 #=================================================
 # SETUP SYSTEMD
 #=================================================
@@ -126,25 +139,7 @@ ynh_script_progression --message="Configuring a systemd service..."
 ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
 
 #=================================================
-# MODIFY A CONFIG FILE
-#=================================================
-ynh_script_progression --message="Modifying a config file..."
-
-# Create a dedicated .env config
-ynh_add_config --template=".env" --destination="$final_path/.env"
-
-#=================================================
 # GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-ynh_script_progression --message="Securing files and directories..."
-
-# Set strong right permissions to app files
-chown -R $app: "$final_path"
-chmod -R 640 "$final_path"
-find "$final_path" -type d -print0 | xargs -0 chmod 750
-
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
@@ -158,7 +153,7 @@ yunohost service add $app --description="Wekan daemon"
 ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Meteor APM: completed instrumenting the app"
+ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Enabling LDAP Background Sync"
 
 if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
 	sleep 60
@@ -169,8 +164,6 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring permissions..."
 
-ynh_permission_create --permission="admin" --allowed "$admin"
-
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
@@ -179,10 +172,12 @@ then
 	ynh_permission_update --permission="main" --add="visitors"
 fi
 
+ynh_permission_create --permission="admin" --allowed=$admin
+
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
