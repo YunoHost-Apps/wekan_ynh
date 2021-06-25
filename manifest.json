@@ -8,6 +8,12 @@
     },
     "version": "5.35~ynh1",
     "url": "https://wekan.io",
+    "upstream": {
+        "license": "MIT",
+        "website": "https://wekan.github.io",
+        "userdoc": "https://yunohost.org/#/app_wekan",
+        "code": "https://github.com/wekan/wekan"
+    },
     "license": "MIT",
     "maintainer": [
         {
