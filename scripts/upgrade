@@ -47,6 +47,17 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
+# CHECK VERSION NUMBER
+#=================================================
+
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+	sleep 60
+fi
+abort_if_up_to_date
+# previous function is what defines 'version', more precisely the 'previous version'
+previous_version="${version}"
+
+#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
@@ -71,17 +82,6 @@ if ! ynh_permission_exists --permission="admin"; then
 	# Create the required permissions
 	ynh_permission_create --permission="admin" --allowed=$admin
 fi
-
-#=================================================
-# CHECK VERSION NUMBER
-#=================================================
-
-if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
-	sleep 60
-fi
-abort_if_up_to_date
-# previous function is what defines 'version', more precisely the 'previous version'
-previous_version="${version}"
 
 #=================================================
 # MANAGE UPGRADE FROM PREVIOUS VERSION
