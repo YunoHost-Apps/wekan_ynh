@@ -7,7 +7,7 @@
         "fr": "Un kanban similaire à Trello"
     },
     "version": "5.35~ynh1",
-    "url": "https://wekan.io",
+    "url": "https://wekan.github.io",
     "upstream": {
         "license": "MIT",
         "website": "https://wekan.github.io",
