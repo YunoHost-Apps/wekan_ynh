@@ -310,7 +310,7 @@ ynh_install_mongo() {
     ynh_print_info --message="Installing MongoDB..."
 
     # Define Mongo Service Name
-    if $(dpkg --compare-versions $(cat /etc/debian_version) gt "10.0")
+    if dpkg --compare-versions $(cat /etc/debian_version) ge 10.0
     then
         ynh_print_info --message="Installing MongoDB Community Edition..."
         ynh_install_extra_app_dependencies --repo="$MONGO_CE_REPO" --package="$MONGO_CE_DEPENDENCIES" --key="$MONGO_CE_KEY"
