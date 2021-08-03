@@ -23,13 +23,13 @@
 		# 4.43~ynh1
 		#upgrade=1	from_commit=2cf63bd4d660eae4526221c1a68efede499e3ee6
 		# 4.64~ynh1
-		upgrade=1	from_commit=32fe3a7c342e5f29d7a7534125151723f916de46
+		#upgrade=1	from_commit=32fe3a7c342e5f29d7a7534125151723f916de46
 		# 4.64~ynh2
-		upgrade=1	from_commit=9e698d094c29fc6ab12ac60cd1d0e68b56bfc953
+		#upgrade=1	from_commit=9e698d094c29fc6ab12ac60cd1d0e68b56bfc953
 		# 5.00~ynh1
-		upgrade=1	from_commit=8655e8062d1bc6e90b01b98ca9a0dea15d60119e
+		#upgrade=1	from_commit=8655e8062d1bc6e90b01b98ca9a0dea15d60119e
 		# 5.17~ynh1
-		upgrade=1	from_commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
+		#upgrade=1	from_commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
 		backup_restore=1
 		multi_instance=1
 		port_already_use=0
