@@ -180,6 +180,8 @@ ynh_install_mongo
 #=================================================
 ynh_script_progression --message="Updating a config file..."
 
+main_domain=$(cat /etc/yunohost/current_host)
+
 ynh_add_config --template=".env" --destination="$final_path/.env"
 
 chmod 400 "$final_path/.env"

@@ -125,6 +125,8 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Adding a config file..."
 
+main_domain=$(cat /etc/yunohost/current_host)
+
 ynh_add_config --template=".env" --destination="$final_path/.env"
 
 chmod 400 "$final_path/.env"
