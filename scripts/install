@@ -7,7 +7,6 @@
 #=================================================
 
 source _common.sh
-source ynh_detect_arch__2
 source ynh_mongo_db
 source /usr/share/yunohost/helpers
 
@@ -37,9 +36,8 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 ynh_script_progression --message="Validating installation parameters..."
 
-architecture=$(ynh_detect_arch)
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
-if [ $architecture == "i386" ] || [ $architecture == "arm" ]
+if [ $YNH_ARCH == "i386" ] || [ $YNH_ARCH == "armel" ]
 then
 	ynh_die --message="Sorry, but this app can only be installed on a x86, 64 bits machine :("
 fi
@@ -104,7 +102,7 @@ ynh_script_progression --message="Setting up source files..."
 
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
+ynh_setup_source --dest_dir="$final_path" --source_id="$YNH_ARCH"
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
