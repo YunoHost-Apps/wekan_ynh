@@ -11,7 +11,6 @@
     "upstream": {
         "license": "MIT",
         "website": "https://wekan.github.io",
-        "userdoc": "https://yunohost.org/#/app_wekan",
         "code": "https://github.com/wekan/wekan"
     },
     "license": "MIT",
@@ -29,7 +28,7 @@
         }
     ],
     "requirements": {
-        "yunohost": ">= 4.2.0"
+        "yunohost": ">= 4.3.1.8"
     },
     "multi_instance": true,
     "services": [
@@ -39,8 +38,7 @@
         "install" : [
             {
                 "name": "domain",
-                "type": "domain",
-                "example": "example.com"
+                "type": "domain"
             },
             {
                 "name": "path",
@@ -50,8 +48,7 @@
             },
             {
                 "name": "admin",
-                "type": "user",
-                "example": "johndoe"
+                "type": "user"
             },
             {
                 "name": "is_public",
