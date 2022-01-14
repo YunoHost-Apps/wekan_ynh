@@ -13,7 +13,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Un kanban similaire à Trello
 
-**Version incluse :** 5.35~ynh1
+**Version incluse :** 5.93~ynh1
 
 
 

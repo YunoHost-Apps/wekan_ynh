@@ -29,7 +29,9 @@
 		# 5.00~ynh1
 		#upgrade=1	from_commit=8655e8062d1bc6e90b01b98ca9a0dea15d60119e
 		# 5.17~ynh1
-		#upgrade=1	from_commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
+		upgrade=1	from_commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
+		# 5.35~ynh1
+		upgrade=1	from_commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
 		backup_restore=1
 		multi_instance=1
 		port_already_use=0
@@ -56,3 +58,5 @@ Notification=down
 		name=5.00~ynh1
 	; commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
 		name=5.17~ynh1
+	; commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
+		name=5.35~ynh1
