@@ -83,7 +83,7 @@ ynh_install_mongo
 ynh_script_progression --message="Configuring system user..."
 
 # Create a system user
-ynh_system_user_create --username=$app --home_dir="$final_path"
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # CREATE A MONGODB DATABASE
