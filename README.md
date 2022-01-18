@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Trello-like kanban
 
-**Shipped version:** 5.35~ynh2
+**Shipped version:** 5.93~ynh1
 
 
 

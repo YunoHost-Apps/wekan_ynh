@@ -1,9 +1,9 @@
 # This is on YunoHost server just to avoid the file from disappearing
-# Original source is https://releases.wekan.team/raspi3/wekan-5.35-arm64.zip
-# YunoHost source is https://build.yunohost.org/apps/wekan-5.35-arm64.zip
-SOURCE_URL=https://build.yunohost.org/apps/wekan-5.35-arm64.zip
-SOURCE_SUM=afd00947c25965ec5c8dbacaf97d666ef03a5350802587951c0a866e77c4ebae
+# Original source is https://releases.wekan.team/raspi3/wekan-5.93-arm64.zip
+# YunoHost source is https://build.yunohost.org/apps/wekan-5.93-arm64.zip
+SOURCE_URL=https://build.yunohost.org/apps/wekan-5.93-arm64.zip
+SOURCE_SUM=d015d2d128d1c9d1f71ba773f9e3914c97fb82e9b2c5d2a5bd5fdf23377a9980
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=wekan-5.35-arm64.zip
+SOURCE_FILENAME=wekan-5.93-arm64.zip
