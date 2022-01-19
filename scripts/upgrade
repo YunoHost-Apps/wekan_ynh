@@ -8,7 +8,6 @@
 
 source _common.sh
 source ynh_package_version
-source ynh_detect_arch__2
 source ynh_mongo_db
 source /usr/share/yunohost/helpers
 
@@ -120,7 +119,7 @@ fi
 ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir="$final_path"
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -139,9 +138,8 @@ then
 	# Remove the app directory securely
 	ynh_secure_remove --file="$final_path"
 
-	architecture=$(ynh_detect_arch)
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
+	ynh_setup_source --dest_dir="$final_path" --source_id="$YNH_ARCH"
   
 	#Copy the admin saved settings from tmp directory to final path
 	cp -af "$tmpdir/.env" "$final_path/.env"
@@ -178,7 +176,9 @@ ynh_install_mongo
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Updating a config file..."
+ynh_script_progression --message="Updating a configuration file..."
+
+main_domain=$(cat /etc/yunohost/current_host)
 
 ynh_add_config --template=".env" --destination="$final_path/.env"
 
