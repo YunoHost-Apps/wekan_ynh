@@ -1,6 +1,6 @@
-SOURCE_URL=https://github.com/wekan/wekan/releases/download/v6.20/wekan-6.20-arm64.zip
-SOURCE_SUM=502dbc15b11e459c896de46270fdcf65b19dcf93c66ba07b898104197c247c1e
+SOURCE_URL=https://github.com/wekan/wekan/releases/download/v6.24/wekan-6.24-arm64.zip
+SOURCE_SUM=718667ff19a66a1ef3cc035a027ff684da3786104d6dde1cad13f1069179d502
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=wekan-6.20-arm64.zip
+SOURCE_FILENAME=wekan-6.24-arm64.zip
