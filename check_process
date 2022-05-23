@@ -12,26 +12,10 @@
 		setup_private=1
 		setup_public=1
 		upgrade=1
-		# 3.79~ynh2
-		#upgrade=1	from_commit=2843d504bcdb0402939f87ebeeda3417de02a9e4
-		# 3.95~ynh1
-		#upgrade=1	from_commit=46f4b540cb99090a3fe1d35828094dbbfb34b692
-		# 3.95~ynh1
-		#upgrade=1	from_commit=3cd252289f4fd138879872658762f4c6ae415cc4
-		# 4.09~ynh1
-		#upgrade=1	from_commit=c2b4715e8591031f3054cedb1220e7619607bb36
-		# 4.43~ynh1
-		#upgrade=1	from_commit=2cf63bd4d660eae4526221c1a68efede499e3ee6
-		# 4.64~ynh1
-		#upgrade=1	from_commit=32fe3a7c342e5f29d7a7534125151723f916de46
-		# 4.64~ynh2
-		#upgrade=1	from_commit=9e698d094c29fc6ab12ac60cd1d0e68b56bfc953
-		# 5.00~ynh1
-		#upgrade=1	from_commit=8655e8062d1bc6e90b01b98ca9a0dea15d60119e
-		# 5.17~ynh1
-		upgrade=1	from_commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
 		# 5.35~ynh1
 		upgrade=1	from_commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
+		# 5.93~ynh1
+		upgrade=1	from_commit=493a70f7d0e79b3ee92d53976a0cd35fa944b428
 		backup_restore=1
 		multi_instance=1
 		port_already_use=0
@@ -40,23 +24,7 @@
 Email=ljf+ynh-wekan@reflexlibre.net
 Notification=down
 ;;; Upgrade options
-	; commit=2843d504bcdb0402939f87ebeeda3417de02a9e4
-		name=3.79~ynh2
-	; commit=46f4b540cb99090a3fe1d35828094dbbfb34b692
-		name=3.95~ynh1
-	; commit=3cd252289f4fd138879872658762f4c6ae415cc4
-		name=3.95~ynh1
-	; commit=c2b4715e8591031f3054cedb1220e7619607bb36
-		name=4.09~ynh1
-	; commit=2cf63bd4d660eae4526221c1a68efede499e3ee6
-		name=4.43~ynh1
-	; commit=32fe3a7c342e5f29d7a7534125151723f916de46
-		name=4.64~ynh1
-	; commit=9e698d094c29fc6ab12ac60cd1d0e68b56bfc953
-		name=4.64~ynh2
-	; commit=8655e8062d1bc6e90b01b98ca9a0dea15d60119e
-		name=5.00~ynh1
-	; commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
-		name=5.17~ynh1
 	; commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
 		name=5.35~ynh1
+	; commit=493a70f7d0e79b3ee92d53976a0cd35fa944b428
+		name=5.93~ynh1
