@@ -6,7 +6,7 @@
         "en": "Trello-like kanban",
         "fr": "Un kanban similaire à Trello"
     },
-    "version": "6.24~ynh1",
+    "version": "6.26~ynh1",
     "url": "https://wekan.github.io",
     "upstream": {
         "license": "MIT",
@@ -18,9 +18,9 @@
     "license": "MIT",
     "maintainer": [
         {
-        "name": "alexAubin",
-        "email": "alex.aubin@mailoo.org",
-        "url": "https://github.com/alexAubin/"
+            "name": "alexAubin",
+            "email": "alex.aubin@mailoo.org",
+            "url": "https://github.com/alexAubin/"
         },
         {
             "name": "ljf"
