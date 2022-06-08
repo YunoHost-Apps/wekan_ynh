@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MONGO_CE_SERVICENAME="mongod"
-MONGO_CE_DEPENDENCIES="mongodb-org mongodb-org-server mongodb-org-tools"
+MONGO_CE_DEPENDENCIES="mongodb-org mongodb-org-server mongodb-org-tools mongodb-mongosh"
 MONGO_CE_CONFIG="/etc/mongod.conf"
 MONGO_CE_REPO="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main"
 MONGO_CE_KEY="https://www.mongodb.org/static/pgp/server-5.0.asc"
@@ -90,7 +90,7 @@ ynh_mongo_exec() {
             database=""
         fi
 
-        mongo --quiet $user $password $authenticationdatabase $host $port <<EOF
+        mongosh --quiet --username $user --password $password --authenticationDatabase $authenticationdatabase --host $host --port $port <<EOF
 $database
 ${command}
 quit()
@@ -104,7 +104,7 @@ EOF
             database=""
         fi
         
-        mongo --quiet $database $user $password $authenticationdatabase $host $port --eval="$command"
+        mongosh --quiet $database --username $user --password $password --authenticationDatabase $authenticationdatabase --host $host --port $port --eval="$command"
     fi
 }
 
