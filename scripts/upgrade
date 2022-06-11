@@ -7,8 +7,7 @@
 #=================================================
 
 source _common.sh
-source ynh_package_version
-source ynh_mongo_db
+source ynh_mongo_db__2
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -47,17 +46,6 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
-# CHECK VERSION NUMBER
-#=================================================
-
-if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
-	sleep 60
-fi
-abort_if_up_to_date
-# previous function is what defines 'version', more precisely the 'previous version'
-previous_version="${version}"
-
-#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
@@ -83,36 +71,7 @@ if ! ynh_permission_exists --permission="admin"; then
 	ynh_permission_create --permission="admin" --allowed=$admin
 fi
 
-#=================================================
-# MANAGE UPGRADE FROM PREVIOUS VERSION
-#=================================================
-ynh_script_progression --message="Managing upgrade from previous version..."
-
-if ynh_version_gt "0.45-2" "${previous_version}" ; then
-	ynh_script_progression --message="Upgrading to 0.45-2..."
-	ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
-	systemctl daemon-reload
-fi
-
-if ynh_version_gt "0.45-3" "${previous_version}" ; then
-	ynh_script_progression --message="Upgrading to 0.45-3..."
-fi
-
-if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
-	ynh_script_progression --message="Upgrading to 1.07~ynh2..."
-
-	# Replace mongodb packages
-	# Assume no other app needs it >.>
-	rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
-	ynh_remove_app_dependencies
-	ynh_install_app_dependencies "mongodb mongodb-server"
-fi
-
-if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
-	# Create a dedicated .env config
-	config_file="$final_path/.env"
-	touch $config_file
-fi
+ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-3.2.list"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -139,22 +98,22 @@ chmod -R o-rwx "$final_path"
 chown -R $app:$app "$final_path"
 
 #=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Upgrading dependencies..."
+
+ynh_install_app_dependencies $pkg_dependencies
+ynh_install_nodejs --nodejs_version=$nodejs_version
+ynh_use_nodejs
+ynh_install_mongo
+
+#=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
-
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Upgrading dependencies..."
-
-ynh_install_app_dependencies $pkg_dependencies
-ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
-ynh_use_nodejs
-ynh_install_mongo
 
 #=================================================
 # SPECIFIC UPGRADE
