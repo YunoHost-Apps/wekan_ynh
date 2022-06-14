@@ -73,7 +73,7 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-ynh_install_nodejs --nodejs_version=$NODEJS_VERSION
+ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
 ynh_install_mongo
 
