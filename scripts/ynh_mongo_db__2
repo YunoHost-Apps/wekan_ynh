@@ -1,13 +1,10 @@
 #!/bin/bash
 
-MONGO_DEBIAN_SERVICENAME="mongodb"
 MONGO_CE_SERVICENAME="mongod"
-MONGO_DEBIAN_DEPENDENCIES="mongodb mongodb-server mongo-tools"
-MONGO_CE_DEPENDENCIES="mongodb-org mongodb-org-server mongodb-org-tools"
-MONGO_DEBIAN_CONFIG="/etc/mongodb.conf"
+MONGO_CE_DEPENDENCIES="mongodb-org mongodb-org-server mongodb-org-tools mongodb-mongosh"
 MONGO_CE_CONFIG="/etc/mongod.conf"
-MONGO_CE_REPO="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main"
-MONGO_CE_KEY="https://www.mongodb.org/static/pgp/server-4.4.asc"
+MONGO_CE_REPO="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main"
+MONGO_CE_KEY="https://www.mongodb.org/static/pgp/server-5.0.asc"
 
 # Execute a mongo command
 #
@@ -93,7 +90,7 @@ ynh_mongo_exec() {
             database=""
         fi
 
-        mongo --quiet $user $password $authenticationdatabase $host $port <<EOF
+        mongosh --quiet --username $user --password $password --authenticationDatabase $authenticationdatabase --host $host --port $port <<EOF
 $database
 ${command}
 quit()
@@ -107,7 +104,7 @@ EOF
             database=""
         fi
         
-        mongo --quiet $database $user $password $authenticationdatabase $host $port --eval="$command"
+        mongosh --quiet $database --username $user --password $password --authenticationDatabase $authenticationdatabase --host $host --port $port --eval="$command"
     fi
 }
 
@@ -307,27 +304,16 @@ ynh_mongo_remove_db() {
 #
 #
 ynh_install_mongo() {
-    ynh_print_info --message="Installing MongoDB..."
-
-    # Define Mongo Service Name
-    if dpkg --compare-versions $(cat /etc/debian_version) ge 10.0
-    then
-        ynh_print_info --message="Installing MongoDB Community Edition..."
-        ynh_install_extra_app_dependencies --repo="$MONGO_CE_REPO" --package="$MONGO_CE_DEPENDENCIES" --key="$MONGO_CE_KEY"
-        MONGODB_SERVICENAME=$MONGO_CE_SERVICENAME
-    else
-        ynh_print_info --message="Installing MongoDB Debian..."
-        ynh_install_app_dependencies $MONGO_DEBIAN_DEPENDENCIES
-        MONGODB_SERVICENAME=$MONGO_DEBIAN_SERVICENAME
-    fi
-    mongodb_servicename=$MONGODB_SERVICENAME
+    ynh_print_info --message="Installing MongoDB Community Edition..."
+    ynh_install_extra_app_dependencies --repo="$MONGO_CE_REPO" --package="$MONGO_CE_DEPENDENCIES" --key="$MONGO_CE_KEY"
+    mongodb_servicename=$MONGO_CE_SERVICENAME
     
     # Make sure MongoDB is started and enabled
-    systemctl is-enabled $MONGODB_SERVICENAME -q || systemctl enable $MONGODB_SERVICENAME --quiet
-    systemctl is-active $MONGODB_SERVICENAME -q || ynh_systemd_action --service_name=$MONGODB_SERVICENAME --action=restart --line_match="aiting for connections" --log_path="/var/log/mongodb/$MONGODB_SERVICENAME.log"
+    systemctl is-enabled $mongodb_servicename -q || systemctl enable $mongodb_servicename --quiet
+    systemctl is-active $mongodb_servicename -q || ynh_systemd_action --service_name=$mongodb_servicename --action=restart --line_match="aiting for connections" --log_path="/var/log/mongodb/$mongodb_servicename.log"
     
     # Integrate MongoDB service in YunoHost
-    yunohost service add $MONGODB_SERVICENAME --description="MongoDB daemon" --log="/var/log/mongodb/$MONGODB_SERVICENAME.log"
+    yunohost service add $mongodb_servicename --description="MongoDB daemon" --log="/var/log/mongodb/$mongodb_servicename.log"
 }
 
 # Remove MongoDB
@@ -342,14 +328,9 @@ ynh_remove_mongo() {
     if ! ynh_package_is_installed --package="mongodb*"
     then
         ynh_print_info --message="Removing MongoDB service..."
-        # Define Mongo Service Name
-        if [ "$(lsb_release --codename --short)" = "buster" ]; then
-            MONGODB_SERVICENAME=$MONGO_CE_SERVICENAME
-        else
-            MONGODB_SERVICENAME=$MONGO_DEBIAN_SERVICENAME
-        fi
+        mongodb_servicename=$MONGO_CE_SERVICENAME
         # Remove the mongodb service
-        yunohost service remove $MONGODB_SERVICENAME
+        yunohost service remove $mongodb_servicename
         # ynh_secure_remove --file=$MONGO_ROOT_PWD_FILE
     fi
 }

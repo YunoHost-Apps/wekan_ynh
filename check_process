@@ -16,6 +16,8 @@
 		upgrade=1	from_commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
 		# 5.93~ynh1
 		upgrade=1	from_commit=493a70f7d0e79b3ee92d53976a0cd35fa944b428
+		# 6.27~ynh1
+		upgrade=1	from_commit=b74bbb4b5c8e67753672ecb69501c4a41771d852
 		backup_restore=1
 		multi_instance=1
 		port_already_use=0
@@ -23,8 +25,3 @@
 ;;; Options
 Email=ljf+ynh-wekan@reflexlibre.net
 Notification=down
-;;; Upgrade options
-	; commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
-		name=5.35~ynh1
-	; commit=493a70f7d0e79b3ee92d53976a0cd35fa944b428
-		name=5.93~ynh1
