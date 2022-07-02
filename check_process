@@ -16,8 +16,16 @@
 		upgrade=1	from_commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
 		# 5.93~ynh1
 		upgrade=1	from_commit=493a70f7d0e79b3ee92d53976a0cd35fa944b428
-		# 6.27~ynh1
-		upgrade=1	from_commit=b74bbb4b5c8e67753672ecb69501c4a41771d852
+		# 6.24~ynh1
+		upgrade=1	from_commit=9a686b180d38329a5b53dcc40c0501961a0144b5
+		# 6.26~ynh1
+		upgrade=1	from_commit=20ccbbbd80021d71692291bfc8de6d03d32f7a76
+		# 6.27.1~ynh1
+		upgrade=1	from_commit=9cac9713c99aabae61074ebdb2b88b1e927a1f1b
+		# 6.27.1~ynh2
+		upgrade=1	from_commit=1ed17a307bd6a2374a21d3488f17a099107d3984
+		# 6.28~ynh1
+		upgrade=1	from_commit=2c93251155dd3ce73bfa03090e914d407cc89d30
 		backup_restore=1
 		multi_instance=1
 		port_already_use=0
