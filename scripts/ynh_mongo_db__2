@@ -12,14 +12,14 @@ MONGO_CE_KEY="https://www.mongodb.org/static/pgp/server-5.0.asc"
 # example: ynh_mongo_exec --command="db.getMongo().getDBNames().indexOf(\"wekan\")"
 #
 # usage: ynh_mongo_exec [--user=user] [--password=password] [--authenticationdatabase=authenticationdatabase] [--database=database] [--host=host] [--port=port] --command="command" [--eval]
-# | arg: -u, --user=                    - The user name to connect as
-# | arg: -p, --password=                - The user password
-# | arg: -d, --authenticationdatabase=  - The authenticationdatabase to connect to
-# | arg: -d, --database=                - The database to connect to
-# | arg: -h, --host=                    - The host to connect to
-# | arg: -P, --port=                    - The port to connect to
-# | arg: -c, --command=                 - The command to evaluate
-# | arg: -e, --eval                     - Evaluate instead of execute the command.
+# | arg: -u, --user=                        - The user name to connect as
+# | arg: -p, --password=                    - The user password
+# | arg: -d, --authenticationdatabase=      - The authenticationdatabase to connect to
+# | arg: -d, --database=                    - The database to connect to
+# | arg: -h, --host=                        - The host to connect to
+# | arg: -P, --port=                        - The port to connect to
+# | arg: -c, --command=                     - The command to evaluate
+# | arg: -e, --eval                         - Evaluate instead of execute the command.
 #
 #
 ynh_mongo_exec() {
@@ -155,9 +155,9 @@ ynh_mongo_dump_db() {
 # [internal]
 #
 # usage: ynh_mongo_create_user --db_user=user --db_pwd=pwd --db_name=name
-# | arg: -u, --db_user= - The user name to create
-# | arg: -p, --db_pwd=  - The password to identify user by
-# | arg: -n, --db_name= - Name of the database to grant privilegies
+# | arg: -u, --db_user=     - The user name to create
+# | arg: -p, --db_pwd=      - The password to identify user by
+# | arg: -n, --db_name=     - Name of the database to grant privilegies
 #
 #
 ynh_mongo_create_user() {
@@ -180,7 +180,7 @@ ynh_mongo_create_user() {
 # Check if a mongo database exists
 #
 # usage: ynh_mongo_database_exists --database=database
-# | arg: -d, --database=    - The database for which to check existence
+# | arg: -d, --database=        - The database for which to check existence
 # | exit: Return 1 if the database doesn't exist, 0 otherwise
 #
 #
@@ -224,8 +224,8 @@ ynh_mongo_restore_db() {
 # [internal]
 #
 # usage: ynh_mongo_drop_user --db_user=user --db_name=name
-# | arg: -u, --db_user= - The user to drop
-# | arg: -n, --db_name= - Name of the database
+# | arg: -u, --db_user=     - The user to drop
+# | arg: -n, --db_name=     - Name of the database
 #
 #
 ynh_mongo_drop_user() {
@@ -243,9 +243,9 @@ ynh_mongo_drop_user() {
 # Create a database, an user and its password. Then store the password in the app's config
 #
 # usage: ynh_mongo_setup_db --db_user=user --db_name=name [--db_pwd=pwd]
-# | arg: -u, --db_user= - Owner of the database
-# | arg: -n, --db_name= - Name of the database
-# | arg: -p, --db_pwd=  - Password of the database. If not provided, a password will be generated
+# | arg: -u, --db_user=     - Owner of the database
+# | arg: -n, --db_name=     - Name of the database
+# | arg: -p, --db_pwd=      - Password of the database. If not provided, a password will be generated
 #
 # After executing this helper, the password of the created database will be available in $db_pwd
 # It will also be stored as "mongopwd" into the app settings.
@@ -275,8 +275,8 @@ ynh_mongo_setup_db() {
 # Remove a database if it exists, and the associated user
 #
 # usage: ynh_mongo_remove_db --db_user=user --db_name=name
-# | arg: -u, --db_user= - Owner of the database
-# | arg: -n, --db_name= - Name of the database
+# | arg: -u, --db_user=     - Owner of the database
+# | arg: -n, --db_name=     - Name of the database
 #
 #
 ynh_mongo_remove_db() {
