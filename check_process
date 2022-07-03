@@ -12,6 +12,36 @@
 		setup_private=1
 		setup_public=1
 		upgrade=1
+		# 1.07~ynh2
+		upgrade=1	from_commit=37d226544f2738bd37f97b612ff4798545b3dc5a
+		# 2.09~ynh1
+		upgrade=1	from_commit=3105eb5a3c515ea55a38b8b80c9b5dda1277a82e
+		# 2.56~ynh2
+		upgrade=1	from_commit=b26768aad2627da739677da740429591ffbb9a6e
+		# 2.98~ynh2
+		upgrade=1	from_commit=dab614bd7679f2f7978d1df2e360fba7ae0edfa4
+		# 3.45~ynh1
+		upgrade=1	from_commit=2e6131af03c723cf9eaf82e13aa9488f42c085f9
+		# 3.55~ynh1
+		upgrade=1	from_commit=3be3f1d7290b534f7689222645a42c06f3103589
+		# 3.79~ynh2
+		upgrade=1	from_commit=2843d504bcdb0402939f87ebeeda3417de02a9e4
+		# 3.95~ynh1
+		upgrade=1	from_commit=46f4b540cb99090a3fe1d35828094dbbfb34b692
+		# 3.95~ynh1
+		upgrade=1	from_commit=3cd252289f4fd138879872658762f4c6ae415cc4
+		# 4.09~ynh1
+		upgrade=1	from_commit=c2b4715e8591031f3054cedb1220e7619607bb36
+		# 4.43~ynh1
+		upgrade=1	from_commit=2cf63bd4d660eae4526221c1a68efede499e3ee6
+		# 4.64~ynh1
+		upgrade=1	from_commit=32fe3a7c342e5f29d7a7534125151723f916de46
+		# 4.64~ynh2
+		upgrade=1	from_commit=9e698d094c29fc6ab12ac60cd1d0e68b56bfc953
+		# 5.00~ynh1
+		upgrade=1	from_commit=8655e8062d1bc6e90b01b98ca9a0dea15d60119e
+		# 5.17~ynh1
+		upgrade=1	from_commit=8cdb28eff25b8b431635b87f92f96f8e216ad71f
 		# 5.35~ynh1
 		upgrade=1	from_commit=2e9c8be6b87d5c4cd6693e7b3c0c05cfc7d1ac51
 		# 5.93~ynh1
