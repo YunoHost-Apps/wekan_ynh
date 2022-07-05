@@ -15,10 +15,10 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 ## Vue d'ensemble
 
-WeKan ® is an completely Open Source and Free software collaborative kanban board application with MIT license.
+WeKan ® est une application de tableau kanban collaborative entièrement libre et open source avec une licence MIT.
 
 
-**Version incluse :** 6.28~ynh1
+**Version incluse :** 6.28~ynh2
 
 **Démo :** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
 
@@ -28,22 +28,22 @@ WeKan ® is an completely Open Source and Free software collaborative kanban boa
 
 ## Avertissements / informations importantes
 
-* There is currently **no SSO integration** though it might be integrated at some point in the app, now that it's supported in Meteor/Wekan. In the meantime, users can create accounts (in fact, they can create infinite number of accounts) manually, and need to login manually specifically in Wekan.
-* This app **only works on x86, 64bits architecture**! In particular, it won't work on 32 bit machines or ARM. See the discussion [here](https://github.com/YunoHost-Apps/wekan_ynh/issues/1#issuecomment-401612500).
-* YunoHost users with more than one email address can't login to wekan using ldap. For example first YunoHost user has severals email addresses: root@domain; admin@domain; webmaster@domain; postmaster@domain, etc... Workaround: remove all mail aliases of the user you want to connect, connect one time on wekan, recreate the aliases of the YunoHost user.
+* Il n'y a actuellement **pas d'intégration SSO**, bien qu'elle puisse être intégrée à un moment donné dans l'application, maintenant qu'elle est supportée par Meteor/Wekan. En attendant, les utilisateurs peuvent créer des comptes (en fait, ils peuvent créer un nombre infini de comptes) manuellement, et doivent se connecter manuellement spécifiquement dans Wekan.
+* Cette application **ne fonctionne que sur une architecture x86, 64bits** ! En particulier, elle ne fonctionnera pas sur les machines 32 bits ou ARM. Voir la discussion [ici] (https://github.com/YunoHost-Apps/wekan_ynh/issues/1#issuecomment-401612500).
+* Les utilisateurs de YunoHost ayant plus d'une adresse e-mail ne peuvent pas se connecter à wekan en utilisant ldap. Par exemple, le premier utilisateur de YunoHost a plusieurs adresses e-mail : root@domain ; admin@domain ; webmaster@domain ; postmaster@domain, etc.... Solution : supprimez tous les alias de messagerie de l'utilisateur que vous voulez connecter, connectez-vous une fois sur wekan, recréez les alias de l'utilisateur YunoHost.
 
-## Configuration:
-As LDAP authentification is enabled by default, Wekan admins correspond to the permission `Wekan Admin`. The user you choose during installation is member of this group.
-To add an admin account, you can:
+## Configuration :
+L'authentification LDAP étant activée par défaut, les admins de Wekan correspondent à la permission `Wekan Admin`. L'utilisateur que vous choisissez lors de l'installation est membre de ce groupe.
+Pour ajouter un compte admin, vous pouvez :
 
-- [with the webadmin] go to Users > Groups and permissions > Add the user to the permission `Wekan Admin`
-- [or with the command line] `yunohost user permission update wekan.admin -a the_user_to_add`
+- [avec le webadmin] allez dans Utilisateurs > Groupes et permissions > Ajouter l'utilisateur à la permission `Wekan Admin`.
+- [ou avec la ligne de commande] `yunohost user permission update wekan.admin -a the_user_to_add`.
 
-All others YunhoHost user can access with LDAP authentication.
+Tous les autres utilisateurs de YunhoHost peuvent accéder avec l'authentification LDAP.
 
-If you have disable ldap authentication, first registered user will be admin, and next ones normal users. If you want other admins too, you can change their permission to admin at Wekan Admin Panel.
+Si vous avez désactivé l'authentification LDAP, le premier utilisateur enregistré sera l'administrateur, et les suivants seront des utilisateurs normaux. Si vous voulez d'autres administrateurs, vous pouvez changer leur permission à admin dans le panneau d'administration de Wekan.
 
-**Private/Public mode:** In private mode, only authorized YunoHost members can access to the Wekan. 
+**Mode privé/public:** En mode privé, seuls les membres autorisés de YunoHost peuvent accéder au Wekan.
 
 ## Documentations et ressources
 

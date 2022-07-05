@@ -72,6 +72,7 @@ if ! ynh_permission_exists --permission="admin"; then
 fi
 
 ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-3.2.list"
+ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-4.4.list"
 
 #=================================================
 # CREATE DEDICATED USER
