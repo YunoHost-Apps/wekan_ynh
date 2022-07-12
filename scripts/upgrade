@@ -7,7 +7,7 @@
 #=================================================
 
 source _common.sh
-source ynh_mongo_db__3
+source ynh_mongo_db__2
 source /usr/share/yunohost/helpers
 
 #=================================================
