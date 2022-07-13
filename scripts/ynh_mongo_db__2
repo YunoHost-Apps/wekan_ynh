@@ -1,10 +1,9 @@
 #!/bin/bash
 
-MONGO_CE_SERVICENAME="mongod"
-MONGO_CE_DEPENDENCIES="mongodb-org mongodb-org-server mongodb-org-tools mongodb-mongosh"
-MONGO_CE_CONFIG="/etc/mongod.conf"
-MONGO_CE_REPO="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/5.0 main"
-MONGO_CE_KEY="https://www.mongodb.org/static/pgp/server-5.0.asc"
+readonly YNH_DEFAULT_MONGO_VERSION=4.4
+# Declare the actual MongoDB version to use: 4.4 ; 5.0
+# A packager willing to use another version of MongoDB can override the variable into its _common.sh.
+YNH_MONGO_VERSION=${YNH_MONGO_VERSION:-$YNH_DEFAULT_MONGO_VERSION}
 
 # Execute a mongo command
 #
@@ -300,21 +299,33 @@ ynh_mongo_remove_db() {
 
 # Install MongoDB and integrate MongoDB service in YunoHost
 #
-# usage: ynh_install_mongo
+# usage: ynh_install_mongo [--mongo_version=mongo_version]
+# | arg: -m, --mongo_version=		- Version of MongoDB to install
 #
 #
 ynh_install_mongo() {
+	# Declare an array to define the options of this helper.
+	local legacy_args=m
+	local -A args_array=([m]=mongo_version=)
+	local mongo_version
+	# Manage arguments with getopts
+	ynh_handle_getopts_args "$@"
+	mongo_version="${mongo_version:-$YNH_MONGO_VERSION}"
+
 	ynh_print_info --message="Installing MongoDB Community Edition..."
-	ynh_install_extra_app_dependencies --repo="$MONGO_CE_REPO" --package="$MONGO_CE_DEPENDENCIES" --key="$MONGO_CE_KEY"
-	mongodb_servicename=$MONGO_CE_SERVICENAME
-	
+	ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$mongo_version main" --package="mongodb-org mongodb-org-server mongodb-org-tools mongodb-mongosh" --key="https://www.mongodb.org/static/pgp/server-$mongo_version.asc"
+	mongodb_servicename=mongod
+
 	# Make sure MongoDB is started and enabled
 	systemctl enable $mongodb_servicename --quiet
 	systemctl daemon-reload --quiet
 	ynh_systemd_action --service_name=$mongodb_servicename --action=restart --line_match="aiting for connections" --log_path="/var/log/mongodb/$mongodb_servicename.log"
-	
+
 	# Integrate MongoDB service in YunoHost
 	yunohost service add $mongodb_servicename --description="MongoDB daemon" --log="/var/log/mongodb/$mongodb_servicename.log"
+
+	# Store mongo_version into the config of this app
+	ynh_app_setting_set --app=$app --key=mongo_version --value=$mongo_version
 }
 
 # Remove MongoDB
@@ -329,7 +340,7 @@ ynh_remove_mongo() {
 	if ! ynh_package_is_installed --package="mongodb*"
 	then
 		ynh_print_info --message="Removing MongoDB service..."
-		mongodb_servicename=$MONGO_CE_SERVICENAME
+		mongodb_servicename=mongod
 		# Remove the mongodb service
 		yunohost service remove $mongodb_servicename
 		ynh_secure_remove --file="/var/lib/mongodb"
