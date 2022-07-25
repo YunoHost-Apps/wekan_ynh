@@ -22,6 +22,7 @@ path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 port=$(ynh_app_setting_get --app=$app --key=port)
+mongo_version=$(ynh_app_setting_get --app=$app --key=mongo_version)
 
 #=================================================
 # CHECK VERSION
@@ -71,6 +72,12 @@ if ! ynh_permission_exists --permission="admin"; then
 	ynh_permission_create --permission="admin" --allowed=$admin
 fi
 
+# If mongo_version doesn't exist, create it
+if [ -z "$mongo_version" ]; then
+	mongo_version="$(mongod --version | grep -oP 'db version v\K.{0,3}')"
+	ynh_app_setting_set --app=$app --key=mongo_version --value=$mongo_version
+fi
+
 ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-3.2.list"
 ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-4.4.list"
 
@@ -106,7 +113,7 @@ ynh_script_progression --message="Upgrading dependencies..."
 ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
-ynh_install_mongo
+ynh_install_mongo --mongo_version=$mongo_version
 
 #=================================================
 # NGINX CONFIGURATION
