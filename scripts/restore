@@ -33,6 +33,7 @@ path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
+mongo_version=$(ynh_app_setting_get --app=$app --key=mongo_version)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -74,7 +75,7 @@ ynh_script_progression --message="Reinstalling dependencies..."
 ynh_install_app_dependencies $pkg_dependencies
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
-ynh_install_mongo
+ynh_install_mongo --mongo_version=$mongo_version
 
 #=================================================
 # RESTORE THE NGINX CONFIGURATION
