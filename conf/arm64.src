@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/wekan/wekan/releases/download/v6.49/wekan-6.49-arm64.zip
-SOURCE_SUM=25ed376d49645ded514f1d7b487d2135b03459092db890b2ca3959e906594041
+SOURCE_URL=https://github.com/wekan/wekan/releases/download/v6.50/wekan-6.50-arm64.zip
+SOURCE_SUM=1295c045c88f3ede6617a01ab2a1b9666c2ec8915c4f35128a42e1d97cc4160f
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
