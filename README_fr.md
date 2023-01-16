@@ -5,26 +5,26 @@ It shall NOT be edited by hand.
 
 # Wekan pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)  
 [![Installer Wekan avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wekan)
 
 *[Read this readme in english.](./README.md)*
 
-> *Ce package vous permet d'installer Wekan rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Wekan rapidement et simplement sur un serveur YunoHost.
+Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l’installer et en profiter.*
 
-## Vue d'ensemble
+## Vue d’ensemble
 
 WeKan ® est une application de tableau kanban collaborative entièrement libre et open source avec une licence MIT.
 
 
-**Version incluse :** 6.69~ynh1
+**Version incluse :** 6.70~ynh1
 
 **Démo :** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
 
-## Captures d'écran
+## Captures d’écran
 
-![Capture d'écran de Wekan](./doc/screenshots/screenshot.jpg)
+![Capture d’écran de Wekan](./doc/screenshots/screenshot.jpg)
 
 ## Avertissements / informations importantes
 
@@ -47,9 +47,9 @@ Si vous avez désactivé l'authentification LDAP, le premier utilisateur enregis
 
 ## Documentations et ressources
 
-* Site officiel de l'app : <https://wekan.github.io>
-* Documentation officielle de l'admin : <https://github.com/wekan/wekan/wiki>
-* Dépôt de code officiel de l'app : <https://github.com/wekan/wekan>
+* Site officiel de l’app : <https://wekan.github.io>
+* Documentation officielle de l’admin : <https://github.com/wekan/wekan/wiki>
+* Dépôt de code officiel de l’app : <https://github.com/wekan/wekan>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_wekan>
 * Signaler un bug : <https://github.com/YunoHost-Apps/wekan_ynh/issues>
 
@@ -65,4 +65,4 @@ ou
 sudo yunohost app upgrade wekan -u https://github.com/YunoHost-Apps/wekan_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>
