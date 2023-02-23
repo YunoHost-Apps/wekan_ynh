@@ -6,6 +6,7 @@ It shall NOT be edited by hand.
 # Wekan for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan) ![Working status](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)
+
 [![Install Wekan with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wekan)
 
 *[Lire ce readme en français.](./README_fr.md)*
