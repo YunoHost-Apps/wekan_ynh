@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies=""
+#REMOVEME? pkg_dependencies=""
 
 nodejs_version="14.19.3"
 
