@@ -13,7 +13,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-#REMOVEME? ynh_script_progression --message="Installing dependencies..."
+ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
