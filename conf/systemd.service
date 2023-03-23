@@ -16,9 +16,6 @@ Restart=on-failure
 RestartSec=10
 ExecReload=/bin/kill -USR1 $MAINPID
 RestartSec=10
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=__APP__
 
 [Install]
 WantedBy=multi-user.target
