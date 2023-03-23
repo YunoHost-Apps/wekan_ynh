@@ -11,11 +11,9 @@ EnvironmentFile=__INSTALL_DIR__/.env
 WorkingDirectory=__INSTALL_DIR__/
 ExecStart=__YNH_NODE__ __INSTALL_DIR__/main.js
 Restart=on-failure
-#StartLimitInterval=86400
-#StartLimitBurst=5
-RestartSec=10
-ExecReload=/bin/kill -USR1 $MAINPID
-RestartSec=10
+SuccessExitStatus=143
+#RestartSec=10
+#ExecReload=/bin/kill -USR1 $MAINPID
 
 [Install]
 WantedBy=multi-user.target
