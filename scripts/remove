@@ -11,19 +11,6 @@ source ynh_mongo_db__2
 source /usr/share/yunohost/helpers
 
 #=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..."
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-port=$(ynh_app_setting_get --app=$app --key=port)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-
-#=================================================
 # STANDARD REMOVE
 #=================================================
 # REMOVE SERVICE INTEGRATION IN YUNOHOST
@@ -53,14 +40,6 @@ ynh_script_progression --message="Removing the MongoDB database..."
 ynh_mongo_remove_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
-# REMOVE APP MAIN DIR
-#=================================================
-ynh_script_progression --message="Removing app main directory..."
-
-# Remove the app directory securely
-ynh_secure_remove --file="$final_path"
-
-#=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Removing NGINX web server configuration..."
@@ -71,22 +50,11 @@ ynh_remove_nginx_config
 #=================================================
 # REMOVE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Removing dependencies..."
+#REMOVEME? ynh_script_progression --message="Removing dependencies..."
 
 # Remove metapackage and its dependencies
-ynh_remove_app_dependencies
 ynh_remove_nodejs
 ynh_remove_mongo
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# REMOVE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Removing the dedicated system user..."
-
-# Delete a system user
-ynh_system_user_delete --username=$app
 
 #=================================================
 # END OF SCRIPT
