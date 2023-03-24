@@ -11,6 +11,14 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# LOAD SETTINGS
+#=================================================
+ynh_script_progression --message="Loading installation settings..." --weight=1
+
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
+
+#=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
 ynh_script_progression --message="Restoring the app main directory..."
@@ -44,9 +52,6 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 ynh_script_progression --message="Restoring the MongoDB database..."
 
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
 ynh_mongo_restore_db --database="$db_name" < ./dump.bson
 
 #=================================================
