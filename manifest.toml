@@ -17,7 +17,7 @@ admindoc = "https://github.com/wekan/wekan/wiki"
 code = "https://github.com/wekan/wekan"
 
 [integration]
-yunohost = ">= 11.1.15"
+yunohost = ">= 11.1.16"
 architectures = ["arm64", "amd64"]
 multi_instance = true
 ldap = true
@@ -47,6 +47,9 @@ ram.runtime = "50M"
         arm64.sha256 = "f1b6865a5357391cb79cd9fa8c799542dcf38fea39503343540e9d705f2ea1b1"
         amd64.url = "https://github.com/wekan/wekan/releases/download/v6.80/wekan-6.80-amd64.zip"
         amd64.sha256 = "e1e627fc290deaa64ba1892cb7afcd34607300e150a9f365e5c39115c399bf16"
+        autoupdate.strategy = "latest_github_release"
+        autoupdate.asset.amd64 = "*-amd64.zip"
+        autoupdate.asset.arm64 = "*-arm64.zip"
 
     [resources.ports]
 
