@@ -1,5 +1,5 @@
 [Unit]
-Description=Wekan, task board
+Description=Wekan: task board
 Wants=__MONGODB_SERVICENAME__.service
 After=network.target __MONGODB_SERVICENAME__.service
 
