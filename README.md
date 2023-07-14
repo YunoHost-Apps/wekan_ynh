@@ -16,7 +16,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-WeKan ® is an completely Open Source and Free software collaborative kanban board application with MIT license.
+WeKan is an completely Open Source and Free software collaborative kanban board.
 
 
 **Shipped version:** 6.78~ynh1
