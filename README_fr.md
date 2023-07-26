@@ -16,10 +16,10 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 ## Vue d’ensemble
 
-WeKan ® est une application de tableau kanban collaborative entièrement libre et open source avec une licence MIT.
+WeKan est une application de tableau kanban collaborative.
 
 
-**Version incluse :** 6.78~ynh1
+**Version incluse :** 6.99.9~ynh1
 
 **Démo :** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
 
