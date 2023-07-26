@@ -30,7 +30,7 @@
         }
     ],
     "requirements": {
-        "yunohost": ">= 11.1.21"
+        "yunohost": ">= 4.3.0"
     },
     "multi_instance": true,
     "services": [
