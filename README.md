@@ -21,6 +21,7 @@ WeKan® is an completely Open Source and Free software collaborative kanban boar
 
 **Shipped version:** 6.97~ynh1
 
+
 **Demo:** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
 
 ## Screenshots
