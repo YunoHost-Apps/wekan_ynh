@@ -43,10 +43,10 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        arm64.url = "https://github.com/wekan/wekan/releases/download/v6.97/wekan-6.97-arm64.zip"
-        arm64.sha256 = "3c60fadf67cee852da3e453f32e9548b5ba4f9bd2bdba7e4f60a9f3c4998b08a"
-        amd64.url = "https://github.com/wekan/wekan/releases/download/v6.97/wekan-6.97-amd64.zip"
-        amd64.sha256 = "b2637a2a1545a35ac622651aa9d58b58f295ada66cfe9863602aafbfcac90dcc"
+        arm64.url = "https://github.com/wekan/wekan/releases/download/v7.09/wekan-7.09-arm64.zip"
+        arm64.sha256 = "0ef14b07dd7fdb635b0350094f3df57aeb6d082e4525fe087e097c4f8cfbf238"
+        amd64.url = "https://github.com/wekan/wekan/releases/download/v7.09/wekan-7.09-amd64.zip"
+        amd64.sha256 = "7f9956c878bab40c99d5a7bebdeb1a7fa7d0016098cd47f0946bfde7d997ae7d"
         autoupdate.strategy = "latest_github_release"
         autoupdate.asset.amd64 = "*-amd64.zip"
         autoupdate.asset.arm64 = "*-arm64.zip"

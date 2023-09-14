@@ -16,7 +16,7 @@ mongo_version=6.0
 #=================================================
 
 readonly YNH_DEFAULT_MONGO_VERSION=4.4
-# Declare the actual MongoDB version to use: 4.4 ; 5.0
+# Declare the actual MongoDB version to use: 4.4; 5.0; 6.0
 # A packager willing to use another version of MongoDB can override the variable into its _common.sh.
 YNH_MONGO_VERSION=${YNH_MONGO_VERSION:-$YNH_DEFAULT_MONGO_VERSION}
 
