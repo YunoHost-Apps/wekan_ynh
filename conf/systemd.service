@@ -15,7 +15,6 @@ SuccessExitStatus=143
 #RestartSec=10
 #ExecReload=/bin/kill -USR1 $MAINPID
 
-
 # Sandboxing options to harden security
 # Depending on specificities of your service/app, you may need to tweak these
 # .. but this should be a good baseline
