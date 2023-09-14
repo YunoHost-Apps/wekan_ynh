@@ -38,8 +38,8 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
-    [install.admin]
-    type = "user"
+    #[install.admin]
+    #type = "user"
 
 [resources]
         [resources.sources.main]
@@ -59,4 +59,4 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
-    admin.allowed = "admins"
+    #admin.allowed = "admins"
