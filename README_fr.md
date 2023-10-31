@@ -51,7 +51,7 @@ Si vous avez désactivé l'authentification LDAP, le premier utilisateur enregis
 * Site officiel de l’app : <https://wekan.github.io>
 * Documentation officielle de l’admin : <https://github.com/wekan/wekan/wiki>
 * Dépôt de code officiel de l’app : <https://github.com/wekan/wekan>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_wekan>
+* YunoHost Store: <https://apps.yunohost.org/app/wekan>
 * Signaler un bug : <https://github.com/YunoHost-Apps/wekan_ynh/issues>
 
 ## Informations pour les développeurs
