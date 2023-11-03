@@ -19,7 +19,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 WeKan is an completely Open Source and Free software collaborative kanban board.
 
 
-**Shipped version:** 7.09~ynh1
+**Shipped version:** 7.12~ynh1
 
 **Demo:** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
 
@@ -51,7 +51,7 @@ If you have disable ldap authentication, first registered user will be admin, an
 * Official app website: <https://wekan.github.io>
 * Official admin documentation: <https://github.com/wekan/wekan/wiki>
 * Upstream app code repository: <https://github.com/wekan/wekan>
-* YunoHost documentation for this app: <https://yunohost.org/app_wekan>
+* YunoHost Store: <https://apps.yunohost.org/app/wekan>
 * Report a bug: <https://github.com/YunoHost-Apps/wekan_ynh/issues>
 
 ## Developer info
