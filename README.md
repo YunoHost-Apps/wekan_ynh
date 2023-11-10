@@ -32,7 +32,7 @@ WeKan® is an completely Open Source and Free software collaborative kanban boar
 * Official app website: <https://wekan.github.io>
 * Official admin documentation: <https://github.com/wekan/wekan/wiki>
 * Upstream app code repository: <https://github.com/wekan/wekan>
-* YunoHost documentation for this app: <https://yunohost.org/app_wekan>
+* YunoHost Store: <https://apps.yunohost.org/app/wekan>
 * Report a bug: <https://github.com/YunoHost-Apps/wekan_ynh/issues>
 
 ## Developer info
