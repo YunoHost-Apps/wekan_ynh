@@ -1,1 +1,1 @@
-WeKan® is an completely Open Source and Free software collaborative kanban board application.
+WeKan is an completely Open Source and Free software collaborative kanban board application.
