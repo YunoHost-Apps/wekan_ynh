@@ -1,1 +1,1 @@
-WeKan est une application de tableau kanban collaborative.
+WeKan est une application de tableau kanban collaborative entièrement libre et open source.
