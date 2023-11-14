@@ -9,6 +9,8 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+main_domain=$(cat /etc/yunohost/current_host)
+
 #=================================================
 # CHECK VERSION
 #=================================================
@@ -81,8 +83,6 @@ yunohost service add $app --description="Wekan daemon" --log="/var/log/$app/$app
 # UPDATE A CONFIG FILE
 #=================================================
 ynh_script_progression --message="Updating a configuration file..."
-
-main_domain=$(cat /etc/yunohost/current_host)
 
 ynh_add_config --template=".env" --destination="$install_dir/.env"
 

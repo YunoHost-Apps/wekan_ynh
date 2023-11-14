@@ -16,17 +16,7 @@ ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
-ynh_install_mongo
 
-#=================================================
-# CREATE A MONGODB DATABASE
-#=================================================
-ynh_script_progression --message="Creating a MongoDB database..."
-
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -38,6 +28,18 @@ ynh_setup_source --dest_dir="$install_dir"
 
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
+
+#=================================================
+# CREATE A MONGODB DATABASE
+#=================================================
+ynh_script_progression --message="Creating a MongoDB database..."
+
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+db_user=$db_name
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+
+ynh_install_mongo
+ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # NGINX CONFIGURATION
