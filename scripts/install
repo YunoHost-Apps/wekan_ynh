@@ -7,9 +7,7 @@
 #=================================================
 
 source _common.sh
-source ynh_detect_arch__2
-source ynh_add_config
-source ynh_mongo_db
+source ynh_mongo_db__2
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -28,8 +26,8 @@ ynh_abort_if_errors
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
+admin=$YNH_APP_ARG_ADMIN
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -38,9 +36,8 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 ynh_script_progression --message="Validating installation parameters..."
 
-architecture=$(ynh_detect_arch)
 # Check machine architecture (in particular, we don't support ARM and 32bit machines)
-if [ $architecture == "i386" ] || [ $architecture == "arm" ]
+if [ $YNH_ARCH == "i386" ] || [ $YNH_ARCH == "armel" ] || [ $YNH_ARCH == "armhf" ] || [ $YNH_ARCH == "aarch64" ] || [ $YNH_ARCH == "arm64" ]
 then
 	ynh_die --message="Sorry, but this app can only be installed on a x86, 64 bits machine :("
 fi
@@ -58,14 +55,13 @@ ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Configuring firewall..."
+ynh_script_progression --message="Finding an available port..."
 
 # Find an available port
 port=$(ynh_find_port --port=8095)
@@ -77,17 +73,24 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-ynh_install_nodejs --nodejs_version=$nodejsversion
+ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
 ynh_install_mongo
 ynh_mongo_test_if_first_run
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # CREATE A MONGODB DATABASE
 #=================================================
 ynh_script_progression --message="Creating a MongoDB database..."
 
-# Registering db name
 db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
@@ -100,60 +103,50 @@ ynh_script_progression --message="Setting up source files..."
 
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$final_path" --source_id="$architecture"
+ynh_setup_source --dest_dir="$final_path" --source_id="$YNH_ARCH"
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..."
+ynh_script_progression --message="Configuring NGINX web server..."
 
-# Create a dedicated nginx config
+# Create a dedicated NGINX config
 ynh_add_nginx_config
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..."
-
-# Create a system user
-ynh_system_user_create --username=$app --home_dir="$final_path"
-
-#=================================================
 # SPECIFIC SETUP
+#=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression --message="Adding a config file..."
+
+main_domain=$(cat /etc/yunohost/current_host)
+
+ynh_add_config --template=".env" --destination="$final_path/.env"
+
+chmod 400 "$final_path/.env"
+chown $app:$app "$final_path/.env"
+
 #=================================================
 # SETUP SYSTEMD
 #=================================================
 ynh_script_progression --message="Configuring a systemd service..."
 
 # Create a dedicated systemd config
-ynh_add_systemd_config --others_var="mongodb_servicename ynh_node"
-
-#=================================================
-# MODIFY A CONFIG FILE
-#=================================================
-ynh_script_progression --message="Modifying a config file..."
-
-# Create a dedicated .env config
-ynh_add_config --template=".env" --destination="$final_path/.env"
+ynh_add_systemd_config
 
 #=================================================
 # GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-ynh_script_progression --message="Securing files and directories..."
-
-# Set strong right permissions to app files
-chown -R $app: "$final_path"
-chmod -R 640 "$final_path"
-find "$final_path" -type d -print0 | xargs -0 chmod 750
-
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description "Wekan daemon" --log_type "systemd"
+yunohost service add $app --description="Wekan daemon"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -161,7 +154,7 @@ yunohost service add $app --description "Wekan daemon" --log_type "systemd"
 ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Meteor APM: completed instrumenting the app"
+ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Enabling LDAP Background Sync"
 
 if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
 	sleep 60
@@ -170,20 +163,22 @@ fi
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
-
-ynh_permission_create --permission="admin" --allowed "$admin"
+ynh_script_progression --message="Configuring permissions..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
-	ynh_permission_update --permission "main" --add "visitors"
+	# Everyone can access the app.
+	# The "main" permission is automatically created before the install script.
+	ynh_permission_update --permission="main" --add="visitors"
 fi
+
+ynh_permission_create --permission="admin" --allowed=$admin
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 

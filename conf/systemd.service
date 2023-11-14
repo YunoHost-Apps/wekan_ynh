@@ -1,5 +1,5 @@
 [Unit]
-Description=Wekan, task board
+Description=Wekan: task board
 Wants=__MONGODB_SERVICENAME__.service
 After=network.target __MONGODB_SERVICENAME__.service
 
@@ -8,7 +8,7 @@ Type=simple
 User=__APP__
 Group=__APP__
 EnvironmentFile=__FINALPATH__/.env
-WorkingDirectory=__FINALPATH__
+WorkingDirectory=__FINALPATH__/
 ExecStart=__YNH_NODE__ __FINALPATH__/main.js
 Restart=on-failure
 #StartLimitInterval=86400
