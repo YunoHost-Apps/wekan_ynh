@@ -12,5 +12,3 @@ Pour ajouter un compte admin, vous pouvez :
 Tous les autres utilisateurs de YunhoHost peuvent accéder avec l'authentification LDAP.
 
 Si vous avez désactivé l'authentification LDAP, le premier utilisateur enregistré sera l'administrateur, et les suivants seront des utilisateurs normaux. Si vous voulez d'autres administrateurs, vous pouvez changer leur permission à admin dans le panneau d'administration de Wekan.
-
-**Mode privé/public:** En mode privé, seuls les membres autorisés de YunoHost peuvent accéder au Wekan.

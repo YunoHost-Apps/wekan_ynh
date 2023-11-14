@@ -1,0 +1,5 @@
+test_format = 1.0
+
+[default]
+
+    test_upgrade_from.413b6e0e52fdf162a40313a4f7960f203a0bc64f.name = "Upgrade from 7.09~ynh1"
