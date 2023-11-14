@@ -49,6 +49,8 @@ ynh_remove_systemd_config
 #=================================================
 ynh_script_progression --message="Removing the MongoDB database..."
 
+ynh_mongo_test_if_first_run
+
 # Remove a database if it exists, along with the associated user
 ynh_mongo_remove_db --db_user=$db_user --db_name=$db_name
 

@@ -21,6 +21,7 @@ domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 port=$(ynh_app_setting_get --app=$app --key=port)
 mongo_version=$(ynh_app_setting_get --app=$app --key=mongo_version)
 
@@ -60,9 +61,52 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path=systemd
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
 
-# Cleaning legacy permissions
-if ynh_legacy_permissions_exists; then
-	ynh_legacy_permissions_delete_all
+if ynh_version_gt "0.45-2" "${previous_version}" ; then
+	ynh_script_progression --message="Upgrading to 0.45-2..."
+	ynh_replace_string --match_string="Environment=ROOT_URL=http://127.0.0.1:$port$path_url" --replace_string="Environment=ROOT_URL=https://$domain$path_url/" --target_file="/etc/systemd/system/$app.service"
+	systemctl daemon-reload
+fi
+
+if ynh_version_gt "0.45-3" "${previous_version}" ; then
+	ynh_script_progression --message="Upgrading to 0.45-3..."
+	yunohost service add $app --description "Wekan daemon" --log_type "systemd"
+fi
+
+if ynh_version_gt "1.07~ynh2" "${previous_version}" ; then
+	ynh_script_progression --message="Upgrading to 1.07~ynh2..."
+
+	# Replace mongodb packages
+	# Assume no other app needs it >.>
+	rm -f /etc/apt/sources.list.d/mongodb-org-3.2.list
+	ynh_remove_app_dependencies
+	ynh_install_app_dependencies "mongodb mongodb-server"
+	yunohost service add $app --description "Wekan daemon" --log_type "systemd"
+fi
+
+if ynh_version_gt "2.56~ynh1" "${previous_version}" ; then
+	# Create a dedicated .env config
+	config_file="$final_path/.env"
+	touch $config_file
+fi
+
+if ynh_version_gt "4.09~ynh2" "${previous_version}" ; then
+	db_pwd=$(ynh_string_random)
+	ynh_mongo_test_if_first_run
+	ynh_mongo_create_user --db_user=$db_user --db_pwd=$db_pwd --db_name=$db_name
+fi
+
+# Create the permission "admin" only if it doesn't exist.
+if ! ynh_permission_exists --permission="admin"
+then
+	ynh_script_progression --message="Upgrading Permission configuration..."
+
+	ynh_app_setting_delete --app=$app --key=unprotected_uris
+
+	is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+
+	if [ $is_public -eq 1 ]; then
+		ynh_permission_update --permission "main" --add "visitors"
+	fi
 
 	ynh_app_setting_delete --app=$app --key=is_public
 fi
@@ -78,8 +122,20 @@ if [ -z "$mongo_version" ]; then
 	ynh_app_setting_set --app=$app --key=mongo_version --value=$mongo_version
 fi
 
-ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-3.2.list"
-ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-4.4.list"
+# Create a dedicated nginx config
+ynh_add_nginx_config
+
+#=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Upgrading dependencies..."
+
+ynh_install_app_dependencies $pkg_dependencies
+ynh_remove_nodejs
+ynh_install_nodejs --nodejs_version=$nodejsversion
+ynh_use_nodejs
+ynh_install_mongo
+ynh_mongo_test_if_first_run
 
 #=================================================
 # CREATE DEDICATED USER
