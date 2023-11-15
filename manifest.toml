@@ -51,8 +51,8 @@ ram.runtime = "50M"
         amd64.url = "https://github.com/wekan/wekan/releases/download/v7.18/wekan-7.18-amd64.zip"
         amd64.sha256 = "da865310d70de763fc0d410344e28a493691e461b5195fe97d16e89f3d0d7246"
         autoupdate.strategy = "latest_github_release"
-        autoupdate.asset.amd64 = "*-amd64.zip"
-        autoupdate.asset.arm64 = "*-arm64.zip"
+        autoupdate.asset.amd64 = ".*-amd64.zip"
+        autoupdate.asset.arm64 = ".*-arm64.zip"
 
     [resources.ports]
 
