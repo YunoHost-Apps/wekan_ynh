@@ -60,4 +60,4 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
-    #admin.allowed = "admins"
+    admin.allowed = "admins"
