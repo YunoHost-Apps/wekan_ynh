@@ -19,7 +19,7 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 WeKan est une application de tableau kanban collaborative entièrement libre et open source.
 
 
-**Version incluse :** 7.34~ynh1
+**Version incluse :** 7.36~ynh1
 
 **Démo :** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
 
@@ -29,11 +29,11 @@ WeKan est une application de tableau kanban collaborative entièrement libre et 
 
 ## Documentations et ressources
 
-* Site officiel de l’app : <https://wekan.github.io>
-* Documentation officielle de l’admin : <https://github.com/wekan/wekan/wiki>
-* Dépôt de code officiel de l’app : <https://github.com/wekan/wekan>
-* YunoHost Store: <https://apps.yunohost.org/app/wekan>
-* Signaler un bug : <https://github.com/YunoHost-Apps/wekan_ynh/issues>
+- Site officiel de l’app : <https://wekan.github.io>
+- Documentation officielle de l’admin : <https://github.com/wekan/wekan/wiki>
+- Dépôt de code officiel de l’app : <https://github.com/wekan/wekan>
+- YunoHost Store : <https://apps.yunohost.org/app/wekan>
+- Signaler un bug : <https://github.com/YunoHost-Apps/wekan_ynh/issues>
 
 ## Informations pour les développeurs
 

@@ -19,7 +19,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 WeKan is an completely Open Source and Free software collaborative kanban board application.
 
 
-**Shipped version:** 7.34~ynh1
+**Shipped version:** 7.36~ynh1
 
 **Demo:** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
 
@@ -29,11 +29,11 @@ WeKan is an completely Open Source and Free software collaborative kanban board 
 
 ## Documentation and resources
 
-* Official app website: <https://wekan.github.io>
-* Official admin documentation: <https://github.com/wekan/wekan/wiki>
-* Upstream app code repository: <https://github.com/wekan/wekan>
-* YunoHost Store: <https://apps.yunohost.org/app/wekan>
-* Report a bug: <https://github.com/YunoHost-Apps/wekan_ynh/issues>
+- Official app website: <https://wekan.github.io>
+- Official admin documentation: <https://github.com/wekan/wekan/wiki>
+- Upstream app code repository: <https://github.com/wekan/wekan>
+- YunoHost Store: <https://apps.yunohost.org/app/wekan>
+- Report a bug: <https://github.com/YunoHost-Apps/wekan_ynh/issues>
 
 ## Developer info
 
