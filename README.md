@@ -18,10 +18,9 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 WeKan is an completely Open Source and Free software collaborative kanban board application.
 
+**Shipped version:** 7.41~ynh1
 
-**Shipped version:** 7.36~ynh1
-
-**Demo:** https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h
+**Demo:** <https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h>
 
 ## Screenshots
 
@@ -41,7 +40,7 @@ Please send your pull request to the [testing branch](https://github.com/YunoHos
 
 To try the testing branch, please proceed like that.
 
-``` bash
+```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/wekan_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade wekan -u https://github.com/YunoHost-Apps/wekan_ynh/tree/testing --debug
