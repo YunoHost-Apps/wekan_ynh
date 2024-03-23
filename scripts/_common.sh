@@ -61,7 +61,7 @@ ynh_mongo_exec() {
 	if [ -n "$user" ]
 	then
 		user="--username=$user"
-		
+
 		# If password is provided
 		if [ -n "$password" ]
 		then
@@ -116,7 +116,7 @@ EOF
 		else
 			database=""
 		fi
-		
+
 		mongosh --quiet $database --username $user --password $password --authenticationDatabase $authenticationdatabase --host $host --port $port --eval="$command"
 	fi
 }
@@ -185,7 +185,7 @@ ynh_mongo_create_user() {
 
 	# Create the user and set the user as admin of the db
 	ynh_mongo_exec --database="$db_name" --command='db.createUser( { user: "'${db_user}'", pwd: "'${db_pwd}'", roles: [ { role: "readWrite", db: "'${db_name}'" } ] } );'
-	
+
 	# Add clustermonitoring rights
 	ynh_mongo_exec --database="$db_name" --command='db.grantRolesToUser("'${db_user}'",[{ role: "clusterMonitor", db: "admin" }]);'
 }
@@ -277,12 +277,12 @@ ynh_mongo_setup_db() {
 	local new_db_pwd=$(ynh_string_random) # Generate a random password
 	# If $db_pwd is not provided, use new_db_pwd instead for db_pwd
 	db_pwd="${db_pwd:-$new_db_pwd}"
-	
+
 	# Create the user and grant access to the database
 	ynh_mongo_create_user --db_user="$db_user" --db_pwd="$db_pwd" --db_name="$db_name"
 
 	# Store the password in the app's config
-	ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd 
+	ynh_app_setting_set --app=$app --key=db_pwd --value=$db_pwd
 }
 
 # Remove a database if it exists, and the associated user
@@ -326,8 +326,13 @@ ynh_install_mongo() {
 	ynh_handle_getopts_args "$@"
 	mongo_version="${mongo_version:-$YNH_MONGO_VERSION}"
 
+	debian=$(lsb_release --codename --short)
+
 	ynh_print_info --message="Installing MongoDB Community Edition..."
-	ynh_install_extra_app_dependencies --repo="deb http://repo.mongodb.org/apt/debian buster/mongodb-org/$mongo_version main" --package="mongodb-org mongodb-org-server mongodb-org-tools mongodb-mongosh" --key="https://www.mongodb.org/static/pgp/server-$mongo_version.asc"
+	ynh_install_extra_app_dependencies \
+		--repo="deb http://repo.mongodb.org/apt/debian $debian/mongodb-org/$mongo_version main" \
+		--package="mongodb-org mongodb-org-server mongodb-org-tools mongodb-mongosh" \
+		--key="https://www.mongodb.org/static/pgp/server-$mongo_version.asc"
 	mongodb_servicename=mongod
 
 	# Make sure MongoDB is started and enabled
