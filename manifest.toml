@@ -18,7 +18,7 @@ code = "https://github.com/wekan/wekan"
 
 [integration]
 yunohost = ">= 11.2"
-architectures = ["arm64", "amd64"]
+architectures = ["amd64"]
 multi_instance = true
 
 ldap = true
