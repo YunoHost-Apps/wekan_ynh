@@ -17,7 +17,7 @@ admindoc = "https://github.com/wekan/wekan/wiki"
 code = "https://github.com/wekan/wekan"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 11.2.12"
 architectures = ["amd64"]
 multi_instance = true
 
