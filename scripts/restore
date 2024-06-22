@@ -35,7 +35,7 @@ ynh_use_nodejs
 #=================================================
 ynh_script_progression --message="Restoring the MongoDB database..."
 
-ynh_install_mongo
+ynh_install_mongo --mongo_version=$mongo_version
 ynh_mongo_restore_db --database="$db_name" < ./dump.bson
 
 #=================================================
