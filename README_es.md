@@ -5,7 +5,7 @@ No se debe editar a mano.
 
 # Wekan para Yunohost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/wekan.svg)](https://dash.yunohost.org/appci/app/wekan) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)
+[![Nivel de integración](https://dash.yunohost.org/integration/wekan.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)
 
 [![Instalar Wekan con Yunhost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wekan)
 
@@ -19,7 +19,7 @@ No se debe editar a mano.
 WeKan is an completely Open Source and Free software collaborative kanban board application.
 
 
-**Versión actual:** 7.50~ynh1
+**Versión actual:** 7.51~ynh1
 
 **Demo:** <https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h>
 
