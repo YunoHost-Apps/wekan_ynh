@@ -51,6 +51,12 @@ ram.runtime = "50M"
         autoupdate.strategy = "latest_github_release"
         autoupdate.asset.amd64 = ".*-amd64.zip"
 
+        [resources.sources.ldap]
+        url = "https://raw.githubusercontent.com/wekan/wekan/main/docs/Login/ldap-sync/ldap-sync.py"
+        sha256 = "c65fad3ad90072d45df5995074e2f9924fc6399c17867ab15305300b6c7eddf9"
+        format = "whatever"
+        rename = "ldapsync.py"
+
     [resources.ports]
 
     [resources.system_user]
@@ -60,4 +66,6 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
-    #admin.allowed = "admins"
+
+    [resources.apt]
+    packages = ["python3", "python3-venv"]
