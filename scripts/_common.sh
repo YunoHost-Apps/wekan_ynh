@@ -18,14 +18,12 @@ ynh_sync_admin_user_to_wekan() {
     ynh_add_config --template="add_admin_user.py" --destination="$tmp/add_admin_user.py"
 
     python3 -m venv $tmp
-    source $tmp/bin/activate
-    pip install pymongo ldap3 environs
+    $tmp/bin/pip install pymongo ldap3 environs
     
     source "$install_dir/.env"
 
-    python3 $tmp/add_admin_user.py
+    $tmp/bin/python $tmp/add_admin_user.py
 
-    deactivate
     ynh_secure_remove --file="$tmp"
 }
 
