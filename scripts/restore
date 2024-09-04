@@ -10,16 +10,11 @@ ynh_script_progression "Restoring the app main directory..."
 
 ynh_restore "$install_dir"
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
-#=================================================
-# SPECIFIC RESTORATION
 #=================================================
 # REINSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression "Reinstalling dependencies..."
 
-# Define and install dependencies
 ynh_nodejs_install
 
 #=================================================
@@ -48,10 +43,6 @@ yunohost service add $app --description="Wekan daemon" --log="/var/log/$app/$app
 ynh_script_progression "Starting $app's systemd service..."
 
 ynh_systemctl --service=$app --action="start" --log_path=systemd --wait_until="Enabling LDAP Background Sync"
-
-#if ynh_in_ci_tests; then
-#	sleep 60
-#fi
 
 ynh_systemctl --service=nginx --action=reload
 
