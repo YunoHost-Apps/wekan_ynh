@@ -4,11 +4,8 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD REMOVE
-#=================================================
 # REMOVE SERVICE INTEGRATION IN YUNOHOST
 #=================================================
-
 if ynh_hide_warnings yunohost service status $app >/dev/null
 then
 	ynh_script_progression "Removing $app service integration..."
@@ -17,7 +14,6 @@ fi
 
 ynh_config_remove_systemd
 
-# Remove a database if it exists, along with the associated user
 ynh_mongo_remove_db --db_user=$db_user --db_name=$db_name
 ynh_remove_mongo
 
