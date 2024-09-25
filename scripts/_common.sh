@@ -5,4 +5,4 @@
 #=================================================
 
 nodejs_version="14"
-mongo_version="6.0"
+mongo_version="7.0"
