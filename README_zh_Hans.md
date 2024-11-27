@@ -5,7 +5,9 @@
 
 # YunoHost 上的 Wekan
 
-[![集成程度](https://dash.yunohost.org/integration/wekan.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/) ![工作状态](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)
+[![集成程度](https://apps.yunohost.org/badge/integration/wekan)](https://ci-apps.yunohost.org/ci/apps/wekan/)
+![工作状态](https://apps.yunohost.org/badge/state/wekan)
+![维护状态](https://apps.yunohost.org/badge/maintained/wekan)
 
 [![使用 YunoHost 安装 Wekan](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wekan)
 
