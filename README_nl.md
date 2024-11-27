@@ -5,7 +5,9 @@ Hij mag NIET handmatig aangepast worden.
 
 # Wekan voor Yunohost
 
-[![Integratieniveau](https://dash.yunohost.org/integration/wekan.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/) ![Mate van functioneren](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![Onderhoudsstatus](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)
+[![Integratieniveau](https://apps.yunohost.org/badge/integration/wekan)](https://ci-apps.yunohost.org/ci/apps/wekan/)
+![Mate van functioneren](https://apps.yunohost.org/badge/state/wekan)
+![Onderhoudsstatus](https://apps.yunohost.org/badge/maintained/wekan)
 
 [![Wekan met Yunohost installeren](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wekan)
 
