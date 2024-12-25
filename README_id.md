@@ -5,7 +5,9 @@ Ini TIDAK boleh diedit dengan tangan.
 
 # Wekan untuk YunoHost
 
-[![Tingkat integrasi](https://dash.yunohost.org/integration/wekan.svg)](https://ci-apps.yunohost.org/ci/apps/wekan/) ![Status kerja](https://ci-apps.yunohost.org/ci/badges/wekan.status.svg) ![Status pemeliharaan](https://ci-apps.yunohost.org/ci/badges/wekan.maintain.svg)
+[![Tingkat integrasi](https://apps.yunohost.org/badge/integration/wekan)](https://ci-apps.yunohost.org/ci/apps/wekan/)
+![Status kerja](https://apps.yunohost.org/badge/state/wekan)
+![Status pemeliharaan](https://apps.yunohost.org/badge/maintained/wekan)
 
 [![Pasang Wekan dengan YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=wekan)
 
@@ -18,8 +20,7 @@ Ini TIDAK boleh diedit dengan tangan.
 
 WeKan is an completely Open Source and Free software collaborative kanban board application.
 
-
-**Versi terkirim:** 7.56~ynh1
+**Versi terkirim:** 7.73~ynh1
 
 **Demo:** <https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h>
 
