@@ -5,7 +5,7 @@ name = "Wekan"
 description.en = "Trello-like kanban"
 description.fr = "Kanban similaire à Trello"
 
-version = "7.74~ynh1"
+version = "7.74~ynh2"
 
 maintainers = ["alexAubin", "ljf", "yalh76"]
 
