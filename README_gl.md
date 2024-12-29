@@ -21,7 +21,7 @@ NON debe editarse manualmente.
 WeKan is an completely Open Source and Free software collaborative kanban board application.
 
 
-**Versión proporcionada:** 7.73~ynh1
+**Versión proporcionada:** 7.74~ynh2
 
 **Demo:** <https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h>
 
