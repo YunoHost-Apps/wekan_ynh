@@ -24,7 +24,7 @@ ynh_nodejs_install
 ynh_script_progression "Restoring the MongoDB database..."
 
 ynh_install_mongo
-ynh_mongo_restore_db  < ./dump.bson
+ynh_mongo_restore_db < ./dump.bson
 
 #=================================================
 # RESTORE THE NGINX CONFIGURATION

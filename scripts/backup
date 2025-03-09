@@ -25,7 +25,7 @@ ynh_backup "/etc/systemd/system/$app.service"
 #=================================================
 ynh_print_info "Backing up the MongoDB database..."
 
-ynh_mongo_dump_db  > ./dump.bson
+ynh_mongo_dump_db > ./dump.bson
 
 #=================================================
 # END OF SCRIPT
