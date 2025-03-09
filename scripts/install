@@ -9,7 +9,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-
 main_domain=$(cat /etc/yunohost/current_host)
 
 #=================================================
@@ -26,7 +25,7 @@ ynh_use_nodejs
 ynh_script_progression --message="Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir" 
+ynh_setup_source --dest_dir="$install_dir"
 
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
@@ -40,7 +39,7 @@ db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 
-ynh_install_mongo
+ynh_install_mongo --mongo_version=$mongo_version
 ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
@@ -76,9 +75,9 @@ ynh_script_progression --message="Starting a systemd service..."
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Enabling LDAP Background Sync"
 
-#if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
-#	sleep 60
-#fi
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+	sleep 60
+fi
 
 #=================================================
 # END OF SCRIPT

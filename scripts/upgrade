@@ -12,12 +12,6 @@ source /usr/share/yunohost/helpers
 main_domain=$(cat /etc/yunohost/current_host)
 
 #=================================================
-# CHECK VERSION
-#=================================================
-
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
@@ -43,14 +37,10 @@ ynh_secure_remove --file="/etc/apt/sources.list.d/mongodb-org-4.4.list"
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Upgrading source files..."
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Upgrading source files..."
-
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$install_dir"  --keep=".env"
-fi
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir"  --keep=".env"
 
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
@@ -62,6 +52,7 @@ ynh_script_progression --message="Upgrading dependencies..."
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
+
 ynh_install_mongo --mongo_version=$mongo_version
 
 #=================================================
@@ -96,9 +87,9 @@ ynh_script_progression --message="Starting a systemd service..."
 
 ynh_systemd_action --service_name=$app --action="start" --log_path=systemd --line_match="Enabling LDAP Background Sync"
 
-#if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
-#	sleep 60
-#fi
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+	sleep 60
+fi
 
 #=================================================
 # END OF SCRIPT
