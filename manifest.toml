@@ -41,9 +41,6 @@ ram.runtime = "50M"
     type = "group"
     default = "visitors"
 
-    [install.admin]
-    type = "user"
-
 [resources]
         [resources.sources.main]
         amd64.url = "https://github.com/wekan/wekan/releases/download/v7.83/wekan-7.83-amd64.zip"
