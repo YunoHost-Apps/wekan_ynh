@@ -5,7 +5,7 @@ name = "Wekan"
 description.en = "Trello-like kanban"
 description.fr = "Kanban similaire à Trello"
 
-version = "7.83~ynh1"
+version = "7.83~ynh2"
 
 maintainers = ["alexAubin", "ljf", "yalh76"]
 
@@ -41,9 +41,6 @@ ram.runtime = "50M"
     [install.init_main_permission]
     type = "group"
     default = "visitors"
-
-    [install.admin]
-    type = "user"
 
 [resources]
         [resources.sources.main]
