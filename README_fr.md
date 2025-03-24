@@ -21,7 +21,7 @@ Il NE doit PAS être modifié à la main.
 WeKan est une application de tableau kanban collaborative entièrement libre et open source.
 
 
-**Version incluse :** 7.83~ynh1
+**Version incluse :** 7.84~ynh1
 
 **Démo :** <https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h>
 
