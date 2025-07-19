@@ -7,7 +7,7 @@ description.fr = "Kanban similaire à Trello"
 
 version = "7.93~ynh1"
 
-maintainers = ["alexAubin", "ljf", "yalh76"]
+maintainers = []
 
 [upstream]
 license = "MIT"
