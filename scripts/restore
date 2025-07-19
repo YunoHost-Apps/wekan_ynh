@@ -4,13 +4,6 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# RESTORE THE APP MAIN DIR
-#=================================================
-ynh_script_progression "Restoring the app main directory..."
-
-ynh_restore "$install_dir"
-
-#=================================================
 # REINSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression "Reinstalling dependencies..."
@@ -18,12 +11,20 @@ ynh_script_progression "Reinstalling dependencies..."
 # Define and install dependencies
 ynh_nodejs_install
 
+ynh_install_mongo
+
+#=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_script_progression "Restoring the app main directory..."
+
+ynh_restore "$install_dir"
+
 #=================================================
 # RESTORE THE MONGODB DATABASE
 #=================================================
 ynh_script_progression "Restoring the MongoDB database..."
 
-ynh_install_mongo
 ynh_mongo_restore_db < ./dump.bson
 
 #=================================================
@@ -43,11 +44,7 @@ yunohost service add $app --description="Wekan daemon" --log="/var/log/$app/$app
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service=$app --action="start" --log_path=systemd --wait_until="Enabling LDAP Background Sync"
-
-if ynh_in_ci_tests; then
-	sleep 60
-fi
+ynh_systemctl --service=$app --action="start" --log_path=systemd
 
 ynh_systemctl --service=nginx --action=reload
 
