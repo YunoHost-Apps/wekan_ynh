@@ -4,8 +4,8 @@
 # COMMON VARIABLES
 #=================================================
 
-nodejs_version="14"
-mongo_version="7.0"
+#REMOVEME? nodejs_version="14"
+mon#REMOVEME? go_version="7.0"
 
 #=================================================
 # PERSONAL HELPERS
