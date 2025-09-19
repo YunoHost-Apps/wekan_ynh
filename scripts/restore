@@ -4,13 +4,6 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression "Reinstalling dependencies..."
-
-ynh_install_mongo
-
-#=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
 ynh_script_progression "Restoring the app main directory..."
@@ -23,6 +16,7 @@ ynh_restore "$install_dir"
 ynh_script_progression "Restoring the MongoDB database..."
 
 ynh_install_mongo --mongo_version=$mongo_version
+ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
 
 ynh_mongo_restore_db < ./dump.bson
 
