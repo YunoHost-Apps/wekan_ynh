@@ -8,9 +8,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Reinstalling dependencies..."
 
-# Define and install dependencies
-ynh_nodejs_install
-
 ynh_install_mongo
 
 #=================================================
@@ -24,6 +21,8 @@ ynh_restore "$install_dir"
 # RESTORE THE MONGODB DATABASE
 #=================================================
 ynh_script_progression "Restoring the MongoDB database..."
+
+ynh_install_mongo --mongo_version=$mongo_version
 
 ynh_mongo_restore_db < ./dump.bson
 

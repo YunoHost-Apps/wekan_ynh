@@ -5,7 +5,7 @@ name = "Wekan"
 description.en = "Trello-like kanban"
 description.fr = "Kanban similaire à Trello"
 
-version = "7.93~ynh1"
+version = "7.94~ynh1"
 
 maintainers = []
 
@@ -17,13 +17,12 @@ admindoc = "https://github.com/wekan/wekan/wiki"
 code = "https://github.com/wekan/wekan"
 
 [integration]
-yunohost = ">= 12.0.9"
+yunohost = ">= 12.1.17"
 helpers_version = "2.1"
 architectures = ["amd64"]
 multi_instance = true
 
 ldap = true
-
 sso = false
 
 disk = "50M"
@@ -44,8 +43,8 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        amd64.url = "https://github.com/wekan/wekan/releases/download/v7.93/wekan-7.93-amd64.zip"
-        amd64.sha256 = "3de7b33ad634ad210eb044242225ad2f36624328dd0f44fed65e9cd7016b0aea"
+        amd64.url = "https://github.com/wekan/wekan/releases/download/v7.94/wekan-7.94-amd64.zip"
+        amd64.sha256 = "bdfbeed51ec5a5a30b52e02464f81c7edcbc4717d874f37ffdb15d0737444987"
         autoupdate.strategy = "latest_github_release"
         autoupdate.asset.amd64 = ".*-amd64.zip"
 
@@ -59,3 +58,6 @@ ram.runtime = "50M"
     [resources.permissions]
     main.url = "/"
     admin.allowed = "admins"
+
+    [resources.nodejs]
+    version = "14"

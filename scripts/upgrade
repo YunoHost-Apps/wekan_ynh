@@ -39,9 +39,7 @@ ynh_setup_source --dest_dir="$install_dir"  --keep=".env"
 #=================================================
 ynh_script_progression "Upgrading dependencies..."
 
-ynh_nodejs_install
-
-ynh_install_mongo
+ynh_install_mongo --mongo_version=$mongo_version
 
 #=================================================
 # NGINX CONFIGURATION
