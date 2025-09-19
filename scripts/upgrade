@@ -27,7 +27,7 @@ ynh_script_progression --message="Ensuring downward compatibility..."
 
 # If mongo_version doesn't exist, create it
 if [ -z "$mongo_version" ]; then
-	mongo_version="$(mongod --version | grep -oP 'db version v\K.{0,3}')"
+	mon#REMOVEME? go_version="$(mongod --version | grep -oP 'db version v\K.{0,3}')"
 	ynh_app_setting_set --app=$app --key=mongo_version --value=$mongo_version
 fi
 
@@ -50,10 +50,10 @@ chown -R $app:$app "$install_dir"
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..."
 
-ynh_install_nodejs --nodejs_version=$nodejs_version
-ynh_use_nodejs
+#REMOVEME? ynh_install_nodejs --#REMOVEME? nodejs_version=$nodejs_version
+#REMOVEME? ynh_use_nodejs
 
-ynh_install_mongo --mongo_version=$mongo_version
+ynh_install_mongo --mon#REMOVEME? go_version=$mongo_version
 
 #=================================================
 # NGINX CONFIGURATION

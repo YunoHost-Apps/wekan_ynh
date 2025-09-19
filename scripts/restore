@@ -27,15 +27,15 @@ chown -R $app:$app "$install_dir"
 ynh_script_progression --message="Reinstalling dependencies..."
 
 # Define and install dependencies
-ynh_install_nodejs --nodejs_version=$nodejs_version
-ynh_use_nodejs
+#REMOVEME? ynh_install_nodejs --#REMOVEME? nodejs_version=$nodejs_version
+#REMOVEME? ynh_use_nodejs
 
 #=================================================
 # RESTORE THE MONGODB DATABASE
 #=================================================
 ynh_script_progression --message="Restoring the MongoDB database..."
 
-ynh_install_mongo --mongo_version=$mongo_version
+ynh_install_mongo --mon#REMOVEME? go_version=$mongo_version
 ynh_mongo_restore_db --database="$db_name" < ./dump.bson
 
 #=================================================
