@@ -32,9 +32,6 @@ ynh_remove_mongo
 # Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
-# Remove metapackage and its dependencies
-#REMOVEME? ynh_remove_nodejs
-
 #=================================================
 # END OF SCRIPT
 #=================================================

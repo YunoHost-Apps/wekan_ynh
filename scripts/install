@@ -12,14 +12,6 @@ source /usr/share/yunohost/helpers
 main_domain=$(cat /etc/yunohost/current_host)
 
 #=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Installing dependencies..."
-
-#REMOVEME? ynh_install_nodejs --#REMOVEME? nodejs_version=$nodejs_version
-#REMOVEME? ynh_use_nodejs
-
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..."

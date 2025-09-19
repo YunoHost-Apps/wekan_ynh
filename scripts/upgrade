@@ -50,9 +50,6 @@ chown -R $app:$app "$install_dir"
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..."
 
-#REMOVEME? ynh_install_nodejs --#REMOVEME? nodejs_version=$nodejs_version
-#REMOVEME? ynh_use_nodejs
-
 ynh_install_mongo --mon#REMOVEME? go_version=$mongo_version
 
 #=================================================

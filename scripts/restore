@@ -20,17 +20,6 @@ chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
 
 #=================================================
-# SPECIFIC RESTORATION
-#=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Reinstalling dependencies..."
-
-# Define and install dependencies
-#REMOVEME? ynh_install_nodejs --#REMOVEME? nodejs_version=$nodejs_version
-#REMOVEME? ynh_use_nodejs
-
-#=================================================
 # RESTORE THE MONGODB DATABASE
 #=================================================
 ynh_script_progression --message="Restoring the MongoDB database..."
