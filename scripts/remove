@@ -28,7 +28,7 @@ ynh_remove_mongo
 ynh_config_remove_nginx
 
 # To prevent permissions issues on reinstall
-ynh_safe_rm "/var/log/mongodb"
+ynh_safe_rm "/var/lib/mongodb"
 
 #=================================================
 # END OF SCRIPT
