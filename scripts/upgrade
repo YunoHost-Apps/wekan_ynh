@@ -54,6 +54,11 @@ ynh_config_add_systemd
 
 yunohost service add $app --description="Wekan daemon" --log="/var/log/$app/$app.log"
 
+mkdir -p "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
+# Use logrotate to manage application logfile(s)
+ynh_config_add_logrotate
+
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
