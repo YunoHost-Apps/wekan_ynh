@@ -19,7 +19,7 @@ ynh_script_progression "Ensuring downward compatibility..."
 
 # If mongo_version doesn't exist, create it
 if [ -z "$mongo_version" ]; then
-	mon#REMOVEME? go_version="$(mongod --version | grep -oP 'db version v\K.{0,3}')"
+	mongo_version="$(mongod --version | grep -oP 'db version v\K.{0,3}')"
 	ynh_app_setting_set --key=mongo_version --value=$mongo_version
 fi
 
