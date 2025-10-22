@@ -27,19 +27,19 @@ ynh_safe_rm "/etc/apt/sources.list.d/mongodb-org-3.2.list"
 ynh_safe_rm "/etc/apt/sources.list.d/mongodb-org-4.4.list"
 
 #=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression "Upgrading dependencies..."
+
+ynh_install_mongo go_version
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression "Upgrading source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"  --keep=".env"
-
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-ynh_script_progression "Upgrading dependencies..."
-
-ynh_install_mongo go_version=$mongo_version
 
 #=================================================
 # NGINX CONFIGURATION

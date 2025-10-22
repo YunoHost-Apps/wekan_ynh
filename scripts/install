@@ -6,12 +6,10 @@ source /usr/share/yunohost/helpers
 main_domain=$(cat /etc/yunohost/current_host)
 
 #=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
+# INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression "Setting up source files..."
 
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir"
+ynh_install_mongo
 
 #=================================================
 # CREATE A MONGODB DATABASE
@@ -21,9 +19,15 @@ ynh_script_progression "Creating a MongoDB database..."
 db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --key=db_name --value=$db_name
-
-ynh_install_mongo
 ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression "Setting up source files..."
+
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir"
 
 #=================================================
 # NGINX CONFIGURATION
