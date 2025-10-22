@@ -11,13 +11,9 @@ main_domain=$(cat /etc/yunohost/current_host)
 
 if [[ -f "/var/log/mongodb" ]]; then
     chown mongodb:mongodb "/var/log/mongodb"
-	chmod 600 -R "/var/log/mongodb"
+	chmod 755 -R "/var/log/mongodb"
 	chmod 755 "/var/log/mongodb"
 fi
-
-chown mongodb:mongodb "/var/log/mongodb"
-chmod 600 -R "/var/log/mongodb"
-chmod 755 "/var/log/mongodb"
 
 ynh_install_mongo
 
