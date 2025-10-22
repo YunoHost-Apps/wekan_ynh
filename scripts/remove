@@ -27,6 +27,13 @@ ynh_remove_mongo
 # Remove the dedicated NGINX config
 ynh_config_remove_nginx
 
+
+if [[ -f "/var/log/mongodb" ]]; then
+    chown mongodb:mongodb "/var/log/mongodb"
+	chmod 600 -R "/var/log/mongodb"
+	chmod 755 "/var/log/mongodb"
+fi
+
 #=================================================
 # END OF SCRIPT
 #=================================================
