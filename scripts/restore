@@ -15,7 +15,7 @@ ynh_restore "$install_dir"
 #=================================================
 ynh_script_progression "Restoring the MongoDB database..."
 
-ynh_install_mongo go_version=$mongo_version
+ynh_install_mongo
 ynh_mongo_restore_db  < ./dump.bson
 
 #=================================================
