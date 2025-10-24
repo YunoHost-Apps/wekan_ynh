@@ -9,14 +9,9 @@ main_domain=$(cat /etc/yunohost/current_host)
 # INSTALL DEPENDENCIES
 #=================================================
 
-# Install mongo server only if asked to
-if [ "$mongo_version" != "None" ]; then
-    ynh_script_progression "Installing MongoDB..."
-    ynh_install_mongo
-else
-    # gives the mongo service name for the rest of installation
-    mongodb_servicename=mongod
-fi
+ynh_script_progression "Installing MongoDB..."
+
+ynh_install_mongo
 
 #=================================================
 # CREATE A MONGODB DATABASE
