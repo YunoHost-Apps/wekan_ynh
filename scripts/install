@@ -3,13 +3,16 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+#=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
+
 main_domain=$(cat /etc/yunohost/current_host)
+ynh_app_setting_set --key=main_domain --value=$main_domain
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-
-ynh_script_progression "Installing MongoDB..."
 
 ynh_install_mongo
 
@@ -32,6 +35,13 @@ ynh_script_progression "Setting up source files..."
 ynh_setup_source --dest_dir="$install_dir"
 
 #=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression "Adding a config file..."
+
+ynh_config_add --template=".env" --destination="$install_dir/.env"
+
+#=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression "Configuring NGINX web server..."
@@ -48,15 +58,6 @@ mkdir -p "/var/log/$app"
 chown -R $app:$app "/var/log/$app"
 # Use logrotate to manage application logfile(s)
 ynh_config_add_logrotate
-
-#=================================================
-# SPECIFIC SETUP
-#=================================================
-# ADD A CONFIGURATION
-#=================================================
-ynh_script_progression "Adding a config file..."
-
-ynh_config_add --template=".env" --destination="$install_dir/.env"
 
 #=================================================
 # START SYSTEMD SERVICE

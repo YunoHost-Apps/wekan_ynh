@@ -20,15 +20,12 @@ fi
 # Remove the dedicated systemd config
 ynh_config_remove_systemd
 
-# Remove a database if it exists, along with the associated user
-ynh_mongo_remove_db --db_user=$db_user --db_name=$db_name
-#ynh_remove_mongo
-
 # Remove the dedicated NGINX config
 ynh_config_remove_nginx
 
-# To prevent permissions issues on reinstall
-ynh_safe_rm "/var/lib/mongodb"
+# Remove a database if it exists, along with the associated user
+ynh_mongo_remove_db --db_user=$db_user --db_name=$db_name
+ynh_remove_mongo
 
 #=================================================
 # END OF SCRIPT
