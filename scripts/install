@@ -14,8 +14,11 @@ ynh_app_setting_set --key=main_domain --value=$main_domain
 # INSTALL DEPENDENCIES
 #=================================================
 
-# to fix some mongo issue on reinstall
+if [[ -d "/var/lib/mongodb" ]]; then
+    # to fix some mongo issue on reinstall
 chown -R mongodb:mongodb /var/lib/mongodb/*
+fi
+
 
 ynh_install_mongo
 
