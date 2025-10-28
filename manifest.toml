@@ -7,7 +7,7 @@ description.fr = "Kanban similaire à Trello"
 
 version = "7.95~ynh1"
 
-maintainers = ["alexAubin", "ljf", "yalh76"]
+maintainers = []
 
 [upstream]
 license = "MIT"
@@ -18,6 +18,7 @@ code = "https://github.com/wekan/wekan"
 
 [integration]
 yunohost = ">= 12.1.17"
+helpers_version = "2.1"
 architectures = ["amd64"]
 multi_instance = true
 
