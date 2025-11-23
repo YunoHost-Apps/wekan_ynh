@@ -60,6 +60,10 @@ ynh_script_progression "Starting $app's systemd service..."
 # Start a systemd service
 ynh_systemctl --service=$app --action="start" --log_path=systemd
 
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+	sleep 60
+fi
+
 #=================================================
 # END OF SCRIPT
 #=================================================
