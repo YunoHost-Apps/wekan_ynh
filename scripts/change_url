@@ -35,10 +35,6 @@ ynh_script_progression "Starting $app's systemd service..."
 # Start a systemd service
 ynh_systemctl --service=$app --action="start"
 
-if ynh_in_ci_tests; then
-	sleep 60
-fi
-
 #=================================================
 # END OF SCRIPT
 #=================================================
