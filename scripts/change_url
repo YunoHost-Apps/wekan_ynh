@@ -8,7 +8,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service=$app --action="stop" --log_path=systemd
+ynh_systemctl --service=$app --action="stop"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -33,7 +33,7 @@ ynh_store_file_checksum "$install_dir/.env"
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemctl --service=$app --action="start" --log_path=systemd --wait_until="Enabling LDAP Background Sync"
+ynh_systemctl --service=$app --action="start"
 
 if ynh_in_ci_tests; then
 	sleep 60
