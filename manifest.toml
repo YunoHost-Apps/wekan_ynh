@@ -5,7 +5,7 @@ name = "Wekan"
 description.en = "Trello-like kanban"
 description.fr = "Kanban similaire à Trello"
 
-version = "8.19~ynh1"
+version = "8.20~ynh1"
 
 maintainers = []
 
@@ -17,7 +17,7 @@ admindoc = "https://github.com/wekan/wekan/wiki"
 code = "https://github.com/wekan/wekan"
 
 [integration]
-yunohost = ">= 12.1.17"
+yunohost = ">= 12.1.38"
 helpers_version = "2.1"
 architectures = ["amd64", "arm64"]
 multi_instance = true
