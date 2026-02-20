@@ -5,7 +5,7 @@ name = "Wekan"
 description.en = "Trello-like kanban"
 description.fr = "Kanban similaire à Trello"
 
-version = "8.33~ynh1"
+version = "8.34~ynh1"
 
 maintainers = [ ]
 
@@ -43,10 +43,10 @@ ram.runtime = "50M"
 [resources]
 
         [resources.sources.main]
-        amd64.url = "https://github.com/wekan/wekan/releases/download/v8.33/wekan-8.33-amd64.zip"
-        amd64.sha256 = "94b33a895cc79c01f0c85328a06200ef6843ab05f5d1b4b68052bbd1850dc541"
-        arm64.url = "https://github.com/wekan/wekan/releases/download/v8.33/wekan-8.33-arm64.zip"
-        arm64.sha256 = "3e83094aff21c7aa7bd5b1e70703860c7058f32e5dd48d95ae293e570b43b927"
+        amd64.url = "https://github.com/wekan/wekan/releases/download/v8.34/wekan-8.34-amd64.zip"
+        amd64.sha256 = "e3c7de598bae45fe750f70ddf1d290e6cd8b4bffd095adfc37b36cefbf09f356"
+        arm64.url = "https://github.com/wekan/wekan/releases/download/v8.34/wekan-8.34-arm64.zip"
+        arm64.sha256 = "60e31ff1f7d6ba75f1168d2a2220761895db196e513123ba0552c5e0f33d0159"
 
         autoupdate.strategy = "latest_github_release"
         autoupdate.asset.amd64 = ".*-amd64.zip"
