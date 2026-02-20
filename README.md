@@ -12,7 +12,7 @@ Trello-like kanban
 
 [![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://wekan.github.io)
 [![App Demo](https://img.shields.io/badge/App_Demo-blue?style=for-the-badge)](https://demo.sandstorm.io/appdemo/m86q05rdvj14yvn78ghaxynqz7u2svw6rnttptxx49g1785cdv1h)
-[![Version: 8.33~ynh1](https://img.shields.io/badge/Version-8.33~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/wekan/)
+[![Version: 8.34~ynh1](https://img.shields.io/badge/Version-8.34~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/wekan/)
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/wekan"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
