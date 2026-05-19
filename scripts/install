@@ -72,7 +72,7 @@ chown $app:$app "$install_dir/.env"
 #=================================================
 ynh_script_progression --message="Building server..."
 
-pushd "$install_dir"
+pushd "$install_dir/programs/server"
 	npm install --omit=dev
 popd
 
