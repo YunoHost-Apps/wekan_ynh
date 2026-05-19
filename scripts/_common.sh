@@ -4,4 +4,4 @@
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
-mongo_version="7.0"
+mongo_version="8.0"
