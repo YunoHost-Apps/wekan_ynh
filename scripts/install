@@ -29,8 +29,15 @@ db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --key=db_name --value=$db_name
 
-ynh_install_mongo --mongo_version=$mongo_version
 ynh_mongo_setup_db --db_user=$db_user --db_name=$db_name
+
+#=================================================
+# BUILD APP
+#=================================================
+ynh_script_progression "Running build..."
+pushd $install_dir
+    ynh_exec_as_app npm install --prefix ./programs/server
+popd
 
 #=================================================
 # NGINX CONFIGURATION
