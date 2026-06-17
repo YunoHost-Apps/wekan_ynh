@@ -10,7 +10,7 @@ main_domain=$(cat /etc/yunohost/current_host)
 #=================================================
 ynh_script_progression "Installing dependencies..."
 
-ynh_install_mongo --mongo_version=$mongo_version
+ynh_install_mongo
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
