@@ -16,7 +16,7 @@ ynh_restore "$install_dir"
 ynh_script_progression "Restoring the MongoDB database..."
 
 ynh_install_mongo --mongo_version=$mongo_version
-ynh_mongo_restore_db < ./dump.bson
+ynh_mongo_restore_db --database=$app < ./dump.bson
 
 #=================================================
 # RESTORE THE NGINX CONFIGURATION

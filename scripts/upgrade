@@ -32,14 +32,27 @@ ynh_safe_rm "/etc/apt/sources.list.d/mongodb-org-4.4.list"
 ynh_script_progression "Upgrading source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir" --keep=".env"
+ynh_setup_source --dest_dir="$install_dir" --keep=".env" --full_replace=1
+
+if ynh_app_upgrading_from_version_before 8.98~ynh1; then
+    ynh_script_progression "Reapplying configuration..."
+	ynh_config_add --template=".env" --destination="$install_dir/.env"
+fi
+
+#=================================================
+# BUILD APP
+#=================================================
+ynh_script_progression "Running build..."
+pushd $install_dir
+    ynh_exec_as_app npm install --prefix ./programs/server
+popd
 
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
 ynh_script_progression "Upgrading dependencies..."
 
-ynh_install_mongo --mongo_version=$mongo_version
+ynh_install_mongo
 
 #=================================================
 # NGINX CONFIGURATION
