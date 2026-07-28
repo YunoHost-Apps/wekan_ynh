@@ -44,7 +44,7 @@ fi
 #=================================================
 ynh_script_progression "Running build..."
 pushd $install_dir
-    ynh_exec_as_app npm install --prefix ./programs/server
+    ynh_hide_warnings ynh_exec_as_app npm install --prefix ./programs/server
 popd
 
 #=================================================
