@@ -50,8 +50,8 @@ ram.runtime = "50M"
         arm64.sha256 = "130bc7574651caaabbfccd2fe480ee36e9e10eaed16a04e2e3fdbc9c2242c37c"
 
         autoupdate.strategy = "latest_github_release"
-        autoupdate.asset.amd64 = ".*-amd64.zip"
-        autoupdate.asset.arm64 = "wekan-\\d+\\.\\d+-arm64.zip"
+        autoupdate.asset.amd64 = "wekan-\\d+\\.\\d+-amd64.zip$"
+        autoupdate.asset.arm64 = "wekan-\\d+\\.\\d+-arm64.zip$"
 
     [resources.ports]
 
